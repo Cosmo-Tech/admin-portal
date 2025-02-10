@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+// SPDX-License-Identifier: LicenseRef-CosmoTech
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';

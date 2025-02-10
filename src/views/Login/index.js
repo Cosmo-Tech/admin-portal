@@ -1,4 +1,4 @@
-// Copyright (c) Cosmo Tech.
-// Licensed under the MIT license.
+// SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+// SPDX-License-Identifier: LicenseRef-CosmoTech
 
 export { default } from './Login';

@@ -1,5 +1,5 @@
-// Copyright (c) Cosmo Tech.
-// Licensed under the MIT license.
+// SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+// SPDX-License-Identifier: LicenseRef-CosmoTech
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import App from './App.jsx';

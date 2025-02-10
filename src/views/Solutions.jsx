@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+// SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
 import { AppBar } from '../components/AppBar/AppBar.jsx';
 import { useGetAllSolutionsQuery } from '../state/api/apiSlice.js';

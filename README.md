@@ -1,3 +1,6 @@
+<!-- SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech -->
+<!-- SPDX-License-Identifier: LicenseRef-CosmoTech -->
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

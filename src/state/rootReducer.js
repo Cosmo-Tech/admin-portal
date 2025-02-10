@@ -1,5 +1,5 @@
-// Copyright (c) Cosmo Tech.
-// Licensed under the MIT license.
+// SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+// SPDX-License-Identifier: LicenseRef-CosmoTech
 import { combineReducers } from '@reduxjs/toolkit';
 import { cosmoApi } from './api/apiSlice.js';
 import authReducer from './auth/reducers.js';
