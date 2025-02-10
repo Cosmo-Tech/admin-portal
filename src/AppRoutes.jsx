@@ -1,7 +1,8 @@
 // Copyright (c) Cosmo Tech.
 // Licensed under the MIT license.
 import React from 'react';
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Navigate } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import { UserStatusGate } from './components/UserStatusGate/UserStatusGate.jsx';
 import { Organizations } from './views/Organizations.jsx';
 import { Scenarios } from './views/Scenarios.jsx';
