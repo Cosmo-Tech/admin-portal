@@ -1,8 +1,8 @@
 // Copyright (c) Cosmo Tech.
 // Licensed under the MIT license.
 import React from 'react';
-import { AuthKeycloakRedirect } from '@cosmotech/core';
 import { useLogin } from 'src/state/auth/hooks.js';
+import { AuthKeycloakRedirect } from '@cosmotech/core';
 
 const Login = () => {
   const login = useLogin();

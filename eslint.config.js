@@ -21,13 +21,7 @@ const neostandardConfig = neostandard({ semi: true, noStyle: true });
 
 export default [
   {
-    ignores: [
-      '**/build',
-      '**/dist',
-      '**/.github',
-      '**/node_modules',
-      'cypress/reports',
-    ],
+    ignores: ['**/build', '**/dist', '**/.github', '**/node_modules', 'cypress/reports'],
   },
   ...neostandardConfig,
   ...compat.extends(

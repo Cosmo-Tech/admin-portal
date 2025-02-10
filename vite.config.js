@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), nodePolyfills()],
   resolve: {
     alias: {
-      src: "/src",
+      src: '/src',
     },
   },
   server: {
