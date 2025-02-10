@@ -34,7 +34,7 @@ function App() {
       }
     }
     checkLogin();
-  }, []);
+  }, [setAuthData]);
 
   return <AppRoutes />;
 }
