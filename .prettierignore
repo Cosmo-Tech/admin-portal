@@ -1,0 +1,6 @@
+build
+dist
+.github
+node_modules
+stats.html
+cypress/reports
