@@ -26,7 +26,6 @@ export default [
       '**/dist',
       '**/.github',
       '**/node_modules',
-      'cypress/commons/services/stubbing.js',
       'cypress/reports',
     ],
   },
