@@ -1,6 +1,6 @@
 import React from 'react';
-import { AppBar } from '../../components/AppBar/AppBar.jsx';
-import { useGetAllSolutionsQuery } from '../../state/api/apiSlice.js';
+import { AppBar } from 'src/components/AppBar/AppBar.jsx';
+import { useGetAllSolutionsQuery } from 'src/state/api/apiSlice.js';
 
 export const Users = () => {
   const { data, isLoading } = useGetAllSolutionsQuery();

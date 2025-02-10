@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 import React from 'react';
 import { AuthKeycloakRedirect } from '@cosmotech/core';
-import { useLogin } from '../../state/auth/hooks.js';
+import { useLogin } from 'src/state/auth/hooks.js';
 
 const Login = () => {
   const login = useLogin();
