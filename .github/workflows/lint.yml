@@ -25,5 +25,5 @@ jobs:
           cache: 'yarn'
       - name: Run eslint
         run: yarn install && yarn eslint .
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run reuse lint
+        run: pip install reuse && reuse lint
