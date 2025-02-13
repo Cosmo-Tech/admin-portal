@@ -3,7 +3,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 export const getAllWorkspaces = createAsyncThunk('workspaces/getAllWorkspaces', async (arg, thunkAPI) => {
-  const { Api } = thunkAPI.extra;
-  const { data } = await Api.Workspaces.findAllWorkspaces('o-vloxvdke5gqvx');
+  const { api } = thunkAPI.extra;
+  const { data } = await api.Workspaces.findAllWorkspaces('o-vloxvdke5gqvx');
   return data;
 });

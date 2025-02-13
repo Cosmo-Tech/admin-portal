@@ -7,10 +7,10 @@ export const cosmoApi = createApi({
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getAllSolutions: builder.query({
-      queryFn: async (args, api) => {
-        const { Api } = api.extra;
+      queryFn: async (args, thunkAPI) => {
+        const { api } = thunkAPI.extra;
         try {
-          const { data } = await Api.Solutions.findAllSolutions('o-vloxvdke5gqvx');
+          const { data } = await api.Solutions.findAllSolutions('o-vloxvdke5gqvx');
           return { data };
         } catch (error) {
           console.error(error);
@@ -19,10 +19,10 @@ export const cosmoApi = createApi({
       },
     }),
     getAllScenarios: builder.query({
-      queryFn: async (args, api) => {
-        const { Api } = api.extra;
+      queryFn: async (args, thunkAPI) => {
+        const { api } = thunkAPI.extra;
         try {
-          const { data } = await Api.Runners.listRunners('o-vloxvdke5gqvx', 'w-314qryelkyop5', 0, 5000);
+          const { data } = await api.Runners.listRunners('o-vloxvdke5gqvx', 'w-314qryelkyop5', 0, 5000);
           const scenarios = data.filter((runner) => runner.ownerId === 'c12fe835-b8b0-4578-9343-dddeaecd0140');
           return { data: scenarios };
         } catch (error) {
@@ -32,11 +32,11 @@ export const cosmoApi = createApi({
       },
     }),
     renameScenario: builder.mutation({
-      queryFn: async (args, api) => {
-        const { Api } = api.extra;
+      queryFn: async (args, thunkAPI) => {
+        const { api } = thunkAPI.extra;
         const { runnerId, patch } = args;
         try {
-          const { data } = await Api.Runners.updateRunner('o-vloxvdke5gqvx', 'w-314qryelkyop5', runnerId, patch);
+          const { data } = await api.Runners.updateRunner('o-vloxvdke5gqvx', 'w-314qryelkyop5', runnerId, patch);
           return { data };
         } catch (error) {
           console.error(error);

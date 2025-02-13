@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { Auth } from '@cosmotech/core';
 import AppRoutes from './AppRoutes.jsx';
-import './services/config/auth/keycloak.js';
+import './services/auth/keycloak.js';
 import { AUTH_STATUS } from './state/auth/constants.js';
 import { useSetAuthData } from './state/auth/hooks.js';
 
