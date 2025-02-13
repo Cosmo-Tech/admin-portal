@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllWorkspaces } from './thunks/GetAllWorkspaces.js';
+import { getAllWorkspaces } from './thunks/getAllWorkspaces.js';
 
 export const useGetAllWorkspaces = () => {
   const dispatch = useDispatch();

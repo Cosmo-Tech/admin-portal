@@ -8,7 +8,7 @@ import { setAuthData } from '../reducers.js';
 const UNKNOWN_ERROR_MESSAGE =
   'Unknown error. Authentication failed\nIf the problem persists, please contact your administrator.';
 
-export const Login = createAsyncThunk('auth/login', async (arg, thunkAPI) => {
+export const login = createAsyncThunk('auth/login', async (arg, thunkAPI) => {
   const { provider } = arg;
   const { dispatch } = thunkAPI;
   try {
