@@ -15,5 +15,6 @@ A user interface to manage resources in your Cosmo Tech workspaces
 - if you don't already have _yarn_ installed, run `corepack enable`
 
 ### Webapp server setup
+
 - run `yarn install` to install the webapp dependencies
 - run `yarn start` to start the webapp server

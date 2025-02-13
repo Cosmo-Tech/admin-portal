@@ -6,6 +6,7 @@ path = [
   "**/*.json",
   "**/*.ico",
   "yarn.lock",
+  ".nvmrc",
 ]
 precedence = "closest"
 SPDX-FileCopyrightText = "Copyright (C) 2024-2025 Cosmo Tech"
