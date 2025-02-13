@@ -4,7 +4,7 @@ import React from 'react';
 import { useLogin } from 'src/state/auth/hooks.js';
 import { AuthKeycloakRedirect } from '@cosmotech/core';
 
-const Login = () => {
+export const Login = () => {
   const login = useLogin();
   const handleLogin = (event, provider) => {
     event.preventDefault();
@@ -16,4 +16,3 @@ const Login = () => {
     </div>
   );
 };
-export default Login;

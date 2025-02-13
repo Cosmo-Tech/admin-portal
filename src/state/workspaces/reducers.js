@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { createSlice } from '@reduxjs/toolkit';
-import { getAllWorkspaces } from './thunks/GetAllWorkspaces.js';
+import { getAllWorkspaces } from './thunks/getAllWorkspaces.js';
 
 const initialWorkspacesState = {
   list: [],

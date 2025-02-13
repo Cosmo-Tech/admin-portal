@@ -3,12 +3,8 @@
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
-import { UserStatusGate } from './components/UserStatusGate/UserStatusGate.jsx';
-import { Organizations } from './views/Organizations.jsx';
-import { Scenarios } from './views/Scenarios.jsx';
-import { Solutions } from './views/Solutions.jsx';
-import { Users } from './views/Users/Users.jsx';
-import { Workspaces } from './views/Workspaces.jsx';
+import { UserStatusGate } from './components';
+import { Organizations, Scenarios, Solutions, Users, Workspaces } from './views';
 
 const getLocationRelativePath = (path) => {
   const routerBasename = '';

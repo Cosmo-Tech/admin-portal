@@ -8,11 +8,11 @@ import {
   WorkspaceApiFactory,
   OrganizationApiFactory,
 } from '@cosmotech/api-ts';
-import { clientApi } from '../ClientApi';
+import { clientApi } from './clientApi';
 
 const defaultBasePath = 'https://kubernetes.cosmotech.com/cosmotech-api/brewery/v4'.replace(/\/+$/, '');
 
-export const Api = {
+export const api = {
   defaultBasePath,
   Solutions: SolutionApiFactory(null, defaultBasePath, clientApi),
   Datasets: DatasetApiFactory(null, defaultBasePath, clientApi),
