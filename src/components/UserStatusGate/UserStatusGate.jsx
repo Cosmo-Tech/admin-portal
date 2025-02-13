@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
 import PropTypes from 'prop-types';
-import { AUTH_STATUS } from '../../state/auth/constants.js';
-import Login from '../../views/Login/index.js';
+import { AUTH_STATUS } from 'src/state/auth/constants.js';
+import { Login } from 'src/views';
 import { useUserStatusGateHook } from './UserStatusGateHook.js';
 
 export const UserStatusGate = ({ children }) => {
