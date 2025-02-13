@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React, { useEffect } from 'react';
-import { AppBar } from '../components/AppBar/AppBar.jsx';
+import { AppBar } from '../components';
 import { useGetAllWorkspaces, useWorkspacesList, useWorkspacesListStatus } from '../state/workspaces/hooks.js';
 
 export const Workspaces = () => {

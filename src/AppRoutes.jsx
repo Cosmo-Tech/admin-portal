@@ -3,7 +3,7 @@
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
-import { UserStatusGate } from './components/UserStatusGate/UserStatusGate.jsx';
+import { UserStatusGate } from './components';
 import { Organizations, Scenarios, Solutions, Users, Workspaces } from './views';
 
 const getLocationRelativePath = (path) => {
