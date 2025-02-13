@@ -4,7 +4,7 @@
   "version": "0.1.0-dev",
   "type": "module",
   "scripts": {
-    "start": "vite",
+    "start": "vite --open",
     "build": "vite build",
     "lint": "eslint .",
     "prettier": "npx prettier . --write",

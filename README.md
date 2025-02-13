@@ -1,13 +1,19 @@
 <!-- SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech -->
 <!-- SPDX-License-Identifier: LicenseRef-CosmoTech -->
 
-# React + Vite
+# Cosmo Tech Administration Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A user interface to manage resources in your Cosmo Tech workspaces
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Local setup
 
-# admin-portal
+### Prerequisites
+
+- if you don't have NodeJS yet, [install nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating), and run: `nvm use` in the repository folder
+- if you don't already have _yarn_ installed, run `corepack enable`
+
+### Webapp server setup
+- run `yarn install` to install the webapp dependencies
+- run `yarn start` to start the webapp server
