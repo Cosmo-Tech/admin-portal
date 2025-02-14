@@ -2,3 +2,4 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 export { AppBar } from './AppBar/AppBar';
 export { UserStatusGate } from './UserStatusGate/UserStatusGate';
+export { ErrorBoundary } from './ErrorBoundary/ErrorBoundary';
