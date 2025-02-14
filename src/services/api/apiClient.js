@@ -2,9 +2,17 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import {
+  DatasetApiFactory,
+  RunnerApiFactory,
+  RunApiFactory,
+  SolutionApiFactory,
+  WorkspaceApiFactory,
+  OrganizationApiFactory,
+} from '@cosmotech/api-ts';
 import { Auth } from '@cosmotech/core';
 
-const getAuthenticationHeaders = async (allowApiKey = false) => {
+export const getAuthenticationHeaders = async (allowApiKey = false) => {
   // if (allowApiKey && process.env.REACT_APP_API_KEY) return { 'X-CSM-API-KEY': process.env.REACT_APP_API_KEY };
 
   let tokens = await Auth.acquireTokens();
@@ -40,4 +48,12 @@ const addInterceptors = (axiosInstance) => {
 
 const axiosClientApi = addInterceptors(axios.create());
 
-export { axiosClientApi as clientApi, getAuthenticationHeaders };
+export const getApiClient = (apiUrl) => ({
+  apiUrl,
+  Solutions: SolutionApiFactory(null, apiUrl, axiosClientApi),
+  Datasets: DatasetApiFactory(null, apiUrl, axiosClientApi),
+  Runners: RunnerApiFactory(null, apiUrl, axiosClientApi),
+  RunnerRuns: RunApiFactory(null, apiUrl, axiosClientApi),
+  Workspaces: WorkspaceApiFactory(null, apiUrl, axiosClientApi),
+  Organizations: OrganizationApiFactory(null, apiUrl, axiosClientApi),
+});
