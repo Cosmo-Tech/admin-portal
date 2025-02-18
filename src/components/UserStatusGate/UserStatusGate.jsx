@@ -1,23 +1,24 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router';
 import PropTypes from 'prop-types';
-import { AUTH_STATUS } from 'src/state/auth/constants.js';
-import { Login } from 'src/views';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import { useUserStatusGateHook } from './UserStatusGateHook.js';
 
 export const UserStatusGate = ({ children }) => {
-  const { authStatus } = useUserStatusGateHook();
-  const authenticated = authStatus === AUTH_STATUS.AUTHENTICATED || authStatus === AUTH_STATUS.DISCONNECTING;
-  if (!authenticated)
-    return (
-      <ErrorBoundary>
-        <Login />
-      </ErrorBoundary>
-    );
-  return <ErrorBoundary>{children}</ErrorBoundary>;
+  const { authenticated } = useUserStatusGateHook();
+  const location = useLocation();
+
+  if (!authenticated && location.pathname !== '/sign-in') return <Navigate to="/sign-in" replace />;
+  if (authenticated && location.pathname === '/sign-in') return <Navigate to="/" replace />;
+  return (
+    <ErrorBoundary>
+      <Outlet />
+    </ErrorBoundary>
+  );
 };
+
 UserStatusGate.propTypes = {
   children: PropTypes.node,
 };

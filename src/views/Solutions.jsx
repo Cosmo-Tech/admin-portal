@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
-import { AppBar } from '../components';
 import { useGetAllSolutionsQuery } from '../state/api/apiSlice.js';
 
 export const Solutions = () => {
@@ -11,7 +10,6 @@ export const Solutions = () => {
   }
   return (
     <div>
-      <AppBar />
       {data && (
         <ol>
           {data.map((solution) => (

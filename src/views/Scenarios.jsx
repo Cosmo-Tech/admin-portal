@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { AppBar } from '../components';
 import { useGetAllScenariosQuery, useRenameScenarioMutation } from '../state/api/apiSlice.js';
 
 export const Scenarios = () => {
@@ -18,7 +17,6 @@ export const Scenarios = () => {
   if (error) return <h1>Error!</h1>;
   return (
     <div>
-      <AppBar />
       {data && (
         <ol>
           {data.map((scenario) => (
