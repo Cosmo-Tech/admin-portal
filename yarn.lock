@@ -319,6 +319,47 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cosmotech/admin-portal@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@cosmotech/admin-portal@workspace:."
+  dependencies:
+    "@azure/msal-browser": "npm:^3.26.1"
+    "@cosmotech/api-ts": "npm:^3.2.9"
+    "@cosmotech/azure": "npm:^3.0.1"
+    "@cosmotech/core": "npm:^2.0.0"
+    "@emotion/react": "npm:^11.14.0"
+    "@emotion/styled": "npm:^11.14.0"
+    "@eslint/eslintrc": "npm:^3.2.0"
+    "@eslint/js": "npm:^9.20.0"
+    "@mui/material": "npm:^6.4.4"
+    "@reduxjs/toolkit": "npm:^2.5.1"
+    "@trivago/prettier-plugin-sort-imports": "npm:^5.2.2"
+    "@types/react": "npm:^19.0.8"
+    "@types/react-dom": "npm:^19.0.3"
+    "@vitejs/plugin-react": "npm:^4.3.4"
+    axios: "npm:^1.7.9"
+    eslint: "npm:^9.20.0"
+    eslint-config-prettier: "npm:^10.0.1"
+    eslint-plugin-cypress: "npm:^4.1.0"
+    eslint-plugin-prettier: "npm:^5.2.3"
+    eslint-plugin-react: "npm:^7.37.4"
+    eslint-plugin-react-hooks: "npm:^5.1.0"
+    eslint-plugin-react-refresh: "npm:^0.4.19"
+    globals: "npm:^15.14.0"
+    jwt-decode: "npm:^4.0.0"
+    neostandard: "npm:^0.12.1"
+    prettier: "npm:3.5.0"
+    prop-types: "npm:^15.8.1"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
+    react-hook-form: "npm:^7.54.2"
+    react-redux: "npm:^9.2.0"
+    react-router: "npm:^7.1.5"
+    vite: "npm:^6.1.0"
+    vite-plugin-node-polyfills: "npm:^0.23.0"
+  languageName: unknown
+  linkType: soft
+
 "@cosmotech/api-ts@npm:^3.2.9":
   version: 3.2.9
   resolution: "@cosmotech/api-ts@npm:3.2.9"
@@ -1619,47 +1660,6 @@ __metadata:
   checksum: 10c0/6d4ee461a7734b2f48836ee0fbb752903606e576cc100eb49340295129ca0b452f3ba91ddd4424a1d4406a98adfb2ebb6bd0ff4c49d7a0930c10e462719bbfd7
   languageName: node
   linkType: hard
-
-"admin-portal@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "admin-portal@workspace:."
-  dependencies:
-    "@azure/msal-browser": "npm:^3.26.1"
-    "@cosmotech/api-ts": "npm:^3.2.9"
-    "@cosmotech/azure": "npm:^3.0.1"
-    "@cosmotech/core": "npm:^2.0.0"
-    "@emotion/react": "npm:^11.14.0"
-    "@emotion/styled": "npm:^11.14.0"
-    "@eslint/eslintrc": "npm:^3.2.0"
-    "@eslint/js": "npm:^9.20.0"
-    "@mui/material": "npm:^6.4.4"
-    "@reduxjs/toolkit": "npm:^2.5.1"
-    "@trivago/prettier-plugin-sort-imports": "npm:^5.2.2"
-    "@types/react": "npm:^19.0.8"
-    "@types/react-dom": "npm:^19.0.3"
-    "@vitejs/plugin-react": "npm:^4.3.4"
-    axios: "npm:^1.7.9"
-    eslint: "npm:^9.20.0"
-    eslint-config-prettier: "npm:^10.0.1"
-    eslint-plugin-cypress: "npm:^4.1.0"
-    eslint-plugin-prettier: "npm:^5.2.3"
-    eslint-plugin-react: "npm:^7.37.4"
-    eslint-plugin-react-hooks: "npm:^5.1.0"
-    eslint-plugin-react-refresh: "npm:^0.4.19"
-    globals: "npm:^15.14.0"
-    jwt-decode: "npm:^4.0.0"
-    neostandard: "npm:^0.12.1"
-    prettier: "npm:3.5.0"
-    prop-types: "npm:^15.8.1"
-    react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
-    react-hook-form: "npm:^7.54.2"
-    react-redux: "npm:^9.2.0"
-    react-router: "npm:^7.1.5"
-    vite: "npm:^6.1.0"
-    vite-plugin-node-polyfills: "npm:^0.23.0"
-  languageName: unknown
-  linkType: soft
 
 "agent-base@npm:^7.1.0, agent-base@npm:^7.1.2":
   version: 7.1.3
