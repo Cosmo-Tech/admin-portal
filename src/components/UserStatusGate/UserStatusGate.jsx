@@ -3,15 +3,15 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router';
 import PropTypes from 'prop-types';
+import { useIsAuthenticated } from 'src/state/auth/hooks.js';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
-import { useUserStatusGateHook } from './UserStatusGateHook.js';
 
 export const UserStatusGate = ({ children }) => {
-  const { authenticated } = useUserStatusGateHook();
+  const isAuthenticated = useIsAuthenticated();
   const location = useLocation();
 
-  if (!authenticated && location.pathname !== '/sign-in') return <Navigate to="/sign-in" replace />;
-  if (authenticated && location.pathname === '/sign-in') return <Navigate to="/" replace />;
+  if (!isAuthenticated && location.pathname !== '/sign-in') return <Navigate to="/sign-in" replace />;
+  if (isAuthenticated && location.pathname === '/sign-in') return <Navigate to="/" replace />;
   return (
     <ErrorBoundary>
       <Outlet />

@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AUTH_STATUS } from './constants.js';
 import { setAuthData } from './reducers.js';
 import { login } from './thunks/login.js';
 
@@ -21,4 +22,11 @@ export const useAuth = () => {
 export const useSetAuthData = () => {
   const dispatch = useDispatch();
   return useCallback((data) => dispatch(setAuthData(data)), [dispatch]);
+};
+
+export const useIsAuthenticated = () => {
+  const authStatus = useAuthStatus();
+  return useMemo(() => {
+    return authStatus === AUTH_STATUS.AUTHENTICATED || authStatus === AUTH_STATUS.DISCONNECTING;
+  }, [authStatus]);
 };
