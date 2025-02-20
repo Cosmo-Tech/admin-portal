@@ -8,10 +8,11 @@ import {
   CategoryOutlined as CategoryOutlinedIcon,
   TuneOutlined as TuneOutlinedIcon,
 } from '@mui/icons-material';
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material';
 
 export const NavigationMenu = () => {
   const location = useLocation();
+  const theme = useTheme();
 
   const menuItems = [
     {
@@ -50,20 +51,22 @@ export const NavigationMenu = () => {
                 sx={{
                   py: 1.25,
                   '&.Mui-selected': {
-                    bgcolor: 'rgba(255, 237, 213, 1)',
+                    bgcolor: theme.palette.secondary.light,
+                    color: theme.palette.secondary.main,
                     '&:hover': {
-                      bgcolor: 'rgba(255, 237, 213, 0.8)',
+                      bgcolor: theme.palette.secondary.light,
                     },
                   },
                   '&:hover': {
-                    bgcolor: 'rgba(255, 237, 213, 0.5)',
+                    bgcolor: theme.palette.secondary.light,
+                    opacity: 0.8,
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 40,
-                    color: 'inherit',
+                    color: isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
                     '& .MuiSvgIcon-root': {
                       fontSize: '1.1rem',
                     },
@@ -76,7 +79,8 @@ export const NavigationMenu = () => {
                   sx={{
                     '& .MuiTypography-root': {
                       fontSize: '0.9rem',
-                      fontWeight: isSelected ? 500 : 400,
+                      fontWeight: isSelected ? 600 : 400,
+                      color: isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
                     },
                   }}
                 />
