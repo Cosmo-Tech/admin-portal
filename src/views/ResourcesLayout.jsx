@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
 import { Outlet } from 'react-router';
-import { AppBar } from '../components';
+import { NavigationMenu } from '../components';
 
 export const ResourcesLayout = () => {
   return (
     <div>
-      <AppBar />
+      <NavigationMenu />
       <h1>Resources</h1>
       <Outlet />
     </div>
