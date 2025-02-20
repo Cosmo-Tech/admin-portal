@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
 import { Outlet } from 'react-router';
+import { Stack } from '@mui/material';
 import { NavigationMenu } from '../components';
 
 export const ResourcesLayout = () => {
   return (
-    <div>
+    <Stack direction="row" sx={{ height: '100%' }}>
       <NavigationMenu />
       <Outlet />
-    </div>
+    </Stack>
   );
 };
