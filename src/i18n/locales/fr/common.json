@@ -1,0 +1,16 @@
+{
+  "login": {
+    "title": "Connexion",
+    "selectApi": "Sélectionner l'API",
+    "loginButton": "Se connecter"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "language": {
+    "en": "Anglais",
+    "fr": "Français"
+  }
+}

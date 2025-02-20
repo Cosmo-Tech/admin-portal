@@ -8,7 +8,6 @@ export const ResourcesLayout = () => {
   return (
     <div>
       <NavigationMenu />
-      <h1>Resources</h1>
       <Outlet />
     </div>
   );

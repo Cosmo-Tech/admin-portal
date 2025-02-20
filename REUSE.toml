@@ -5,6 +5,7 @@ version = 1
 path = [
   "**/*.json",
   "**/*.ico",
+  "**/*.png",
   "yarn.lock",
   ".nvmrc",
 ]

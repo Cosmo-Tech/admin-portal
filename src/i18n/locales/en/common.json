@@ -1,0 +1,16 @@
+{
+  "login": {
+    "title": "Login",
+    "selectApi": "Select API",
+    "loginButton": "Login"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "language": {
+    "en": "English",
+    "fr": "French"
+  }
+}

@@ -4,3 +4,4 @@ export { AppBar } from './AppBar/AppBar';
 export { ErrorBoundary } from './ErrorBoundary/ErrorBoundary';
 export { NavigationMenu } from './NavigationMenu/NavigationMenu';
 export { UserStatusGate } from './UserStatusGate/UserStatusGate';
+export { LanguageSwitcher } from './LanguageSwitcher/LanguageSwitcher';
