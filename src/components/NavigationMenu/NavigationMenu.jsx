@@ -16,24 +16,40 @@ export const NavigationMenu = () => {
 
   const menuItems = [
     {
-      text: 'Dashboards',
+      text: '[WIP] Dashboards',
       icon: <DashboardOutlinedIcon />,
       to: '/dashboards',
     },
     {
-      text: 'Users',
+      text: '[WIP] Users',
       icon: <ManageAccountsOutlinedIcon />,
       to: '/users',
     },
     {
-      text: 'Resources',
+      text: '[WIP] Resources',
       icon: <CategoryOutlinedIcon />,
       to: '/resources',
     },
     {
-      text: 'Roles',
+      text: '[WIP] Roles',
       icon: <TuneOutlinedIcon />,
       to: '/roles',
+    },
+    {
+      text: 'Solutions',
+      to: '/solution',
+    },
+    {
+      text: 'Workspaces',
+      to: '/workspace',
+    },
+    {
+      text: 'Organizations',
+      to: '/organization',
+    },
+    {
+      text: 'Scenarios',
+      to: '/scenario',
     },
   ];
 
