@@ -54,21 +54,44 @@ export const NavigationMenu = () => {
   ];
 
   return (
-    <Paper elevation={0} sx={{ height: 'calc(100% - 64px)', width: '100%', margin: '0px', paddingY: '32px', paddingX: '16px', maxWidth: 280 }}>
+    <Paper
+      elevation={0}
+      sx={{
+        height: 'calc(100vh - 160px)', // 64px (appbar) + 2*48px (padding)
+        width: '100%',
+        margin: '0px',
+        paddingY: '48px',
+        paddingX: '16px',
+        maxWidth: 280,
+        bgcolor: '#FFFAF5',
+      }}
+    >
       <List sx={{ p: 0 }}>
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.to;
           return (
-            <ListItem key={item.text} disablePadding>
+            <ListItem
+              key={item.text}
+              disablePadding
+              sx={{
+                my: 4,
+                borderRadius: '48px',
+                height: '48px',
+                '&:hover': {
+                  bgcolor: theme.palette.secondary.light,
+                  opacity: 0.8,
+                },
+              }}
+            >
               <ListItemButton
                 component={Link}
                 to={item.to}
                 selected={isSelected}
                 sx={{
-                  py: 1.25,
+                  borderRadius: '48px',
+                  height: '48px',
                   '&.Mui-selected': {
-                    bgcolor: theme.palette.secondary.light,
-                    color: theme.palette.secondary.main,
+                    bgcolor: `#C1670014`,
                     '&:hover': {
                       bgcolor: theme.palette.secondary.light,
                     },
@@ -82,7 +105,7 @@ export const NavigationMenu = () => {
                 <ListItemIcon
                   sx={{
                     minWidth: 40,
-                    color: isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
+                    color: isSelected ? '#C16700' : theme.palette.text.primary,
                     '& .MuiSvgIcon-root': {
                       fontSize: '1.1rem',
                     },
@@ -96,7 +119,7 @@ export const NavigationMenu = () => {
                     '& .MuiTypography-root': {
                       fontSize: '0.9rem',
                       fontWeight: isSelected ? 600 : 400,
-                      color: isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
+                      color: isSelected ? '#C16700' : theme.palette.text.primary,
                     },
                   }}
                 />

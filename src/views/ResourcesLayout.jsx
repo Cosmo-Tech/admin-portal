@@ -8,7 +8,7 @@ import { NavigationMenu } from '../components';
 export const ResourcesLayout = () => {
   return (
     <Stack direction="row" sx={{ height: 'calc(100vh - 64px)' }}>
-      <Box sx={{ height: '100%' }}>
+      <Box sx={{ height: '100%', marginRight: '32px' }}>
         <NavigationMenu />
       </Box>
       <Box sx={{ flexGrow: 1, overflow: 'auto', height: '100%' }}>
