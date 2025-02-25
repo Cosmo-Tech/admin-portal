@@ -54,7 +54,7 @@ export const NavigationMenu = () => {
   ];
 
   return (
-    <Paper elevation={0} sx={{ width: '100%', margin: '0px', paddingY: '32px', paddingX: '16px', maxWidth: 280 }}>
+    <Paper elevation={0} sx={{ height: 'calc(100% - 64px)', width: '100%', margin: '0px', paddingY: '32px', paddingX: '16px', maxWidth: 280 }}>
       <List sx={{ p: 0 }}>
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.to;
