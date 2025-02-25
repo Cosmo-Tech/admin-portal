@@ -8,7 +8,7 @@ import {
   CategoryOutlined as CategoryOutlinedIcon,
   TuneOutlined as TuneOutlinedIcon,
 } from '@mui/icons-material';
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material';
+import { Paper, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme } from '@mui/material';
 
 export const NavigationMenu = () => {
   const location = useLocation();
@@ -54,7 +54,7 @@ export const NavigationMenu = () => {
   ];
 
   return (
-    <Box sx={{ width: '100%', marginY: '32px', maxWidth: 280 }}>
+    <Paper elevation={0} sx={{ width: '100%', margin: '0px', paddingY: '32px', paddingX: '16px', maxWidth: 280 }}>
       <List sx={{ p: 0 }}>
         {menuItems.map((item) => {
           const isSelected = location.pathname === item.to;
@@ -105,6 +105,6 @@ export const NavigationMenu = () => {
           );
         })}
       </List>
-    </Box>
+    </Paper>
   );
 };
