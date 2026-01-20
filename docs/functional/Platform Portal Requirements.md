@@ -1,0 +1,1 @@
+The Cosmo Tech "Platform Portal" is a set of tools and services that allow platform administrators to manage and configure the Cosmo Tech platform. The Platform Portal provides capabilities for overseeing multiple organizations, managing global settings, and ensuring compliance across the platform.
