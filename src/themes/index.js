@@ -6,8 +6,7 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#6750A4',
-      light: '#F6F3FF',
+      main: '#f1f5f9',
     },
     secondary: {
       main: '#FFCC89',
@@ -25,8 +24,9 @@ const theme = createTheme({
     },
     background: {
       default: '#FFFFFF',
-      paper: '#F6F3FF',
+      paper: '#FFFFFF',
     },
+    divider: '#E9ECEF',
   },
   components: {
     MuiButton: {
@@ -37,9 +37,27 @@ const theme = createTheme({
         },
       },
     },
+    MuiTypography: {
+      styleOverrides: {
+        h1: {
+          fontSize: '24px',
+          fontWeight: 700,
+          color: '#212529',
+        },
+        body1: {
+          fontSize: '14px',
+          fontWeight: 400,
+        },
+        caption: {
+          fontSize: '12px',
+          color: '#6C757D',
+        },
+      }
+    }
   },
   typography: {
     fontFamily: [
+      'Inter',
       '-apple-system',
       'BlinkMacSystemFont',
       '"Segoe UI"',
@@ -51,6 +69,18 @@ const theme = createTheme({
       '"Segoe UI Emoji"',
       '"Segoe UI Symbol"',
     ].join(','),
+    h1: {
+      fontSize: '1.5rem', // ~24px
+      fontWeight: 700,
+      color: '#212529',
+    },
+    body1: {
+      fontSize: '0.875rem', // 14px
+    },
+    caption: {
+      fontSize: '0.75rem', // 12px
+      color: '#6C757D',
+    },
   },
 });
 

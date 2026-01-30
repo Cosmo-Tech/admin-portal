@@ -40,7 +40,6 @@ function App() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar />
       <Box component="main" sx={{ flexGrow: 1 }}>
         <AppRoutes />
       </Box>

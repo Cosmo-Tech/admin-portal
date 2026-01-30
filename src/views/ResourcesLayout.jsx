@@ -3,16 +3,19 @@
 import React from 'react';
 import { Outlet } from 'react-router';
 import { Box, Stack } from '@mui/material';
-import { NavigationMenu } from '../components';
+import { NavigationMenu, AppBar } from '../components';
 
 export const ResourcesLayout = () => {
   return (
-    <Stack direction="row" sx={{ height: 'calc(100vh - 64px)' }}>
-      <Box sx={{ height: '100%', marginRight: '32px' }}>
+    <Stack direction="row" sx={{ height: '100vh' }}>
+      <Box sx={{ height: '100%' }}>
         <NavigationMenu />
       </Box>
-      <Box sx={{ flexGrow: 1, overflow: 'auto', height: '100%' }}>
-        <Outlet />
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        <AppBar />
+        <Box sx={{ flexGrow: 1, overflow: 'auto', p: 3 }}>
+          <Outlet />
+        </Box>
       </Box>
     </Stack>
   );
