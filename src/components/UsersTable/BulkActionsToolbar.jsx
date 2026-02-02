@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, Button, Paper, Typography, useTheme } from '@mui/material';
 
-export default function BulkActionsToolbar({ selectedCount = 0 }) {
+export const BulkActionsToolbar = ({ selectedCount = 0 }) => {
   const theme = useTheme();
   if (selectedCount === 0) return null;
   return (
@@ -27,7 +27,7 @@ export default function BulkActionsToolbar({ selectedCount = 0 }) {
       </Box>
     </Paper>
   );
-}
+};
 
 BulkActionsToolbar.propTypes = {
   selectedCount: PropTypes.number,

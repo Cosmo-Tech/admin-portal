@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { TableRow, TableCell, TextField, useTheme } from '@mui/material';
 
-export default function UsersTableFilters({ filters, onChange }) {
+export const UsersTableFilters = ({ filters, onChange }) => {
   const theme = useTheme();
 
   return (
@@ -59,7 +59,7 @@ export default function UsersTableFilters({ filters, onChange }) {
       <TableCell />
     </TableRow>
   );
-}
+};
 
 UsersTableFilters.propTypes = {
   filters: PropTypes.object.isRequired,

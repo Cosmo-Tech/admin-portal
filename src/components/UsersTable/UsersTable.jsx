@@ -15,16 +15,16 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import BulkActionsToolbar from './BulkActionsToolbar';
-import UserActions from './UserActions';
-import UserStatusChip from './UserStatusChip';
-import UsersTableFilters from './UsersTableFilters';
-import UsersTablePagination from './UsersTablePagination';
+import { BulkActionsToolbar } from './BulkActionsToolbar';
+import { UserActions } from './UserActions';
+import { UserStatusChip } from './UserStatusChip';
+import { UsersTableFilters } from './UsersTableFilters';
+import { UsersTablePagination } from './UsersTablePagination';
 import mockUsers from './mockUsers';
 
 const ROW_HEIGHT = 56;
 
-export default function UsersTable() {
+export const UsersTable = () => {
   const theme = useTheme();
   const [filters, setFilters] = useState({ name: '', email: '', role: '', org: '', status: '' });
   const [selected, setSelected] = useState([]);
@@ -174,4 +174,4 @@ export default function UsersTable() {
       </Paper>
     </Box>
   );
-}
+};

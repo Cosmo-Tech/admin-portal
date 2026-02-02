@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Chip } from '@mui/material';
 
-export default function UserStatusChip({ status }) {
+export const UserStatusChip = ({ status }) => {
   const normalized = (status || '').toLowerCase();
 
   if (normalized === 'active') {
@@ -14,7 +14,7 @@ export default function UserStatusChip({ status }) {
     return <Chip label="Suspended" sx={{ backgroundColor: '#FFA726', color: '#fff', height: 28 }} />;
   }
   return <Chip label={status} />;
-}
+};
 
 UserStatusChip.propTypes = {
   status: PropTypes.string,

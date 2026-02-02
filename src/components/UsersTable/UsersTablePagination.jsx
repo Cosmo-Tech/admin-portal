@@ -6,7 +6,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
 
-export default function UsersTablePagination({ count, page, rowsPerPage, onPageChange }) {
+export const UsersTablePagination = ({ count, page, rowsPerPage, onPageChange }) => {
   const theme = useTheme();
   const totalPages = Math.max(1, Math.ceil(count / rowsPerPage));
   const start = count === 0 ? 0 : page * rowsPerPage + 1;
@@ -38,7 +38,7 @@ export default function UsersTablePagination({ count, page, rowsPerPage, onPageC
       </Box>
     </Box>
   );
-}
+};
 
 UsersTablePagination.propTypes = {
   count: PropTypes.number.isRequired,
