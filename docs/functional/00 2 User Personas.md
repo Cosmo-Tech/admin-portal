@@ -2,7 +2,7 @@
 
 ## 1. Platform Administrator
 
-Administrator of a tenant on the Cosmo Tech Platform Portal.
+Administrator of one or several tenants on the Cosmo Tech Platform Portal.
 
 ### Skill set & environment
 - Azure portal

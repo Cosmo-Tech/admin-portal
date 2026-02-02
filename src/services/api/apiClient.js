@@ -9,7 +9,7 @@ import {
   SolutionApiFactory,
   WorkspaceApiFactory,
   OrganizationApiFactory,
-} from '@cosmotech/api-ts';
+} from '@cosmotech/api-ts-v3';
 import { Auth } from '@cosmotech/core';
 
 export const getAuthenticationHeaders = async (allowApiKey = false) => {

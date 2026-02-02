@@ -30,7 +30,8 @@ The Cosmo Tech Administration Portal is a React-based web application built with
 - **Keycloak** - Alternative authentication provider
 
 ### API Communication
-- **@cosmotech/api-ts 3.2.9** - TypeScript API client
+- **@cosmotech/api-ts-v3 3.3.4** - TypeScript API client for API v3
+- **@cosmotech/api-ts-v5 5.0.0-rc5** - TypeScript API client for API v5
 - **Axios 1.7.9** - HTTP client
 - **jwt-decode 4.0.0** - JWT token decoding
 

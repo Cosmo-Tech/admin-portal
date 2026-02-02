@@ -89,4 +89,4 @@ import { UserStatusGate } from 'src/components';
 ## Documentation
 - Full architecture: [docs/architecture/Architecture.md](../docs/architecture/Architecture.md)
 - OpenAPI spec: [docs/architecture/openapi-5.0.0-rc5.json](../docs/architecture/openapi-5.0.0-rc5.json)
-- Requirements: [docs/functional/Admin Portal Requirements.md](../docs/functional/Admin Portal Requirements.md)
+- Requirements: [docs/functional/Admin Portal Requirements.md](../docs/functional/Admin%20Portal%20Requirements.md)

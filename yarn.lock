@@ -189,7 +189,14 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
-"@cosmotech/api-ts@^5.0.0-rc5":
+"@cosmotech/api-ts-v3@npm:@cosmotech/api-ts@^3.3.4":
+  version "3.3.4"
+  resolved "https://registry.npmjs.org/@cosmotech/api-ts/-/api-ts-3.3.4.tgz"
+  integrity sha512-LaRaKgvIcXuEVx6jC7K+/gko5n8Hr8rgCwYf3aESl8gDAQUEoGtoqDFkrdUzqf9R69Cgg2Jr7WMlczqy+fDQVg==
+  dependencies:
+    axios "^1.6.1"
+
+"@cosmotech/api-ts-v5@npm:@cosmotech/api-ts@^5.0.0-rc5":
   version "5.0.0-rc5"
   resolved "https://registry.npmjs.org/@cosmotech/api-ts/-/api-ts-5.0.0-rc5.tgz"
   integrity sha512-3brvqHq8iy7DrWSHeU3u5kgHwmXuPfCeNO97c/iKRkqzz9UhvNJndfMNRcar0VqJ0lXZv8BrEExWz2n4hH513A==
