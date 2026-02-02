@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React, { useEffect } from 'react';
+import { Box } from '@mui/material';
 import { Auth } from '@cosmotech/core';
 import AppRoutes from './AppRoutes.jsx';
 import './services/auth/keycloak.js';
@@ -9,6 +10,7 @@ import { useSetAuthData } from './state/auth/hooks.js';
 
 function App() {
   const setAuthData = useSetAuthData();
+
   useEffect(() => {
     async function checkLogin() {
       if (localStorage.getItem('authProvider')) {
@@ -36,7 +38,13 @@ function App() {
     checkLogin();
   }, [setAuthData]);
 
-  return <AppRoutes />;
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Box component="main" sx={{ flexGrow: 1 }}>
+        <AppRoutes />
+      </Box>
+    </Box>
+  );
 }
 
 export default App;

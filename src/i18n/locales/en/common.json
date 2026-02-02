@@ -1,0 +1,44 @@
+{
+  "login": {
+    "title": "Login",
+    "selectApi": "Select API",
+    "loginButton": "Login"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "language": {
+    "en": "English",
+    "fr": "French"
+  },
+  "pagination": {
+    "to": "to",
+    "of": "of",
+    "page": "Page"
+  },
+  "userActions": {
+    "manage": "Manage",
+    "delete": "Delete"
+  },
+  "bulkActions": {
+    "selected": "selected",
+    "addToGroup": "Add to Group",
+    "delete": "Delete"
+  },
+  "filter": {
+    "placeholder": "Filter..."
+  },
+  "navigation": {
+    "solutions": "Solutions",
+    "workspaces": "Workspaces",
+    "organizations": "Organizations",
+    "scenarios": "Scenarios",
+    "dashboards": "Dashboards",
+    "users": "Users",
+    "resources": "Resources",
+    "roles": "Roles",
+    "helpDocumentation": "Help & Documentation"
+  }
+}

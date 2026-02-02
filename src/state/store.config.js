@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { apiManager } from '../services/api/apiManager';
 import { cosmoApi } from './api/apiSlice';
 import rootReducer from './rootReducer';
+import { themeMiddleware } from './theme/themeMiddleware';
 
 const applicationStore = configureStore({
   reducer: rootReducer,
@@ -16,6 +17,8 @@ const applicationStore = configureStore({
         ignoreState: true,
         ignoreActions: true,
       },
-    }).concat(cosmoApi.middleware),
+    })
+      .concat(cosmoApi.middleware)
+      .concat(themeMiddleware),
 });
 export default applicationStore;

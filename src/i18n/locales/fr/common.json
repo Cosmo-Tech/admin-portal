@@ -1,0 +1,44 @@
+{
+  "login": {
+    "title": "Connexion",
+    "selectApi": "Sélectionner l'API",
+    "loginButton": "Se connecter"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "language": {
+    "en": "Anglais",
+    "fr": "Français"
+  },
+  "pagination": {
+    "to": "à",
+    "of": "sur",
+    "page": "Page"
+  },
+  "userActions": {
+    "manage": "Gérer",
+    "delete": "Supprimer"
+  },
+  "bulkActions": {
+    "selected": "sélectionné(s)",
+    "addToGroup": "Ajouter au groupe",
+    "delete": "Supprimer"
+  },
+  "filter": {
+    "placeholder": "Filtrer..."
+  },
+  "navigation": {
+    "solutions": "Solutions",
+    "workspaces": "Workspaces",
+    "organizations": "Organisations",
+    "scenarios": "Scénarios",
+    "dashboards": "Tableaux de bord",
+    "users": "Utilisateurs",
+    "resources": "Ressources",
+    "roles": "Rôles",
+    "helpDocumentation": "Aide et Documentation"
+  }
+}
