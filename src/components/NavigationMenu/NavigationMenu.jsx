@@ -8,7 +8,6 @@ import {
   CategoryOutlined as CategoryOutlinedIcon,
   TuneOutlined as TuneOutlinedIcon,
   HelpOutlineOutlined as HelpOutlineIcon,
-  MoreVertOutlined as MoreVertIcon,
 } from '@mui/icons-material';
 import {
   Paper,
@@ -179,8 +178,10 @@ export const NavigationMenu = () => {
           }}
         >
           <ListItemButton
-            component={Link}
-            to="/help"
+            component="a"
+            href="https://portal.cosmotech.com/"
+            target="_blank"
+            rel="noopener noreferrer"
             sx={{
               borderRadius: '0px 24px 24px 0px',
               height: '48px',
@@ -266,13 +267,6 @@ export const NavigationMenu = () => {
               {auth.userEmail || 'No email'}
             </Typography>
           </Box>
-          <MoreVertIcon
-            sx={{
-              color: theme.palette.text.secondary,
-              cursor: 'pointer',
-              fontSize: '1.25rem',
-            }}
-          />
         </Box>
       </Box>
     </Paper>

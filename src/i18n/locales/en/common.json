@@ -12,5 +12,19 @@
   "language": {
     "en": "English",
     "fr": "French"
+  },
+  "pagination": {
+    "to": "to",
+    "of": "of",
+    "page": "Page"
+  },
+  "userActions": {
+    "manage": "Manage",
+    "delete": "Delete"
+  },
+  "bulkActions": {
+    "selected": "selected",
+    "addToGroup": "Add to Group",
+    "delete": "Delete"
   }
 }

@@ -49,7 +49,7 @@ export const UsersTable = () => {
 
   const toggleSelectAll = (event) => {
     if (event.target.checked) {
-      setSelected(pagedRows.map((r) => r.id));
+      setSelected(rows.map((r) => r.id));
     } else {
       setSelected([]);
     }
@@ -111,17 +111,19 @@ export const UsersTable = () => {
                   <Checkbox
                     size="small"
                     onChange={toggleSelectAll}
-                    checked={pagedRows.length > 0 && selected.length === pagedRows.length}
-                    indeterminate={selected.length > 0 && selected.length < pagedRows.length}
+                    checked={rows.length > 0 && selected.length === rows.length}
+                    indeterminate={selected.length > 0 && selected.length < rows.length}
                   />
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Platform Roles</TableCell>
-                <TableCell>Organizations</TableCell>
-                <TableCell>Last Login</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Platform Roles</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Organizations</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Last Login</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700 }}>
+                  Actions
+                </TableCell>
               </TableRow>
 
               <UsersTableFilters filters={filters} onChange={handleFilterChange} />
@@ -134,7 +136,7 @@ export const UsersTable = () => {
                   hover
                   sx={{
                     height: ROW_HEIGHT,
-                    '&:hover': { backgroundColor: '#F8F9FA' },
+                    '&:hover': { backgroundColor: theme.palette.action.hover },
                     borderBottom: `1px solid ${theme.palette.divider}`,
                   }}
                 >

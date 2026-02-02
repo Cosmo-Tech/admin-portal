@@ -1,16 +1,20 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Box, Button, Paper, Typography, useTheme } from '@mui/material';
 
 export const BulkActionsToolbar = ({ selectedCount = 0 }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   if (selectedCount === 0) return null;
   return (
     <Paper elevation={0} sx={{ p: 1, bgcolor: '#fff', borderBottom: `1px solid ${theme.palette.divider}` }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography sx={{ fontSize: 14 }}>{selectedCount} selected</Typography>
+        <Typography sx={{ fontSize: 14 }}>
+          {selectedCount} {t('bulkActions.selected')}
+        </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button
             variant="contained"
@@ -21,7 +25,7 @@ export const BulkActionsToolbar = ({ selectedCount = 0 }) => {
               console.warn('Add to group functionality not yet implemented');
             }}
           >
-            Add to Group
+            {t('bulkActions.addToGroup')}
           </Button>
           <Button
             variant="outlined"
@@ -32,7 +36,7 @@ export const BulkActionsToolbar = ({ selectedCount = 0 }) => {
               console.warn('Bulk delete functionality not yet implemented');
             }}
           >
-            Delete
+            {t('bulkActions.delete')}
           </Button>
         </Box>
       </Box>

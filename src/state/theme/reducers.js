@@ -2,8 +2,19 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { createSlice } from '@reduxjs/toolkit';
 
+const getInitialThemeMode = () => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('themeMode') || 'light';
+    }
+  } catch (e) {
+    console.warn('Unable to access localStorage:', e);
+  }
+  return 'light';
+};
+
 const themeInitialState = {
-  mode: localStorage.getItem('themeMode') || 'light',
+  mode: getInitialThemeMode(),
 };
 
 const themeSlice = createSlice({

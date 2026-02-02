@@ -7,9 +7,26 @@ import AppRoutes from './AppRoutes.jsx';
 import './services/auth/keycloak.js';
 import { AUTH_STATUS } from './state/auth/constants.js';
 import { useSetAuthData } from './state/auth/hooks.js';
+import { useSetThemeMode } from './state/theme/hooks.js';
 
 function App() {
   const setAuthData = useSetAuthData();
+  const setThemeMode = useSetThemeMode();
+
+  useEffect(() => {
+    // Initialize theme from localStorage
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const savedTheme = localStorage.getItem('themeMode');
+        if (savedTheme) {
+          setThemeMode(savedTheme);
+        }
+      }
+    } catch (e) {
+      console.warn('Unable to load theme from localStorage:', e);
+    }
+  }, [setThemeMode]);
+
   useEffect(() => {
     async function checkLogin() {
       if (localStorage.getItem('authProvider')) {

@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, IconButton, Typography, useTheme } from '@mui/material';
 
 export const UsersTablePagination = ({ count, page, rowsPerPage, onPageChange }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const totalPages = Math.max(1, Math.ceil(count / rowsPerPage));
   const start = count === 0 ? 0 : page * rowsPerPage + 1;
@@ -22,9 +24,9 @@ export const UsersTablePagination = ({ count, page, rowsPerPage, onPageChange })
         borderTop: `1px solid ${theme.palette.divider}`,
       }}
     >
-      <Typography variant="body2">{`${start} to ${end} of ${count}`}</Typography>
+      <Typography variant="body2">{`${start} ${t('pagination.to')} ${end} ${t('pagination.of')} ${count}`}</Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography variant="body2">{`Page ${page + 1} of ${totalPages}`}</Typography>
+        <Typography variant="body2">{`${t('pagination.page')} ${page + 1} ${t('pagination.of')} ${totalPages}`}</Typography>
         <IconButton size="small" disabled={page === 0} onClick={() => onPageChange(Math.max(0, page - 1))}>
           <ChevronLeftIcon />
         </IconButton>
