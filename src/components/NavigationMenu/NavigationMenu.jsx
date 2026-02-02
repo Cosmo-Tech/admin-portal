@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router';
 import {
   DashboardOutlined as DashboardOutlinedIcon,
@@ -23,10 +23,21 @@ import {
   Divider,
   Typography,
 } from '@mui/material';
+import { useAuth } from 'src/state/auth/hooks.js';
 
 export const NavigationMenu = () => {
   const location = useLocation();
   const theme = useTheme();
+  const auth = useAuth();
+
+  const userInitials = useMemo(() => {
+    if (!auth.userName) return 'UN';
+    const parts = auth.userName.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
+  }, [auth.userName]);
 
   const menuItems = [
     {
@@ -223,8 +234,10 @@ export const NavigationMenu = () => {
               color: '#FFFFFF',
               fontWeight: 600,
             }}
+            src={auth.profilePic}
+            alt={auth.userName}
           >
-            MF
+            {userInitials}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography
@@ -237,7 +250,7 @@ export const NavigationMenu = () => {
                 whiteSpace: 'nowrap',
               }}
             >
-              Mahdi Falek
+              {auth.userName || 'User'}
             </Typography>
             <Typography
               variant="caption"
@@ -250,7 +263,7 @@ export const NavigationMenu = () => {
                 display: 'block',
               }}
             >
-              mahdi.falek@cosmotech.com
+              {auth.userEmail || 'No email'}
             </Typography>
           </Box>
           <MoreVertIcon
