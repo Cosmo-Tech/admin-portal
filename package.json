@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@azure/msal-browser": "^3.26.1",
-    "@cosmotech/api-ts": "^3.2.9",
+    "@cosmotech/api-ts-v3": "npm:@cosmotech/api-ts@^3.3.4",
+    "@cosmotech/api-ts-v5": "npm:@cosmotech/api-ts@^5.0.0-rc5",
     "@cosmotech/azure": "^3.0.1",
     "@cosmotech/core": "^2.0.0",
     "@emotion/react": "^11.14.0",
