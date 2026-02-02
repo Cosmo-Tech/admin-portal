@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router';
-// Import Navigate for redirection
 import { RouterProvider } from 'react-router/dom';
 import { UserStatusGate } from './components';
 import { Login, Organizations, ResourcesLayout, Scenarios, Solutions, Users, Workspaces } from './views';

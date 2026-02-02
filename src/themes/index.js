@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
+const getThemeConfig = (mode = 'light') => ({
   palette: {
-    mode: 'light',
+    mode,
     primary: {
-      main: '#f1f5f9',
+      main: mode === 'light' ? '#f1f5f9' : '#1a1a1a',
     },
     secondary: {
       main: '#FFCC89',
@@ -19,14 +19,14 @@ const theme = createTheme({
       main: '#FF4444',
     },
     text: {
-      primary: '#1A1A1A',
-      secondary: '#666666',
+      primary: mode === 'light' ? '#1A1A1A' : '#FFFFFF',
+      secondary: mode === 'light' ? '#666666' : '#B0B0B0',
     },
     background: {
-      default: '#FFFFFF',
-      paper: '#FFFFFF',
+      default: mode === 'light' ? '#FFFFFF' : '#121212',
+      paper: mode === 'light' ? '#FFFFFF' : '#1E1E1E',
     },
-    divider: '#E9ECEF',
+    divider: mode === 'light' ? '#E9ECEF' : '#333333',
   },
   components: {
     MuiButton: {
@@ -42,7 +42,7 @@ const theme = createTheme({
         h1: {
           fontSize: '24px',
           fontWeight: 700,
-          color: '#212529',
+          color: mode === 'light' ? '#212529' : '#FFFFFF',
         },
         body1: {
           fontSize: '14px',
@@ -50,7 +50,7 @@ const theme = createTheme({
         },
         caption: {
           fontSize: '12px',
-          color: '#6C757D',
+          color: mode === 'light' ? '#6C757D' : '#A0A0A0',
         },
       },
     },
@@ -72,16 +72,21 @@ const theme = createTheme({
     h1: {
       fontSize: '1.5rem', // ~24px
       fontWeight: 700,
-      color: '#212529',
+      color: mode === 'light' ? '#212529' : '#FFFFFF',
     },
     body1: {
       fontSize: '0.875rem', // 14px
     },
     caption: {
       fontSize: '0.75rem', // 12px
-      color: '#6C757D',
+      color: mode === 'light' ? '#6C757D' : '#A0A0A0',
     },
   },
 });
+
+export const createAppTheme = (mode = 'light') => createTheme(getThemeConfig(mode));
+
+// Default theme for initial render
+const theme = createTheme(getThemeConfig('light'));
 
 export default theme;
