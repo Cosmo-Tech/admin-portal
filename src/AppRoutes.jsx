@@ -4,7 +4,18 @@ import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { UserStatusGate } from './components';
-import { Login, Organizations, ResourcesLayout, Scenarios, Solutions, Users, Workspaces } from './views';
+import {
+  Login,
+  Organizations,
+  ResourcesLayout,
+  Scenarios,
+  Solutions,
+  Users,
+  Workspaces,
+  Dashboards,
+  Resources,
+  Roles,
+} from './views';
 
 const AppRoutes = () => {
   const router = createBrowserRouter(
@@ -18,6 +29,9 @@ const AppRoutes = () => {
             <Route path="workspace" element={<Workspaces />} />
             <Route path="organization" element={<Organizations />} />
             <Route path="scenario" element={<Scenarios />} />
+            <Route path="dashboards" element={<Dashboards />} />
+            <Route path="resources" element={<Resources />} />
+            <Route path="roles" element={<Roles />} />
           </Route>
 
           <Route path="sign-in" element={<Login />} />

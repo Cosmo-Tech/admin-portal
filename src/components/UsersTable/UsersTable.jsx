@@ -81,14 +81,20 @@ export const UsersTable = () => {
             variant="contained"
             color="secondary"
             sx={{ borderRadius: 1 }}
-            onClick={() => console.log('Add New User')}
+            onClick={() => {
+              // TODO: Implement add new user functionality
+              console.warn('Add new user functionality not yet implemented');
+            }}
           >
             Add New User
           </Button>
           <Button
             variant="outlined"
             sx={{ borderRadius: 1, color: theme.palette.text.primary }}
-            onClick={() => console.log('Batch Invite')}
+            onClick={() => {
+              // TODO: Implement batch invite functionality
+              console.warn('Batch invite functionality not yet implemented');
+            }}
           >
             Batch Invite
           </Button>
@@ -145,8 +151,14 @@ export const UsersTable = () => {
                   </TableCell>
                   <TableCell align="right">
                     <UserActions
-                      onManage={() => console.log('Manage', row.id)}
-                      onDelete={() => console.log('Delete', row.id)}
+                      onManage={() => {
+                        // TODO: Implement manage user functionality
+                        console.warn('Manage user functionality not yet implemented', row.id);
+                      }}
+                      onDelete={() => {
+                        // TODO: Implement delete user functionality
+                        console.warn('Delete user functionality not yet implemented', row.id);
+                      }}
                     />
                   </TableCell>
                 </TableRow>

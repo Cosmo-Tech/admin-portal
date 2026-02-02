@@ -37,23 +37,6 @@ const getThemeConfig = (mode = 'light') => ({
         },
       },
     },
-    MuiTypography: {
-      styleOverrides: {
-        h1: {
-          fontSize: '24px',
-          fontWeight: 700,
-          color: mode === 'light' ? '#212529' : '#FFFFFF',
-        },
-        body1: {
-          fontSize: '14px',
-          fontWeight: 400,
-        },
-        caption: {
-          fontSize: '12px',
-          color: mode === 'light' ? '#6C757D' : '#A0A0A0',
-        },
-      },
-    },
   },
   typography: {
     fontFamily: [

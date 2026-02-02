@@ -7,3 +7,6 @@ export { Scenarios } from './Scenarios';
 export { Solutions } from './Solutions';
 export { Users } from './Users';
 export { Workspaces } from './Workspaces';
+export { Dashboards } from './Dashboards';
+export { Resources } from './Resources';
+export { Roles } from './Roles';

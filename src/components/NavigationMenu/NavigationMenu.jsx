@@ -91,16 +91,16 @@ export const NavigationMenu = () => {
         display: 'flex',
         flexDirection: 'column',
         bgcolor: theme.palette.primary.main,
-        borderRight: '1px solid #E9ECEF',
+        borderRight: `1px solid ${theme.palette.divider}`,
         paddingY: '16px',
         paddingLeft: '0px',
         paddingRight: '16px',
         maxWidth: 280,
         boxSizing: 'border-box',
-        overflow: 'hidden', // Empêche la sidebar entière de scroller
+        overflow: 'hidden',
       }}
     >
-      <Box sx={{ px: 2, mb: 2, display: 'flex-end', justifyContent: 'center' }}>
+      <Box sx={{ px: 2, mb: 2, justifyContent: 'center' }}>
         <Box
           component="img"
           sx={{ height: '39px', width: '100px', maxHeight: '39px', maxWidth: '100px' }}
@@ -130,20 +130,20 @@ export const NavigationMenu = () => {
                   borderRadius: '24px 24px 24px 24px',
                   height: '48px',
                   '&.Mui-selected': {
-                    bgcolor: '#212529',
+                    bgcolor: theme.palette.text.primary,
                     '&:hover': {
-                      bgcolor: '#212529',
+                      bgcolor: theme.palette.text.primary,
                     },
                   },
                   '&:hover': {
-                    bgcolor: '#F8F9FA',
+                    bgcolor: theme.palette.action.hover,
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 40,
-                    color: isSelected ? '#FFFFFF' : '#212529',
+                    color: isSelected ? theme.palette.common.white : theme.palette.text.primary,
                     '& .MuiSvgIcon-root': {
                       fontSize: '1.1rem',
                     },
@@ -157,7 +157,7 @@ export const NavigationMenu = () => {
                     '& .MuiTypography-root': {
                       fontSize: '0.9rem',
                       fontWeight: isSelected ? 600 : 400,
-                      color: isSelected ? '#FFFFFF' : '#212529',
+                      color: isSelected ? theme.palette.common.white : theme.palette.text.primary,
                     },
                   }}
                 />
@@ -185,14 +185,14 @@ export const NavigationMenu = () => {
               borderRadius: '0px 24px 24px 0px',
               height: '48px',
               '&:hover': {
-                bgcolor: '#F8F9FA',
+                bgcolor: theme.palette.action.hover,
               },
             }}
           >
             <ListItemIcon
               sx={{
                 minWidth: 40,
-                color: '#212529',
+                color: theme.palette.text.primary,
                 '& .MuiSvgIcon-root': {
                   fontSize: '1.1rem',
                 },
@@ -206,7 +206,7 @@ export const NavigationMenu = () => {
                 '& .MuiTypography-root': {
                   fontSize: '0.9rem',
                   fontWeight: 400,
-                  color: '#212529',
+                  color: theme.palette.text.primary,
                 },
               }}
             />
@@ -230,8 +230,8 @@ export const NavigationMenu = () => {
               mr: 1.5,
               width: 40,
               height: 40,
-              bgcolor: '#FFCC89',
-              color: '#FFFFFF',
+              bgcolor: theme.palette.warning.light,
+              color: theme.palette.common.white,
               fontWeight: 600,
             }}
             src={auth.profilePic}
@@ -244,7 +244,7 @@ export const NavigationMenu = () => {
               sx={{
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                color: '#212529',
+                color: theme.palette.text.primary,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -256,7 +256,7 @@ export const NavigationMenu = () => {
               variant="caption"
               sx={{
                 fontSize: '0.75rem',
-                color: '#6C757D',
+                color: theme.palette.text.secondary,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
@@ -268,7 +268,7 @@ export const NavigationMenu = () => {
           </Box>
           <MoreVertIcon
             sx={{
-              color: '#6C757D',
+              color: theme.palette.text.secondary,
               cursor: 'pointer',
               fontSize: '1.25rem',
             }}

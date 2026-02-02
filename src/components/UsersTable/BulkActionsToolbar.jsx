@@ -16,11 +16,22 @@ export const BulkActionsToolbar = ({ selectedCount = 0 }) => {
             variant="contained"
             color="primary"
             sx={{ borderRadius: 1 }}
-            onClick={() => console.log('Add to Group')}
+            onClick={() => {
+              // TODO: Implement add users to group functionality
+              console.warn('Add to group functionality not yet implemented');
+            }}
           >
             Add to Group
           </Button>
-          <Button variant="outlined" color="error" sx={{ borderRadius: 1 }} onClick={() => console.log('Delete bulk')}>
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{ borderRadius: 1 }}
+            onClick={() => {
+              // TODO: Implement bulk delete users functionality
+              console.warn('Bulk delete functionality not yet implemented');
+            }}
+          >
             Delete
           </Button>
         </Box>

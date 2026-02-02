@@ -62,6 +62,12 @@ export const UsersTableFilters = ({ filters, onChange }) => {
 };
 
 UsersTableFilters.propTypes = {
-  filters: PropTypes.object.isRequired,
+  filters: PropTypes.shape({
+    name: PropTypes.string,
+    email: PropTypes.string,
+    role: PropTypes.string,
+    org: PropTypes.string,
+    status: PropTypes.string,
+  }).isRequired,
   onChange: PropTypes.func.isRequired,
 };
