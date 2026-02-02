@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router';
 import {
   DashboardOutlined as DashboardOutlinedIcon,
@@ -25,6 +26,7 @@ import {
 import { useAuth } from 'src/state/auth/hooks.js';
 
 export const NavigationMenu = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const theme = useTheme();
   const auth = useAuth();
@@ -40,42 +42,42 @@ export const NavigationMenu = () => {
 
   const menuItems = [
     {
-      text: 'Solutions',
+      text: t('navigation.solutions'),
       icon: <DashboardOutlinedIcon />,
       to: '/solution',
     },
     {
-      text: 'Workspaces',
+      text: t('navigation.workspaces'),
       icon: <CategoryOutlinedIcon />,
       to: '/workspace',
     },
     {
-      text: 'Organizations',
+      text: t('navigation.organizations'),
       icon: <ManageAccountsOutlinedIcon />,
       to: '/organization',
     },
     {
-      text: 'Scenarios',
+      text: t('navigation.scenarios'),
       icon: <TuneOutlinedIcon />,
       to: '/scenario',
     },
     {
-      text: 'Dashboards',
+      text: t('navigation.dashboards'),
       icon: <DashboardOutlinedIcon />,
       to: '/dashboards',
     },
     {
-      text: 'Users',
+      text: t('navigation.users'),
       icon: <ManageAccountsOutlinedIcon />,
       to: '/users',
     },
     {
-      text: 'Resources',
+      text: t('navigation.resources'),
       icon: <CategoryOutlinedIcon />,
       to: '/resources',
     },
     {
-      text: 'Roles',
+      text: t('navigation.roles'),
       icon: <TuneOutlinedIcon />,
       to: '/roles',
     },
@@ -202,7 +204,7 @@ export const NavigationMenu = () => {
               <HelpOutlineIcon />
             </ListItemIcon>
             <ListItemText
-              primary="Help & Documentation"
+              primary={t('navigation.helpDocumentation')}
               sx={{
                 '& .MuiTypography-root': {
                   fontSize: '0.9rem',

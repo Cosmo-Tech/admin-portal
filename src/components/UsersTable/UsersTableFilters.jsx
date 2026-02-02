@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { TableRow, TableCell, TextField, useTheme } from '@mui/material';
 
 export const UsersTableFilters = ({ filters, onChange }) => {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   return (
@@ -13,7 +15,7 @@ export const UsersTableFilters = ({ filters, onChange }) => {
       <TableCell>
         <TextField
           size="small"
-          placeholder="Filter..."
+          placeholder={t('filter.placeholder')}
           value={filters.name}
           onChange={(e) => onChange('name', e.target.value)}
           fullWidth
@@ -22,7 +24,7 @@ export const UsersTableFilters = ({ filters, onChange }) => {
       <TableCell>
         <TextField
           size="small"
-          placeholder="Filter..."
+          placeholder={t('filter.placeholder')}
           value={filters.email}
           onChange={(e) => onChange('email', e.target.value)}
           fullWidth
@@ -31,7 +33,7 @@ export const UsersTableFilters = ({ filters, onChange }) => {
       <TableCell>
         <TextField
           size="small"
-          placeholder="Filter..."
+          placeholder={t('filter.placeholder')}
           value={filters.role}
           onChange={(e) => onChange('role', e.target.value)}
           fullWidth
@@ -40,7 +42,7 @@ export const UsersTableFilters = ({ filters, onChange }) => {
       <TableCell>
         <TextField
           size="small"
-          placeholder="Filter..."
+          placeholder={t('filter.placeholder')}
           value={filters.org}
           onChange={(e) => onChange('org', e.target.value)}
           fullWidth
@@ -50,7 +52,7 @@ export const UsersTableFilters = ({ filters, onChange }) => {
       <TableCell>
         <TextField
           size="small"
-          placeholder="Filter..."
+          placeholder={t('filter.placeholder')}
           value={filters.status}
           onChange={(e) => onChange('status', e.target.value)}
           fullWidth

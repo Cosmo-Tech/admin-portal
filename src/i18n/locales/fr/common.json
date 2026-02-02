@@ -26,5 +26,19 @@
     "selected": "sélectionné(s)",
     "addToGroup": "Ajouter au groupe",
     "delete": "Supprimer"
+  },
+  "filter": {
+    "placeholder": "Filtrer..."
+  },
+  "navigation": {
+    "solutions": "Solutions",
+    "workspaces": "Workspaces",
+    "organizations": "Organisations",
+    "scenarios": "Scénarios",
+    "dashboards": "Tableaux de bord",
+    "users": "Utilisateurs",
+    "resources": "Ressources",
+    "roles": "Rôles",
+    "helpDocumentation": "Aide et Documentation"
   }
 }

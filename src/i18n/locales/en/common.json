@@ -26,5 +26,19 @@
     "selected": "selected",
     "addToGroup": "Add to Group",
     "delete": "Delete"
+  },
+  "filter": {
+    "placeholder": "Filter..."
+  },
+  "navigation": {
+    "solutions": "Solutions",
+    "workspaces": "Workspaces",
+    "organizations": "Organizations",
+    "scenarios": "Scenarios",
+    "dashboards": "Dashboards",
+    "users": "Users",
+    "resources": "Resources",
+    "roles": "Roles",
+    "helpDocumentation": "Help & Documentation"
   }
 }

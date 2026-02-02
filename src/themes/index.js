@@ -15,6 +15,12 @@ const getThemeConfig = (mode = 'light') => ({
     tertiary: {
       main: '#4CAF50',
     },
+    success: {
+      main: '#4CAF50',
+    },
+    warning: {
+      main: '#FF9800',
+    },
     error: {
       main: '#FF4444',
     },

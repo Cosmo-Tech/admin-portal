@@ -10,7 +10,10 @@ export const BulkActionsToolbar = ({ selectedCount = 0 }) => {
   const theme = useTheme();
   if (selectedCount === 0) return null;
   return (
-    <Paper elevation={0} sx={{ p: 1, bgcolor: '#fff', borderBottom: `1px solid ${theme.palette.divider}` }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 1, bgcolor: theme.palette.background.paper, borderBottom: `1px solid ${theme.palette.divider}` }}
+    >
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography sx={{ fontSize: 14 }}>
           {selectedCount} {t('bulkActions.selected')}

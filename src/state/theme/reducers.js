@@ -23,11 +23,9 @@ const themeSlice = createSlice({
   reducers: {
     setThemeMode: (state, action) => {
       state.mode = action.payload;
-      localStorage.setItem('themeMode', action.payload);
     },
     toggleThemeMode: (state) => {
       state.mode = state.mode === 'light' ? 'dark' : 'light';
-      localStorage.setItem('themeMode', state.mode);
     },
   },
 });

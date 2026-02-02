@@ -1,4 +1,5 @@
 # Project Architecture Blueprint
+
 **Cosmo Tech Administration Portal**
 
 ---
@@ -95,12 +96,12 @@ The application follows a **feature-based layered architecture** with clear sepa
 
 ### Architectural Boundaries
 
-| Boundary | Enforcement Mechanism |
-|----------|----------------------|
-| UI → State | React hooks (`useSelector`, `useDispatch`) - one-way binding |
-| State → Service | Redux middleware `extraArgument` - dependency injection |
-| Service → External | Axios interceptors - centralized auth, error handling |
-| Route → Component | Route guards (`UserStatusGate`) - declarative authorization |
+| Boundary           | Enforcement Mechanism                                        |
+| ------------------ | ------------------------------------------------------------ |
+| UI → State         | React hooks (`useSelector`, `useDispatch`) - one-way binding |
+| State → Service    | Redux middleware `extraArgument` - dependency injection      |
+| Service → External | Axios interceptors - centralized auth, error handling        |
+| Route → Component  | Route guards (`UserStatusGate`) - declarative authorization  |
 
 ---
 
@@ -282,6 +283,7 @@ The application follows a **feature-based layered architecture** with clear sepa
 ### 1. Presentation Layer (UI Components)
 
 #### Purpose and Responsibility
+
 - Render user interface using Material UI components
 - Handle user interactions and form inputs
 - Display application state from Redux store
@@ -289,6 +291,7 @@ The application follows a **feature-based layered architecture** with clear sepa
 - Internationalization (i18n) support
 
 #### Internal Structure
+
 - **Views** (`src/views/`): Page-level components for each route
   - `Login.jsx`: Authentication page with API selection
   - `Organizations.jsx`: Organization list view
@@ -302,6 +305,7 @@ The application follows a **feature-based layered architecture** with clear sepa
   - `LanguageSwitcher`: Locale selection
 
 #### Interaction Patterns
+
 - Components **never directly call APIs** - they dispatch actions via custom hooks
 - Use `useSelector` for reading state, `useDispatch` for actions
 - Composition pattern: smaller components composed into layouts
@@ -309,6 +313,7 @@ The application follows a **feature-based layered architecture** with clear sepa
 - Material UI's `sx` prop for styling (no separate CSS files for components)
 
 #### Evolution Patterns
+
 - Add new views in `src/views/` and register routes in `AppRoutes.jsx`
 - Create reusable components in `src/components/` with named exports
 - Use MUI theme customization in `src/themes/` for global styling
@@ -319,6 +324,7 @@ The application follows a **feature-based layered architecture** with clear sepa
 ### 2. State Management Layer (Redux)
 
 #### Purpose and Responsibility
+
 - Single source of truth for application state
 - Manage async operations (API calls) via thunks and RTK Query
 - Provide predictable state updates through reducers
@@ -327,32 +333,38 @@ The application follows a **feature-based layered architecture** with clear sepa
 #### Internal Structure
 
 **Feature Slices** (`src/state/{feature}/reducers.js`):
+
 - `auth`: User authentication state (status, user info, roles)
 - `organizations`: Organization list and loading status
 - `workspaces`: Workspace list and loading status
 - `cosmoApi`: RTK Query slice for API endpoints
 
 **Thunks** (`src/state/{feature}/thunks/{action}.js`):
+
 - Async action creators that access API via `extraArgument`
 - Example: `getAllOrganizations()`, `login()`
 
 **Hooks** (`src/state/{feature}/hooks.js`):
+
 - Custom hooks that encapsulate Redux logic
 - Selector hooks: `useOrganizationsList()`, `useAuthStatus()`
 - Action hooks: `useGetAllOrganizations()`, `useLogin()`
 
 **Store Configuration** (`src/state/store.config.js`):
+
 - Redux Toolkit `configureStore` with middleware setup
 - Dependency injection via `extraArgument: { api }`
 - RTK Query middleware integration
 
 #### Interaction Patterns
+
 - Components dispatch actions via custom hooks
 - Thunks receive injected API client from `extraArgument`
 - Reducers update state immutably (Immer built-in)
 - RTK Query manages cache automatically with optimistic updates
 
 #### Key Design Decisions
+
 1. **Manual thunks vs createAsyncThunk**: Simple cases use manual thunks; complex async flows use `createAsyncThunk`
 2. **RTK Query for queries/mutations**: Used for scenarios requiring cache management and optimistic updates
 3. **Feature-based slices**: Each domain (auth, organizations) has its own slice
@@ -363,6 +375,7 @@ The application follows a **feature-based layered architecture** with clear sepa
 ### 3. Service Layer (API Integration)
 
 #### Purpose and Responsibility
+
 - Abstract API communication from business logic
 - Manage multiple API configurations (multi-environment support)
 - Handle authentication provider selection and configuration
@@ -372,33 +385,39 @@ The application follows a **feature-based layered architecture** with clear sepa
 #### Internal Structure
 
 **API Manager** (`src/services/api/apiManager.js`):
+
 - Singleton pattern with private fields
 - Loads API configurations from `src/config/apis.json`
 - Initializes auth providers for each API (Azure, Keycloak)
 - Provides selected API client to Redux store
 
 **API Client** (`src/services/api/apiClient.js`):
+
 - Creates Axios instance with interceptors
 - Generates API factory methods from `@cosmotech/api-ts`
 - Injects authentication headers on every request
 - Implements proactive token refresh (3 minutes before expiry)
 
 **API Configuration** (`src/services/api/apiConfig.js`):
+
 - Loads and validates API configurations
 - Supports multiple environments (dev, prod, etc.)
 
 **Auth Providers** (`src/services/auth/`):
+
 - `azure.js`: Azure MSAL configuration
 - `keycloak.js`: Keycloak OIDC configuration
 - Both integrate with `@cosmotech/core` Auth singleton
 
 #### Interaction Patterns
+
 - Redux thunks access API client via `extraArgument.api`
 - RTK Query queries access API client via `thunkAPI.extra.api`
 - API client automatically adds auth headers via interceptors
 - Auth providers dynamically registered based on API config
 
 #### Evolution Patterns
+
 - Add new API factories by extending `getApiClient()` function
 - Add new auth providers by creating new files in `src/services/auth/`
 - Extend API configurations in `src/config/apis.json`
@@ -408,6 +427,7 @@ The application follows a **feature-based layered architecture** with clear sepa
 ### 4. Routing Layer
 
 #### Purpose and Responsibility
+
 - Define application navigation structure
 - Protect routes based on authentication status
 - Provide layouts for groups of routes
@@ -416,12 +436,14 @@ The application follows a **feature-based layered architecture** with clear sepa
 #### Internal Structure
 
 **AppRoutes** (`src/AppRoutes.jsx`):
+
 - Uses React Router 7 data router pattern
 - Defines route hierarchy with nested routes
 - Integrates `UserStatusGate` for authentication
 - Layout routes (`ResourcesLayout`) with shared UI
 
 **Route Structure**:
+
 ```
 / (UserStatusGate)
 ├── / (ResourcesLayout)
@@ -434,11 +456,13 @@ The application follows a **feature-based layered architecture** with clear sepa
 ```
 
 **Route Guards** (`UserStatusGate`):
+
 - Redirects unauthenticated users to `/sign-in`
 - Redirects authenticated users away from `/sign-in`
 - Wraps protected routes in `ErrorBoundary`
 
 #### Interaction Patterns
+
 - `Navigate` component for programmatic redirects
 - `useLocation` hook for location-aware logic
 - `Outlet` component for nested route rendering
@@ -449,6 +473,7 @@ The application follows a **feature-based layered architecture** with clear sepa
 ### 5. Authentication & Authorization Layer
 
 #### Purpose and Responsibility
+
 - Support multiple authentication providers (Azure AD, Keycloak)
 - Abstract provider-specific logic via `@cosmotech/core` Auth singleton
 - Manage authentication state in Redux
@@ -458,21 +483,25 @@ The application follows a **feature-based layered architecture** with clear sepa
 #### Internal Structure
 
 **Auth State** (`src/state/auth/`):
+
 - Redux slice with user info, roles, permissions, status
 - Login thunk using `createAsyncThunk`
 - Custom hooks for auth operations and status checks
 
 **Auth Singleton** (`@cosmotech/core`):
+
 - Provider-agnostic auth abstraction
 - Methods: `signIn()`, `signOut()`, `isUserSignedIn()`, `acquireTokens()`
 - Provider registration: `Auth.addProvider()`, `Auth.setProvider()`
 
 **Provider Configuration**:
+
 - Azure MSAL: OAuth2 with redirect flow
 - Keycloak: OIDC with redirect flow
 - Dynamic configuration from API config JSON
 
 #### Interaction Patterns
+
 1. User selects API from login screen
 2. `ApiManager` selects and configures auth provider
 3. User clicks login → `login` thunk invoked
@@ -486,11 +515,13 @@ The application follows a **feature-based layered architecture** with clear sepa
 ### 6. Internationalization Layer
 
 #### Purpose and Responsibility
+
 - Support multiple languages (English, French)
 - Detect browser language and persist user preference
 - Provide translation utilities to components
 
 #### Internal Structure
+
 - `i18next` with `react-i18next` integration
 - Language detection via `i18next-browser-languagedetector`
 - Translation files in `src/i18n/locales/{lang}/common.json`
@@ -530,11 +561,13 @@ The application follows a **feature-based layered architecture** with clear sepa
 ### Dependency Rules
 
 1. **Upper layers depend on lower layers, never the reverse**
+
    - Components depend on Redux → ✅
    - Redux depends on API Manager → ✅
    - API Manager depends on Components → ❌
 
 2. **Cross-layer access is abstracted**
+
    - Components access Redux via custom hooks (not raw `useDispatch`)
    - Redux accesses API via dependency injection (`extraArgument`)
 
@@ -557,18 +590,22 @@ The application follows a **feature-based layered architecture** with clear sepa
 The application manages the following domain entities:
 
 1. **User** (auth state)
+
    - Properties: `userId`, `userEmail`, `userName`, `profilePic`, `roles[]`, `permissions[]`
    - Source: Auth provider (Azure AD, Keycloak)
 
 2. **Organization**
+
    - Properties: `id`, `name`, (additional fields from API)
    - Source: Cosmo Tech API `/organizations`
 
 3. **Workspace**
+
    - Properties: `id`, `name`, (additional fields from API)
    - Source: Cosmo Tech API `/workspaces`
 
 4. **Solution**
+
    - Properties: `id`, `name`, (additional fields from API)
    - Source: Cosmo Tech API `/solutions`
 
@@ -608,16 +645,19 @@ The application manages the following domain entities:
 ### Data Access Patterns
 
 #### Pattern 1: Manual Thunks (Simple CRUD)
+
 - Used for straightforward API calls without complex caching
 - Example: `getAllOrganizations` thunk
 - Status managed manually with `setOrganizationsListStatus`
 
 #### Pattern 2: createAsyncThunk (Complex Async)
+
 - Used for async operations with error handling and lifecycle hooks
 - Example: `getAllWorkspaces` with `.pending`, `.fulfilled`, `.rejected` cases
 - Automatic action dispatching
 
 #### Pattern 3: RTK Query (Queries and Mutations)
+
 - Used for operations requiring caching, invalidation, or optimistic updates
 - Example: `getAllSolutions`, `renameScenario` mutation
 - Automatic cache management and re-fetching
@@ -647,16 +687,19 @@ The application manages the following domain entities:
 ### 1. Authentication & Authorization
 
 #### Security Model
+
 - OAuth2/OIDC with redirect-based flow
 - JWT tokens stored in localStorage (via MSAL/Keycloak libraries)
 - Bearer token authentication for API calls
 
 #### Permission Enforcement
+
 - **Route-level**: `UserStatusGate` component checks authentication status
 - **API-level**: Axios interceptor injects Bearer token
 - **State-level**: `AUTH_STATUS` enum tracks authentication state
 
 #### Identity Management
+
 - Auth provider selection at login (stored in localStorage)
 - User profile fetched from auth provider
 - Roles extracted from JWT token or userinfo endpoint
@@ -668,20 +711,24 @@ The application manages the following domain entities:
 #### Exception Handling Patterns
 
 **Component-Level**:
+
 - `ErrorBoundary` class component catches React errors
 - Displays error details with stack trace
 - Prevents entire app crash
 
 **API-Level**:
+
 - Try-catch in thunks with error state updates
 - RTK Query returns `{ error }` object
 - Console logging for debugging
 
 **Auth-Level**:
+
 - Specific handling for `BrowserAuthError` (MSAL config issues)
 - Graceful fallback to ANONYMOUS state
 
 #### Resilience Patterns
+
 - **Token Refresh**: Proactive refresh 3 minutes before expiry
 - **Loading States**: Prevent multiple simultaneous API calls
 - **Error Recovery**: User can retry by triggering action again
@@ -691,11 +738,13 @@ The application manages the following domain entities:
 ### 3. Logging & Monitoring
 
 #### Instrumentation Patterns
+
 - `console.error()` for error logging
 - `console.warn()` for configuration issues
 - Redux DevTools integration for state debugging
 
 #### Observability
+
 - Redux DevTools Extension for time-travel debugging
 - React DevTools for component inspection
 - Network tab for API call inspection
@@ -705,11 +754,13 @@ The application manages the following domain entities:
 ### 4. Validation
 
 #### Input Validation
+
 - Material UI form components with validation props
 - React Hook Form library available (not yet extensively used)
 - Client-side validation before API calls
 
 #### Business Rule Validation
+
 - API returns validation errors (handled as error states)
 - Future: Add explicit validation layer before API calls
 
@@ -718,16 +769,19 @@ The application manages the following domain entities:
 ### 5. Configuration Management
 
 #### Configuration Sources
+
 - **Build-time**: `vite.config.js`, `package.json`
 - **Runtime**: `src/config/apis.json` (loaded dynamically)
 - **Environment**: localStorage for user preferences
 
 #### Environment-Specific Configuration
+
 - Multiple API configurations in `apis.json`
 - User selects environment at login
 - No environment variables (yet) - all config in JSON
 
 #### Secret Management
+
 - Client IDs in `apis.json` (public identifiers, not secrets)
 - Secrets (client secrets) not needed for public SPAs
 - Access tokens stored in localStorage (managed by auth libraries)
@@ -779,12 +833,14 @@ The application manages the following domain entities:
 ### 1. Component Composition and Reuse Strategies
 
 #### Component Hierarchy
+
 - **Presentational Components**: Pure UI components (e.g., `AppBar`, `NavigationMenu`)
 - **Container Components**: Views that connect to Redux (e.g., `Organizations`, `Workspaces`)
 - **Layout Components**: Wrappers with shared UI (e.g., `ResourcesLayout`)
 - **Higher-Order Components**: Route guards (e.g., `UserStatusGate`)
 
 #### Composition Patterns
+
 - **Composition via Props**: `<ErrorBoundary>{children}</ErrorBoundary>`
 - **Layout Pattern**: `<ResourcesLayout>` with `<Outlet>` for nested routes
 - **Render Props**: Not extensively used (hooks preferred)
@@ -794,12 +850,14 @@ The application manages the following domain entities:
 ### 2. State Management Architecture
 
 #### State Categories
+
 1. **Server State**: Data from APIs (organizations, workspaces) - managed by Redux
 2. **UI State**: Component-local state (form inputs, modals) - managed by `useState`
 3. **URL State**: Route parameters and query strings - managed by React Router
 4. **Derived State**: Computed from other state (e.g., `useIsAuthenticated`) - via `useMemo`
 
 #### State Ownership
+
 - **Global State**: Authentication, fetched resources → Redux
 - **Local State**: Form inputs, UI toggles → `useState`
 - **Shared State**: Lifted to nearest common ancestor or Redux
@@ -809,11 +867,13 @@ The application manages the following domain entities:
 ### 3. Side Effect Handling Patterns
 
 #### useEffect Patterns
+
 - **Data Fetching on Mount**: `useEffect(() => { fetchData(); }, [fetchData])`
 - **Authentication Check**: `App.jsx` checks auth on mount
 - **Language Detection**: `i18n` initializes on import
 
 #### Async Operations
+
 - **Redux Thunks**: Primary pattern for async logic
 - **RTK Query**: For caching and optimistic updates
 - **useEffect + Promises**: Minimal use (Redux preferred)
@@ -823,12 +883,14 @@ The application manages the following domain entities:
 ### 4. Routing and Navigation Approach
 
 #### Routing Strategy
+
 - **Declarative Routes**: `createRoutesFromElements` with JSX
 - **Data Router**: React Router 7 pattern (future-ready for loaders/actions)
 - **Nested Routes**: `Outlet` pattern for layouts
 - **Route Guards**: `UserStatusGate` component
 
 #### Navigation Patterns
+
 - **Programmatic Navigation**: `<Navigate>` component for redirects
 - **Declarative Navigation**: `<Link>` component for user-initiated
 - **Navigation State**: `useLocation` for conditional logic
@@ -838,11 +900,13 @@ The application manages the following domain entities:
 ### 5. Data Fetching and Caching Patterns
 
 #### Fetching Strategies
+
 1. **Imperative Fetch**: `useEffect` + action dispatch on mount
 2. **RTK Query Hooks**: `useGetAllSolutionsQuery()` with automatic fetching
 3. **User-Initiated**: Button click → action dispatch
 
 #### Caching
+
 - **RTK Query Cache**: Automatic, configurable TTL
 - **Redux State Cache**: Lasts for session
 - **No Persistent Cache**: State cleared on page reload
@@ -852,12 +916,14 @@ The application manages the following domain entities:
 ### 6. Rendering Optimization Strategies
 
 #### Performance Patterns
+
 - **Memoization**: `useMemo` for computed values, `useCallback` for functions
 - **Code Splitting**: Not yet implemented (future: React.lazy + Suspense)
 - **Conditional Rendering**: Early returns for loading/error states
 - **Key Props**: Proper keys in lists (`key={item.id}`)
 
 #### Anti-Patterns Avoided
+
 - ❌ Inline function definitions in render (useCallback used)
 - ❌ Unnecessary re-renders (selectors are granular)
 - ❌ Large component trees (composition keeps components small)
@@ -869,6 +935,7 @@ The application manages the following domain entities:
 ### 1. Interface Design Patterns
 
 #### Custom Hook Interfaces
+
 ```javascript
 // Action hooks return dispatch functions
 export const useGetAllOrganizations = () => {
@@ -895,6 +962,7 @@ export const useIsAuthenticated = () => {
 ### 2. Service Implementation Patterns
 
 #### Singleton Pattern (API Manager)
+
 ```javascript
 class ApiManager {
   #api = null;  // Private field
@@ -922,6 +990,7 @@ Object.freeze(apiManager);  // Immutable singleton
 ### 3. Thunk Implementation Patterns
 
 #### Manual Thunk (Simple)
+
 ```javascript
 function getAllOrganizations() {
   return async (dispatch, getState, extraArgument) => {
@@ -934,15 +1003,13 @@ function getAllOrganizations() {
 ```
 
 #### createAsyncThunk (Complex)
+
 ```javascript
-export const getAllWorkspaces = createAsyncThunk(
-  'workspaces/getAll',
-  async (arg, thunkAPI) => {
-    const { api } = thunkAPI.extra;
-    const { data } = await api.Workspaces.findAllWorkspaces('o-vloxvdke5gqvx');
-    return data;
-  }
-);
+export const getAllWorkspaces = createAsyncThunk('workspaces/getAll', async (arg, thunkAPI) => {
+  const { api } = thunkAPI.extra;
+  const { data } = await api.Workspaces.findAllWorkspaces('o-vloxvdke5gqvx');
+  return data;
+});
 
 // Handled in slice's extraReducers
 extraReducers: (builder) => {
@@ -957,7 +1024,7 @@ extraReducers: (builder) => {
     .addCase(getAllWorkspaces.rejected, (state) => {
       state.status = 'ERROR';
     });
-}
+};
 ```
 
 ---
@@ -965,6 +1032,7 @@ extraReducers: (builder) => {
 ### 4. RTK Query Implementation Patterns
 
 #### Query Definition
+
 ```javascript
 getAllSolutions: builder.query({
   queryFn: async (args, thunkAPI) => {
@@ -981,6 +1049,7 @@ getAllSolutions: builder.query({
 ```
 
 #### Mutation with Optimistic Update
+
 ```javascript
 renameScenario: builder.mutation({
   queryFn: async (args, thunkAPI) => {
@@ -1006,6 +1075,7 @@ renameScenario: builder.mutation({
 ### 5. Component Implementation Patterns
 
 #### View Component (Data Fetching)
+
 ```javascript
 export const Organizations = () => {
   const getAllOrganizations = useGetAllOrganizations();
@@ -1017,7 +1087,7 @@ export const Organizations = () => {
   }, [getAllOrganizations]);
 
   if (organizationsStatus === 'LOADING') return <h1>Loading...</h1>;
-  
+
   return (
     <div>
       {organizations && (
@@ -1033,17 +1103,16 @@ export const Organizations = () => {
 ```
 
 #### Route Guard Pattern
+
 ```javascript
 export const UserStatusGate = ({ children }) => {
   const isAuthenticated = useIsAuthenticated();
   const location = useLocation();
 
-  if (!isAuthenticated && location.pathname !== '/sign-in') 
-    return <Navigate to="/sign-in" replace />;
-  
-  if (isAuthenticated && location.pathname === '/sign-in') 
-    return <Navigate to="/" replace />;
-  
+  if (!isAuthenticated && location.pathname !== '/sign-in') return <Navigate to="/sign-in" replace />;
+
+  if (isAuthenticated && location.pathname === '/sign-in') return <Navigate to="/" replace />;
+
   return (
     <ErrorBoundary>
       <Outlet />
@@ -1061,29 +1130,32 @@ export const UserStatusGate = ({ children }) => {
 Currently, the project does not have an extensive test suite. Future testing architecture should follow these patterns:
 
 #### Unit Testing
+
 - **Target**: Redux reducers, utility functions, custom hooks
 - **Tools**: Vitest (already compatible with Vite), React Testing Library
 - **Pattern**: Test pure functions in isolation
 
 #### Integration Testing
+
 - **Target**: Component + Redux integration, API client + interceptors
 - **Tools**: React Testing Library, MSW (Mock Service Worker)
 - **Pattern**: Test user workflows (click → action → state → UI update)
 
 #### E2E Testing
+
 - **Target**: Full user flows (login → navigate → fetch data)
 - **Tools**: Cypress (already configured in devDependencies)
 - **Pattern**: Test critical paths in real browser
 
 ### Test Boundaries
 
-| Layer | Test Type | Focus |
-|-------|-----------|-------|
-| Components | Integration | User interactions, state integration |
-| Redux Slices | Unit | Reducer logic, action creators |
-| Thunks | Integration | API calls with mocked API client |
-| API Client | Integration | Interceptors, token refresh logic |
-| Utility Functions | Unit | Pure function logic |
+| Layer             | Test Type   | Focus                                |
+| ----------------- | ----------- | ------------------------------------ |
+| Components        | Integration | User interactions, state integration |
+| Redux Slices      | Unit        | Reducer logic, action creators       |
+| Thunks            | Integration | API calls with mocked API client     |
+| API Client        | Integration | Interceptors, token refresh logic    |
+| Utility Functions | Unit        | Pure function logic                  |
 
 ### Test Data Strategies
 
@@ -1098,17 +1170,21 @@ Currently, the project does not have an extensive test suite. Future testing arc
 ### Build Process
 
 #### Development
+
 ```bash
 yarn start  # Vite dev server on port 3000
 ```
+
 - Hot Module Replacement (HMR) with React Fast Refresh
 - Source maps for debugging
 - No bundling (native ES modules)
 
 #### Production
+
 ```bash
 yarn build  # Generates dist/ folder
 ```
+
 - Tree-shaking and minification
 - Code splitting (automatic by Vite)
 - Asset optimization (images, fonts)
@@ -1117,11 +1193,13 @@ yarn build  # Generates dist/ folder
 ### Deployment Topology
 
 #### Single-Page Application (SPA)
+
 - **Build Output**: `dist/` folder with `index.html` + JS/CSS chunks
 - **Hosting**: Static file hosting (S3, Netlify, Vercel, etc.)
 - **Server Requirements**: None (client-side only)
 
 #### CDN Deployment
+
 - Static assets served from CDN
 - HTML served from origin or CDN with short TTL
 - Immutable assets with cache-busting hashes
@@ -1167,6 +1245,7 @@ EXPOSE 80
 #### Adding a New Resource Type (e.g., "Users")
 
 **Step 1: Create Redux Slice**
+
 ```javascript
 // src/state/users/reducers.js
 import { createSlice } from '@reduxjs/toolkit';
@@ -1190,6 +1269,7 @@ export default usersSlice.reducer;
 ```
 
 **Step 2: Create Thunk**
+
 ```javascript
 // src/state/users/thunks/getAllUsers.js
 import { setUsers, setUsersStatus } from '../reducers.js';
@@ -1198,7 +1278,7 @@ function getAllUsers() {
   return async (dispatch, getState, extraArgument) => {
     dispatch(setUsersStatus({ status: 'LOADING' }));
     const { api } = extraArgument;
-    const { data } = await api.Users.findAllUsers();  // Assuming API method exists
+    const { data } = await api.Users.findAllUsers(); // Assuming API method exists
     dispatch(setUsers({ users: data }));
   };
 }
@@ -1207,6 +1287,7 @@ export default getAllUsers;
 ```
 
 **Step 3: Create Custom Hooks**
+
 ```javascript
 // src/state/users/hooks.js
 import { useCallback } from 'react';
@@ -1228,6 +1309,7 @@ export const useUsersListStatus = () => {
 ```
 
 **Step 4: Register Reducer in rootReducer**
+
 ```javascript
 // src/state/rootReducer.js
 import usersReducer from './users/reducers.js';
@@ -1236,12 +1318,13 @@ const rootReducer = combineReducers({
   auth: authReducer,
   organizations: organizationsReducer,
   workspaces: workspacesReducer,
-  users: usersReducer,  // Add this line
+  users: usersReducer, // Add this line
   [cosmoApi.reducerPath]: cosmoApi.reducer,
 });
 ```
 
 **Step 5: Create View Component**
+
 ```javascript
 // src/views/Users.jsx
 import React, { useEffect } from 'react';
@@ -1257,7 +1340,7 @@ export const Users = () => {
   }, [getAllUsers]);
 
   if (usersStatus === 'LOADING') return <h1>Loading...</h1>;
-  
+
   return (
     <div>
       <h1>Users</h1>
@@ -1272,6 +1355,7 @@ export const Users = () => {
 ```
 
 **Step 6: Add Route**
+
 ```javascript
 // src/AppRoutes.jsx
 <Route path="users" element={<Users />} />
@@ -1284,17 +1368,19 @@ export const Users = () => {
 If the API client needs a new method not in `@cosmotech/api-ts`:
 
 **Option 1: Extend API Client**
+
 ```javascript
 // src/services/api/apiClient.js
 export const getApiClient = (apiUrl) => ({
   apiUrl,
   Solutions: SolutionApiFactory(null, apiUrl, axiosClientApi),
   // ... existing factories
-  Users: UserApiFactory(null, apiUrl, axiosClientApi),  // Add new factory
+  Users: UserApiFactory(null, apiUrl, axiosClientApi), // Add new factory
 });
 ```
 
 **Option 2: Custom API Call in Thunk**
+
 ```javascript
 // For one-off API calls not in SDK
 function customApiCall() {
@@ -1311,6 +1397,7 @@ function customApiCall() {
 ### 3. Adding New Authentication Provider
 
 **Step 1: Create Provider Configuration**
+
 ```javascript
 // src/services/auth/okta.js (example)
 import { Auth, AuthOkta } from '@cosmotech/core';
@@ -1336,17 +1423,19 @@ export const addAuthProvider = (name, apiConfig) => {
 ```
 
 **Step 2: Update detectApiAuthProviderType**
+
 ```javascript
 // src/services/api/apiUtils.js
 export const detectApiAuthProviderType = (api) => {
   if (api == null) return;
   if (api.AUTH_KEYCLOAK_CLIENT_ID && api.AUTH_KEYCLOAK_REALM) return 'keycloak';
   if (api.APP_REGISTRATION_CLIENT_ID && api.AZURE_TENANT_ID) return 'azure';
-  if (api.OKTA_CLIENT_ID && api.OKTA_ISSUER) return 'okta';  // Add this
+  if (api.OKTA_CLIENT_ID && api.OKTA_ISSUER) return 'okta'; // Add this
 };
 ```
 
 **Step 3: Update ApiManager**
+
 ```javascript
 // src/services/api/apiManager.js
 import { addAuthProvider as addOktaAuthProvider } from '../auth/okta';
@@ -1370,11 +1459,13 @@ import { addAuthProvider as addOktaAuthProvider } from '../auth/okta';
 ### 4. Modification Patterns
 
 #### Changing Existing Component
+
 - Maintain backward compatibility in props
 - Use optional chaining (`?.`) for new props
 - Add feature flags if breaking change is significant
 
 #### Deprecation Pattern
+
 ```javascript
 // Mark deprecated in JSDoc
 /**
@@ -1393,6 +1484,7 @@ export const OldComponent = ({ children }) => {
 #### Integrating External Service (Example: Analytics)
 
 **Step 1: Create Service Module**
+
 ```javascript
 // src/services/analytics/analyticsManager.js
 class AnalyticsManager {
@@ -1415,6 +1507,7 @@ export const analyticsManager = new AnalyticsManager();
 ```
 
 **Step 2: Initialize in App.jsx**
+
 ```javascript
 // src/App.jsx
 useEffect(() => {
@@ -1423,6 +1516,7 @@ useEffect(() => {
 ```
 
 **Step 3: Use in Components**
+
 ```javascript
 // src/views/Organizations.jsx
 const handleOrgClick = (org) => {
@@ -1440,6 +1534,7 @@ const handleOrgClick = (org) => {
 #### Interface Definition and Implementation Separation
 
 **Interface (Custom Hook)**:
+
 ```javascript
 // src/state/organizations/hooks.js
 export const useGetAllOrganizations = () => {
@@ -1449,6 +1544,7 @@ export const useGetAllOrganizations = () => {
 ```
 
 **Implementation (Thunk)**:
+
 ```javascript
 // src/state/organizations/thunks/getAllOrganizations.js
 function getAllOrganizations() {
@@ -1462,11 +1558,12 @@ function getAllOrganizations() {
 ```
 
 **Usage (Component)**:
+
 ```javascript
 // src/views/Organizations.jsx
 const getAllOrganizations = useGetAllOrganizations();
 useEffect(() => {
-  getAllOrganizations();  // Clean interface, no Redux knowledge needed
+  getAllOrganizations(); // Clean interface, no Redux knowledge needed
 }, [getAllOrganizations]);
 ```
 
@@ -1479,13 +1576,13 @@ useEffect(() => {
 ```javascript
 // Component dispatches action
 const handleRefresh = () => {
-  getAllOrganizations();  // Custom hook
+  getAllOrganizations(); // Custom hook
 };
 
 // ↓ Flows to Redux thunk
 function getAllOrganizations() {
   return async (dispatch, getState, extraArgument) => {
-    const { api } = extraArgument;  // Dependency injection
+    const { api } = extraArgument; // Dependency injection
     const { data } = await api.Organizations.findAllOrganizations();
     dispatch(setOrganizations({ organizations: data }));
   };
@@ -1552,6 +1649,7 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 **Decision**: Use Redux Toolkit with feature-based slices.
 
 **Rationale**:
+
 - Redux DevTools for debugging and time-travel
 - Mature ecosystem with middleware support
 - RTK simplifies boilerplate (compared to classic Redux)
@@ -1559,12 +1657,14 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 - Middleware enables dependency injection (API client)
 
 **Consequences**:
+
 - ✅ Predictable state updates, excellent debugging
 - ✅ Easy to test (pure reducer functions)
 - ❌ Slightly more boilerplate than Context API
 - ❌ Learning curve for new developers
 
 **Alternatives Considered**:
+
 - Context API + useReducer (too limited for complex async)
 - Zustand (less mature, no DevTools integration)
 
@@ -1577,11 +1677,13 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 **Decision**: Use manual thunks for simple CRUD, RTK Query for caching/mutations.
 
 **Rationale**:
+
 - Manual thunks are simpler for straightforward fetch operations
 - RTK Query provides automatic caching, invalidation, optimistic updates
 - Gradual migration path (start simple, add RTK Query as needed)
 
 **Consequences**:
+
 - ✅ Flexibility to choose right tool for each use case
 - ✅ Avoid over-engineering simple cases
 - ❌ Two patterns to maintain (inconsistency)
@@ -1598,12 +1700,14 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 **Decision**: Singleton Auth abstraction (`@cosmotech/core`) with dynamic provider registration.
 
 **Rationale**:
+
 - Single build artifact for all environments
 - User selects environment at login (no redeploy needed)
 - Auth abstraction hides provider-specific details
 - Easy to add new providers (Okta, Auth0, etc.)
 
 **Consequences**:
+
 - ✅ Extremely flexible deployment model
 - ✅ Easy to test against multiple environments
 - ✅ Future-proof for new auth providers
@@ -1621,12 +1725,14 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 **Decision**: Organize by feature (auth, organizations, workspaces), not by technical layer.
 
 **Rationale**:
+
 - Related code stays together (reducers, thunks, hooks for same feature)
 - Easier to find and modify feature-specific code
 - Scales better than layer-based structure
 - Encourages feature cohesion
 
 **Consequences**:
+
 - ✅ Easy to locate feature-specific code
 - ✅ Clear ownership boundaries
 - ✅ Simpler code navigation
@@ -1642,6 +1748,7 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 **Decision**: Use Material UI 6 with `sx` prop styling.
 
 **Rationale**:
+
 - Comprehensive component library (reduces custom component dev)
 - Built-in theming system
 - Excellent accessibility (ARIA support)
@@ -1649,6 +1756,7 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 - `sx` prop enables style co-location without CSS files
 
 **Consequences**:
+
 - ✅ Rapid UI development
 - ✅ Consistent design language
 - ✅ Accessibility built-in
@@ -1664,6 +1772,7 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 **Decision**: Use Vite as build tool and dev server.
 
 **Rationale**:
+
 - Significantly faster cold starts (no bundling in dev)
 - Native ES modules in dev (instant HMR)
 - Modern build defaults (ES2015+, tree-shaking)
@@ -1671,6 +1780,7 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 - CRA is deprecated
 
 **Consequences**:
+
 - ✅ Blazing fast development experience
 - ✅ Modern by default
 - ✅ Simpler configuration
@@ -1684,6 +1794,7 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 ### Maintaining Architectural Consistency
 
 #### Code Review Checklist
+
 - [ ] Components don't directly import from `src/services/`
 - [ ] Redux logic uses custom hooks, not raw `useDispatch`
 - [ ] New API calls go through thunks or RTK Query
@@ -1694,15 +1805,18 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 #### Automated Checks
 
 **ESLint**:
+
 - Enforces React best practices (`eslint-plugin-react`)
 - Hook dependencies lint (`eslint-plugin-react-hooks`)
 - Prettier integration (`eslint-plugin-prettier`)
 
 **Prettier**:
+
 - Import sorting (`@trivago/prettier-plugin-sort-imports`)
 - Consistent code formatting
 
 **Future Consideration**:
+
 - Architecture tests (e.g., ensure components don't import services)
 - Bundle size monitoring
 - Dependency cruiser for dependency graph validation
@@ -1724,13 +1838,13 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 
 #### 1. Starting Points for Different Feature Types
 
-| Feature Type | Starting Point |
-|-------------|----------------|
-| New Resource Type (e.g., "Datasets") | Create Redux slice → Thunks → Hooks → View → Route |
-| New UI Component | Create in `src/components/` → Export from `index.js` |
-| New API Endpoint | Extend API client → Create thunk or RTK Query endpoint |
-| New Auth Provider | Create config in `src/services/auth/` → Update ApiManager |
-| New Route | Add to `AppRoutes.jsx` → Create view component |
+| Feature Type                         | Starting Point                                            |
+| ------------------------------------ | --------------------------------------------------------- |
+| New Resource Type (e.g., "Datasets") | Create Redux slice → Thunks → Hooks → View → Route        |
+| New UI Component                     | Create in `src/components/` → Export from `index.js`      |
+| New API Endpoint                     | Extend API client → Create thunk or RTK Query endpoint    |
+| New Auth Provider                    | Create config in `src/services/auth/` → Update ApiManager |
+| New Route                            | Add to `AppRoutes.jsx` → Create view component            |
 
 ---
 
@@ -1751,6 +1865,7 @@ apiManager.selectApi('phoenixdev', apis['phoenixdev']);
 ### Implementation Templates
 
 #### Redux Slice Template
+
 ```javascript
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
@@ -1777,6 +1892,7 @@ export default {featureName}Slice.reducer;
 ---
 
 #### Thunk Template
+
 ```javascript
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
@@ -1802,6 +1918,7 @@ export default getAll{FeatureName};
 ---
 
 #### Custom Hooks Template
+
 ```javascript
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
@@ -1826,6 +1943,7 @@ export const use{FeatureName}ListStatus = () => {
 ---
 
 #### View Component Template
+
 ```javascript
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
@@ -1872,6 +1990,7 @@ export const {FeatureName} = () => {
 #### ❌ Architecture Violations to Avoid
 
 1. **Direct API Calls from Components**
+
    ```javascript
    // ❌ BAD
    const handleClick = async () => {
@@ -1886,15 +2005,17 @@ export const {FeatureName} = () => {
    ```
 
 2. **Importing Services Directly**
+
    ```javascript
    // ❌ BAD
    import { apiManager } from 'src/services/api/apiManager';
 
    // ✅ GOOD - Access API only through Redux
-   const { api } = extraArgument;  // In thunks
+   const { api } = extraArgument; // In thunks
    ```
 
 3. **Not Using Custom Hooks**
+
    ```javascript
    // ❌ BAD
    const dispatch = useDispatch();
@@ -1908,6 +2029,7 @@ export const {FeatureName} = () => {
    ```
 
 4. **Missing License Headers**
+
    ```javascript
    // ❌ BAD - Missing header
 
@@ -1917,6 +2039,7 @@ export const {FeatureName} = () => {
    ```
 
 5. **Mutating State Directly**
+
    ```javascript
    // ❌ BAD (but Immer prevents this in Redux Toolkit)
    state.list.push(newItem);
@@ -1959,12 +2082,14 @@ Areas currently lacking test coverage (future improvement areas):
 ### Keeping Blueprint Updated
 
 **Triggers for Update**:
+
 - New architectural patterns introduced
 - Major refactoring (e.g., migration to RTK Query)
 - New cross-cutting concerns (analytics, error tracking)
 - Technology stack changes (React 20, Redux v3, etc.)
 
 **Update Process**:
+
 1. Identify architectural changes in recent PRs
 2. Update relevant sections of this document
 3. Add/update architectural decision records

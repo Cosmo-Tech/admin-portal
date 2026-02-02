@@ -116,14 +116,12 @@ export const UsersTable = () => {
                   />
                 </TableCell>
                 <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Platform Roles</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Organizations</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Last Login</TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700 }}>
-                  Actions
-                </TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Platform Roles</TableCell>
+                <TableCell>Organizations</TableCell>
+                <TableCell>Last Login</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
               </TableRow>
 
               <UsersTableFilters filters={filters} onChange={handleFilterChange} />
