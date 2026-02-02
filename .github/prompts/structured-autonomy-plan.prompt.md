@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
 ---
 name: sa-plan
 description: Structured Autonomy Planning Prompt

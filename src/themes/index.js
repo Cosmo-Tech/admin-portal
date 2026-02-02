@@ -52,8 +52,8 @@ const theme = createTheme({
           fontSize: '12px',
           color: '#6C757D',
         },
-      }
-    }
+      },
+    },
   },
   typography: {
     fontFamily: [

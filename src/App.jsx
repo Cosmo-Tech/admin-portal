@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import { Box } from '@mui/material';
 import { Auth } from '@cosmotech/core';
 import AppRoutes from './AppRoutes.jsx';
-import { AppBar } from './components';
 import './services/auth/keycloak.js';
 import { AUTH_STATUS } from './state/auth/constants.js';
 import { useSetAuthData } from './state/auth/hooks.js';

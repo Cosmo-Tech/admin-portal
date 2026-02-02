@@ -78,11 +78,11 @@ export const NavigationMenu = () => {
         height: '100%',
         width: '100%',
         display: 'flex',
-        flexDirection: 'column', 
+        flexDirection: 'column',
         bgcolor: theme.palette.primary.main,
         borderRight: '1px solid #E9ECEF',
         paddingY: '16px',
-        paddingLeft: '0px', 
+        paddingLeft: '0px',
         paddingRight: '16px',
         maxWidth: 280,
         boxSizing: 'border-box',
@@ -90,12 +90,12 @@ export const NavigationMenu = () => {
       }}
     >
       <Box sx={{ px: 2, mb: 2, display: 'flex-end', justifyContent: 'center' }}>
-          <Box
-            component="img"
-            sx={{ height: '39px', width: '100px', maxHeight: '39px', maxWidth: '100px' }}
-            alt="Cosmo Tech"
-            src={theme.palette.mode === 'dark' ? '/cosmotech_logo_dark_theme.png' : '/cosmotech_logo_light_theme.png'}
-          />
+        <Box
+          component="img"
+          sx={{ height: '39px', width: '100px', maxHeight: '39px', maxWidth: '100px' }}
+          alt="Cosmo Tech"
+          src={theme.palette.mode === 'dark' ? '/cosmotech_logo_dark_theme.png' : '/cosmotech_logo_light_theme.png'}
+        />
       </Box>
       {/* Navigation Items */}
       <List sx={{ p: 0, flex: 1, overflowY: 'auto' }}>
@@ -157,7 +157,7 @@ export const NavigationMenu = () => {
       </List>
 
       {/* Bottom Section */}
-      <Box sx={{ mt: 'auto'}}>
+      <Box sx={{ mt: 'auto' }}>
         {/* Help & Documentation */}
         <ListItem
           disablePadding

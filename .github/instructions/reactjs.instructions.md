@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
 ---
 description: 'ReactJS development standards and best practices'
 applyTo: '**/*.jsx, **/*.tsx, **/*.js, **/*.ts, **/*.css, **/*.scss'
