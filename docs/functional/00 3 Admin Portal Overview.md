@@ -1,3 +1,5 @@
+<!-- SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech -->
+<!-- SPDX-License-Identifier: LicenseRef-CosmoTech -->
 # Admin Portal Overview
 The "Admin Portal" is a web-based interface designed for administrators to manage and oversee various aspects of the Cosmo Tech platform. It provides an intuitive and user-friendly environment for configuring the objects used by the Cosmo Tech platform:
 - organizations
