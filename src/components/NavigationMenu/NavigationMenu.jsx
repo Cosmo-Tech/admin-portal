@@ -131,9 +131,9 @@ export const NavigationMenu = () => {
                   borderRadius: '24px 24px 24px 24px',
                   height: '48px',
                   '&.Mui-selected': {
-                    bgcolor: theme.palette.text.primary,
+                    bgcolor: theme.palette.secondary.main,
                     '&:hover': {
-                      bgcolor: theme.palette.text.primary,
+                      bgcolor: theme.palette.secondary.main,
                     },
                   },
                   '&:hover': {

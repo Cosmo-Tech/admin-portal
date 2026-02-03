@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import App from './App.jsx';
 import { createAppTheme } from './themes';
@@ -12,6 +13,7 @@ export const AppWrapper = () => {
 
   return (
     <ThemeProvider theme={dynamicTheme}>
+      <CssBaseline />
       <App />
     </ThemeProvider>
   );
