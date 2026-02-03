@@ -1,92 +1,103 @@
-# Copilot Instructions - Cosmo Tech Admin Portal
+<!-- SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech -->
+<!-- SPDX-License-Identifier: LicenseRef-CosmoTech -->
+---
+applyTo: '**'
+---
 
-## Project Overview
-React 19 + Redux Toolkit admin portal for managing Cosmo Tech workspace resources (organizations, workspaces, solutions, scenarios, users). Uses Vite as build tool, Material-UI for components, and supports multi-API/multi-auth environments.
+# Cosmo Tech Admin Portal - Development Guide
 
-## Architecture Patterns
+React 19 + Redux Toolkit + Material-UI 6 + Vite portal for managing Cosmo Tech resources.
 
-### State Management: Redux with Dual Query Approaches
-Two distinct patterns coexist for API calls:
-1. **RTK Query** ([apiSlice.js](../src/state/api/apiSlice.js)) - New pattern using `createApi` with `fakeBaseQuery` and manual `queryFn`. Auto-generates hooks like `useGetAllSolutionsQuery`. Updates optimistically via `onQueryStarted`.
-2. **Redux Thunks** ([organizations/thunks](../src/state/organizations/thunks), [workspaces/thunks](../src/state/workspaces/thunks)) - Legacy pattern where thunks receive API client via `extraArgument` from store config and manually dispatch reducer actions.
+---
 
-For new features, prefer RTK Query. Access API client in `queryFn` via `thunkAPI.extra.api`.
+## Quick Start
 
-### Multi-API/Auth Architecture
-[apiManager.js](../src/services/api/apiManager.js) is a singleton managing multiple Cosmo Tech environments defined in [apis.json](../src/config/apis.json). Automatically:
-- Detects auth provider type (Azure MSAL vs Keycloak) from API config keys
-- Initializes all auth providers on startup via `addAuthProvider` calls
-- Persists selected API to localStorage under `authProvider` key
-- Provides single API client instance via `getApiClient()`
-
-The API client ([apiClient.js](../src/services/api/apiClient.js)) uses:
-- Axios interceptors to inject Bearer tokens from `@cosmotech/core` Auth abstraction
-- Automatic token refresh when < 3 minutes remaining
-- Resource-specific factories from `@cosmotech/api-ts` (Solutions, Runners, Workspaces, Organizations, etc.)
-
-### Authentication Flow
-1. User selects API from [Login.jsx](../src/views/Login.jsx)
-2. [login thunk](../src/state/auth/thunks/login.js) calls `Auth.setProvider()` and `Auth.signIn()` from `@cosmotech/core`
-3. Auth data (email, ID, roles, status) stored in Redux `auth` slice
-4. [UserStatusGate](../src/components/UserStatusGate/UserStatusGate.jsx) protects routes based on auth status constants from [state/auth/constants.js](../src/state/auth/constants.js)
-
-## Development Workflow
-
-### Package Management
-**Critical:** Use `yarn` not npm. Project enforces `yarn@4.5.3` via `packageManager` field.
-
-```powershell
-yarn install    # Install dependencies
-yarn start      # Dev server on port 3000
-yarn build      # Production build
-yarn lint       # Run ESLint
-yarn prettier   # Format code
+```bash
+yarn install && yarn start   # Use yarn only (not npm)
 ```
 
-### File Headers
-Every source file requires SPDX headers:
+**File headers required:**
 ```javascript
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 ```
 
-### Commit Conventions
-**Strict enforcement:** A git hook blocks non-conforming commits. Use [Conventional Commits](../docs/coding-rules/conventional-commits.md):
-- Types: `feat`, `fix`, `refactor`, `perf`, `style`, `test`, `build`, `ops`, `docs`, `chore`
-- Format: `type(optional-scope): description`
-- Tool: `git-conventional-commits@^1.0.0` (v1, NOT v2) installed globally
-- Hook location: `.git-hooks/commit-msg` (activate via `git config core.hooksPath .git-hooks`)
+**Commits:** Conventional format enforced by git hook
+```
+feat|fix|refactor|perf|style|test|build|ops|docs|chore(scope): description
+```
 
-Example: `feat(scenarios): add bulk rename functionality`
+---
 
-## Code Organization
+## Architecture
 
-### Component Structure
-- [src/views/](../src/views/) - Page-level components (one per resource type)
-- [src/components/](../src/components/) - Reusable UI components (AppBar, ErrorBoundary, UserStatusGate)
-- [src/state/](../src/state/) - Redux slices with pattern: `reducers.js`, `hooks.js`, `thunks/` subfolder
-- [src/services/](../src/services/) - API client, auth providers, config loaders
+### State Management
+
+| Pattern | When to Use | Example |
+|---------|-------------|---------|
+| **RTK Query** (preferred) | Caching, optimistic updates | `useGetAllSolutionsQuery()` |
+| **Redux Thunks** (legacy) | Simple CRUD, no caching | `getAllOrganizations()` |
+
+API client injected via Redux `extraArgument.api`.
+
+### Auth Flow
+1. User selects API → `apiManager` configures auth provider (Azure MSAL or Keycloak)
+2. Login thunk calls `Auth.signIn()` from `@cosmotech/core`
+3. `UserStatusGate` protects routes based on `AUTH_STATUS`
+
+### Project Structure
+```
+src/
+├── views/           # Page components (Users, Organizations, etc.)
+├── components/      # Reusable UI (AppBar, NavigationMenu, etc.)
+├── state/           # Redux: {feature}/reducers.js, hooks.js, thunks/
+├── services/api/    # apiManager (singleton), apiClient (Axios)
+├── config/          # apis.json (multi-environment config)
+└── i18n/            # Translations (en, fr)
+```
+
+---
+
+## Coding Standards
+
+### React Patterns
+- **Functional components + hooks only**
+- **Custom hooks** encapsulate Redux logic (`useOrganizationsList()`, `useGetAllOrganizations()`)
+- **Composition over inheritance** via children, render props
+- **Material-UI `sx` prop** for styling (no separate CSS files)
 
 ### State Slice Pattern
-Each resource slice ([organizations](../src/state/organizations/), [workspaces](../src/state/workspaces/)) exports:
-- Reducer from `reducers.js` (imported in [rootReducer.js](../src/state/rootReducer.js))
-- Custom hooks from `hooks.js` (wrap `useSelector` for component consumption)
-- Thunks in `thunks/` folder (one file per thunk function)
+```javascript
+// state/{feature}/hooks.js
+export const useFeatureData = () => useSelector(state => state.feature.data);
+export const useFetchFeature = () => {
+  const dispatch = useDispatch();
+  return useCallback(() => dispatch(fetchFeature()), [dispatch]);
+};
+```
 
-### Import Alias
-[vite.config.js](../vite.config.js) defines `src: '/src'` alias. Use absolute imports:
+### Imports
+Use absolute paths via Vite alias:
 ```javascript
 import { UserStatusGate } from 'src/components';
 ```
 
-## Key Dependencies
-- `@cosmotech/core` - Auth abstraction (works with Azure/Keycloak providers)
-- `@cosmotech/azure` - MSAL implementation via `AuthMSAL` class
-- `@cosmotech/api-ts` - TypeScript API client with resource factories
-- React Router v7 - Uses `createBrowserRouter` API (see [AppRoutes.jsx](../src/AppRoutes.jsx))
-- Redux Toolkit - Store configured with `serializableCheck: false` due to API client in `extraArgument`
+---
 
-## Documentation
-- Full architecture: [docs/architecture/Architecture.md](../docs/architecture/Architecture.md)
-- OpenAPI spec: [docs/architecture/openapi-5.0.0-rc5.json](../docs/architecture/openapi-5.0.0-rc5.json)
-- Requirements: [docs/functional/Admin Portal Requirements.md](../docs/functional/Admin%20Portal%20Requirements.md)
+## Key Rules
+
+| Rule | Details |
+|------|---------|
+| Package manager | `yarn` only (v4.5.3) |
+| Components never call APIs | Dispatch via Redux hooks |
+| New API features | Use RTK Query in `apiSlice.js` |
+| Error handling | `ErrorBoundary` + try-catch in thunks |
+| i18n | `useTranslation()` hook, files in `src/i18n/locales/` |
+| Testing | React Testing Library + Jest |
+
+---
+
+## References
+- [Architecture Blueprint](../../docs/architecture/Project_Architecture_Blueprint.md)
+- [Conventional Commits](../../docs/coding-rules/conventional-commits.md)
+- [Admin Portal Overview](../../docs/functional/00%203%20Admin%20Portal%20Overview.md)

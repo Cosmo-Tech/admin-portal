@@ -12,7 +12,7 @@ import {
   Solutions,
   Users,
   Workspaces,
-  Dashboards,
+  Flowchart,
   Resources,
   Roles,
 } from './views';
@@ -23,13 +23,13 @@ const AppRoutes = () => {
       <>
         <Route path="/" element={<UserStatusGate />}>
           <Route element={<ResourcesLayout />}>
-            <Route index element={<Navigate to="/solution" replace />} />
+            <Route index element={<Navigate to="/users" replace />} />
             <Route path="users" element={<Users />} />
             <Route path="solution" element={<Solutions />} />
             <Route path="workspace" element={<Workspaces />} />
             <Route path="organization" element={<Organizations />} />
             <Route path="scenario" element={<Scenarios />} />
-            <Route path="dashboards" element={<Dashboards />} />
+            <Route path="flowchart" element={<Flowchart />} />
             <Route path="resources" element={<Resources />} />
             <Route path="roles" element={<Roles />} />
           </Route>

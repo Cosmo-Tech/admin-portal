@@ -3,10 +3,10 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
-export const Dashboards = () => {
+export const Flowchart = () => {
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4">Dashboards</Typography>
+      <Typography variant="h4">Flowchart</Typography>
       <Typography variant="body1" sx={{ mt: 2, color: 'text.secondary' }}>
         This section is under development.
       </Typography>

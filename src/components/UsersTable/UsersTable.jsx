@@ -67,9 +67,6 @@ export const UsersTable = () => {
   return (
     <Box>
       <Box sx={{ mb: 2 }}>
-        <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-          Workspace Name &gt; Users
-        </Typography>
         <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
           Users
         </Typography>
