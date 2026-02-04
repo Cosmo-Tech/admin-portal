@@ -6,16 +6,22 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { AppBar as MuiAppBar, Box, Toolbar, Typography, useTheme, IconButton } from '@mui/material';
 import { Auth } from '@cosmotech/core';
+import { useToggleTheme, useThemeMode } from '../../state/theme/hooks.js';
 import { LanguageSwitcher } from '../LanguageSwitcher/LanguageSwitcher';
 
 export const AppBar = () => {
   const theme = useTheme();
+  const themeMode = useThemeMode();
+  const toggleTheme = useToggleTheme();
+
   return (
     <MuiAppBar
       position="static"
+      elevation={0}
       sx={{
         backgroundColor: theme.palette.primary.main,
-        color: '#000',
+        color: theme.palette.primary.contrastText,
+        borderBottom: `1px solid ${theme.palette.divider}`,
       }}
     >
       <Toolbar style={{ padding: 0 }}>
@@ -24,12 +30,12 @@ export const AppBar = () => {
             variant="h6"
             sx={{
               textTransform: 'uppercase',
-              color: '#000',
+              color: theme.palette.primary.contrastText,
             }}
           />
         </Box>
-        <IconButton onClick={() => console.log('Toggle theme')} color="inherit">
-          {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+        <IconButton onClick={toggleTheme} color="inherit">
+          {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
         <IconButton onClick={() => Auth.signOut()} color="inherit">
           <ExitToAppIcon />

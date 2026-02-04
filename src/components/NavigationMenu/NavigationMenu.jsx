@@ -4,10 +4,8 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router';
 import {
-  DashboardOutlined as DashboardOutlinedIcon,
+  AccountTree as FlowchartIcon,
   ManageAccountsOutlined as ManageAccountsOutlinedIcon,
-  CategoryOutlined as CategoryOutlinedIcon,
-  TuneOutlined as TuneOutlinedIcon,
   HelpOutlineOutlined as HelpOutlineIcon,
 } from '@mui/icons-material';
 import {
@@ -42,14 +40,9 @@ export const NavigationMenu = () => {
 
   const menuItems = [
     {
-      text: t('navigation.solutions'),
-      icon: <DashboardOutlinedIcon />,
-      to: '/solution',
-    },
-    {
-      text: t('navigation.workspaces'),
-      icon: <CategoryOutlinedIcon />,
-      to: '/workspace',
+      text: t('navigation.users'),
+      icon: <ManageAccountsOutlinedIcon />,
+      to: '/users',
     },
     {
       text: t('navigation.organizations'),
@@ -57,29 +50,9 @@ export const NavigationMenu = () => {
       to: '/organization',
     },
     {
-      text: t('navigation.scenarios'),
-      icon: <TuneOutlinedIcon />,
-      to: '/scenario',
-    },
-    {
-      text: t('navigation.dashboards'),
-      icon: <DashboardOutlinedIcon />,
-      to: '/dashboards',
-    },
-    {
-      text: t('navigation.users'),
-      icon: <ManageAccountsOutlinedIcon />,
-      to: '/users',
-    },
-    {
-      text: t('navigation.resources'),
-      icon: <CategoryOutlinedIcon />,
-      to: '/resources',
-    },
-    {
-      text: t('navigation.roles'),
-      icon: <TuneOutlinedIcon />,
-      to: '/roles',
+      text: t('navigation.flowchart'),
+      icon: <FlowchartIcon />,
+      to: '/flowchart',
     },
   ];
 
@@ -131,9 +104,9 @@ export const NavigationMenu = () => {
                   borderRadius: '24px 24px 24px 24px',
                   height: '48px',
                   '&.Mui-selected': {
-                    bgcolor: theme.palette.text.primary,
+                    bgcolor: theme.palette.secondary.main,
                     '&:hover': {
-                      bgcolor: theme.palette.text.primary,
+                      bgcolor: theme.palette.secondary.main,
                     },
                   },
                   '&:hover': {
