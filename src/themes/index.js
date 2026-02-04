@@ -49,7 +49,7 @@ const getThemeConfig = (mode = 'light') => ({
       styleOverrides: {
         root: {
           '&:hover': {
-            backgroundColor: mode === 'light' ? '#f8f9fa' : '#252525 !important',
+            backgroundColor: mode === 'light' ? '#f8f9fa' : '#252525',
           },
         },
       },

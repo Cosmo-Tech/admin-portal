@@ -100,4 +100,4 @@ import { UserStatusGate } from 'src/components';
 ## References
 - [Architecture Blueprint](../../docs/architecture/Project_Architecture_Blueprint.md)
 - [Conventional Commits](../../docs/coding-rules/conventional-commits.md)
-- [Admin Portal Overview](../../docs/functional/00%203%20Admin%20Portal%20Overview.md)
+- [Admin Portal Overview](../../docs/functional/00 3 Admin Portal Overview.md)
