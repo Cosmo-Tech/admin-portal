@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import App from './App.jsx';
+import DataLoader from './components/DataLoader/DataLoader.jsx';
 import { createAppTheme } from './themes';
 
 export const AppWrapper = () => {
@@ -14,6 +15,7 @@ export const AppWrapper = () => {
   return (
     <ThemeProvider theme={dynamicTheme}>
       <CssBaseline />
+      <DataLoader />
       <App />
     </ThemeProvider>
   );
