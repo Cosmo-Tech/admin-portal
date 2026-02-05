@@ -50,6 +50,7 @@
     "globals": "^15.14.0",
     "neostandard": "^0.12.1",
     "prettier": "3.5.0",
+    "typescript": "^5.9.3",
     "vite": "^6.1.0",
     "vite-plugin-node-polyfills": "^0.23.0"
   },
