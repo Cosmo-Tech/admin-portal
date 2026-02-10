@@ -19,7 +19,7 @@ This section describes the "Solutions" tab or module within the Organization Vie
 ### 2.1 Solutions Table
 The view presents a list of all solutions available in the organization.
 
-**Columns:**
+**Columns:** **#TODO**
 * **Name:** Name of the solution.
 * **ID:** Unique technical identifier.
 * **Version:** Version number of the solution.

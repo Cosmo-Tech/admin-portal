@@ -32,11 +32,11 @@ The Admin Portal integrates directly with **Keycloak** to manage access control.
 *   **Group Mapping:** The portal will manage Keycloak Groups, which correspond to platform roles (Admin, Editor, Viewer).
 *   **Organization Isolation:** Users and groups must be filtered based on the selected Organization to ensure strict multi-tenant security.
 
-## **4. Admin Portal: First Page Requirements**
+## **4. Admin Portal: landing page Requirements**
 
-The landing page of the Admin Portal provides a "high-level" overview of the platform's health and hierarchy.
+The landing page of the Admin Portal provides a "high-level" overview of the platform resources.
 
-### **4.1 Organizations Dashboard**
+### **4.1 Organizations lit**
 
 The entry point displays all accessible **Organizations**.
 
