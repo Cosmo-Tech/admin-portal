@@ -3,6 +3,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { apiManager } from '../services/api/apiManager';
 import { cosmoApi } from './api/apiSlice';
+import { graphApi } from './graphApi/graphApiSlice';
 import rootReducer from './rootReducer';
 import { themeMiddleware } from './theme/themeMiddleware';
 
@@ -19,6 +20,7 @@ const applicationStore = configureStore({
       },
     })
       .concat(cosmoApi.middleware)
+      .concat(graphApi.middleware)
       .concat(themeMiddleware),
 });
 export default applicationStore;

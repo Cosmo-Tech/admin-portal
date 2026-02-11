@@ -25,15 +25,6 @@ export const UsersTableFilters = ({ filters, onChange }) => {
         <TextField
           size="small"
           placeholder={t('filter.placeholder')}
-          value={filters.email}
-          onChange={(e) => onChange('email', e.target.value)}
-          fullWidth
-        />
-      </TableCell>
-      <TableCell>
-        <TextField
-          size="small"
-          placeholder={t('filter.placeholder')}
           value={filters.role}
           onChange={(e) => onChange('role', e.target.value)}
           fullWidth
@@ -43,21 +34,12 @@ export const UsersTableFilters = ({ filters, onChange }) => {
         <TextField
           size="small"
           placeholder={t('filter.placeholder')}
-          value={filters.org}
-          onChange={(e) => onChange('org', e.target.value)}
+          value={filters.type}
+          onChange={(e) => onChange('type', e.target.value)}
           fullWidth
         />
       </TableCell>
       <TableCell />
-      <TableCell>
-        <TextField
-          size="small"
-          placeholder={t('filter.placeholder')}
-          value={filters.status}
-          onChange={(e) => onChange('status', e.target.value)}
-          fullWidth
-        />
-      </TableCell>
       <TableCell />
     </TableRow>
   );
@@ -66,10 +48,8 @@ export const UsersTableFilters = ({ filters, onChange }) => {
 UsersTableFilters.propTypes = {
   filters: PropTypes.shape({
     name: PropTypes.string,
-    email: PropTypes.string,
     role: PropTypes.string,
-    org: PropTypes.string,
-    status: PropTypes.string,
+    type: PropTypes.string,
   }).isRequired,
   onChange: PropTypes.func.isRequired,
 };

@@ -40,5 +40,27 @@
     "resources": "Resources",
     "roles": "Roles",
     "helpDocumentation": "Help & Documentation"
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage platform users and group assignments",
+    "addUser": "Add New User",
+    "batchInvite": "Batch Invite",
+    "noResults": "No users match the current filters.",
+    "accessDenied": "Access denied. You need Platform.Admin role to view this page.",
+    "unsupportedProvider": "Users management is only available for Azure-based APIs. This feature is not supported for the selected API.",
+    "missingConfig": "Missing SERVICE_PRINCIPAL_OBJECT_ID in the API configuration. Please update apis.json.",
+    "fetchError": "Failed to fetch users",
+    "columns": {
+      "name": "Name",
+      "platformRoles": "Platform Roles",
+      "type": "Type",
+      "assignedDate": "Assigned Date",
+      "actions": "Actions"
+    },
+    "type": {
+      "user": "User",
+      "group": "Group"
+    }
   }
 }

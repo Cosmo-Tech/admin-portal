@@ -1,10 +1,14 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import PropTypes from 'prop-types';
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Paper,
   Table,
   TableBody,
@@ -17,31 +21,28 @@ import {
 } from '@mui/material';
 import { BulkActionsToolbar } from './BulkActionsToolbar';
 import { UserActions } from './UserActions';
-import { UserStatusChip } from './UserStatusChip';
+import { PrincipalTypeChip } from './UserStatusChip';
 import { UsersTableFilters } from './UsersTableFilters';
 import { UsersTablePagination } from './UsersTablePagination';
-import mockUsers from './mockUsers';
 
 const ROW_HEIGHT = 56;
 
-export const UsersTable = () => {
+export const UsersTable = ({ users = [], isLoading = false, error = null }) => {
   const theme = useTheme();
-  const [filters, setFilters] = useState({ name: '', email: '', role: '', org: '', status: '' });
+  const { t } = useTranslation();
+  const [filters, setFilters] = useState({ name: '', role: '', type: '' });
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
 
   const rows = useMemo(() => {
-    const normalized = mockUsers.filter((u) => {
+    return users.filter((u) => {
       if (filters.name && !u.name.toLowerCase().includes(filters.name.toLowerCase())) return false;
-      if (filters.email && !u.email.toLowerCase().includes(filters.email.toLowerCase())) return false;
       if (filters.role && !u.platformRoles.join(' ').toLowerCase().includes(filters.role.toLowerCase())) return false;
-      if (filters.org && !u.organizations.join(' ').toLowerCase().includes(filters.org.toLowerCase())) return false;
-      if (filters.status && !u.status.toLowerCase().includes(filters.status.toLowerCase())) return false;
+      if (filters.type && !u.principalType.toLowerCase().includes(filters.type.toLowerCase())) return false;
       return true;
     });
-    return normalized;
-  }, [filters]);
+  }, [users, filters]);
 
   const pagedRows = useMemo(() => rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage), [rows, page]);
 
@@ -64,14 +65,31 @@ export const UsersTable = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 8 }}>
+        <CircularProgress />
+        <Typography sx={{ ml: 2 }}>{t('common.loading')}</Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ my: 2 }}>
+        {t('users.fetchError')}: {error.message || JSON.stringify(error)}
+      </Alert>
+    );
+  }
+
   return (
     <Box>
       <Box sx={{ mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 700, color: theme.palette.text.primary }}>
-          Users
+          {t('users.title')}
         </Typography>
         <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-          Manage workspace users and permissions
+          {t('users.subtitle')}
         </Typography>
         <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
           <Button
@@ -83,7 +101,7 @@ export const UsersTable = () => {
               console.warn('Add new user functionality not yet implemented');
             }}
           >
-            Add New User
+            {t('users.addUser')}
           </Button>
           <Button
             variant="outlined"
@@ -93,7 +111,7 @@ export const UsersTable = () => {
               console.warn('Batch invite functionality not yet implemented');
             }}
           >
-            Batch Invite
+            {t('users.batchInvite')}
           </Button>
         </Box>
       </Box>
@@ -101,7 +119,7 @@ export const UsersTable = () => {
       <Paper variant="outlined">
         <BulkActionsToolbar selectedCount={selected.length} />
         <TableContainer>
-          <Table sx={{ minWidth: 900 }} size="medium">
+          <Table sx={{ minWidth: 700 }} size="medium">
             <TableHead>
               <TableRow sx={{ backgroundColor: theme.palette.primary.main }}>
                 <TableCell padding="checkbox">
@@ -112,13 +130,11 @@ export const UsersTable = () => {
                     indeterminate={selected.length > 0 && selected.length < rows.length}
                   />
                 </TableCell>
-                <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Platform Roles</TableCell>
-                <TableCell>Organizations</TableCell>
-                <TableCell>Last Login</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
+                <TableCell sx={{ fontWeight: 700 }}>{t('users.columns.name')}</TableCell>
+                <TableCell>{t('users.columns.platformRoles')}</TableCell>
+                <TableCell>{t('users.columns.type')}</TableCell>
+                <TableCell>{t('users.columns.assignedDate')}</TableCell>
+                <TableCell align="right">{t('users.columns.actions')}</TableCell>
               </TableRow>
 
               <UsersTableFilters filters={filters} onChange={handleFilterChange} />
@@ -139,13 +155,11 @@ export const UsersTable = () => {
                     <Checkbox size="small" checked={isSelected(row.id)} onChange={() => toggleSelect(row.id)} />
                   </TableCell>
                   <TableCell sx={{ color: theme.palette.text.primary, fontWeight: 700 }}>{row.name}</TableCell>
-                  <TableCell sx={{ color: theme.palette.text.secondary }}>{row.email}</TableCell>
                   <TableCell>{row.platformRoles.join(', ')}</TableCell>
-                  <TableCell>{row.organizations.join(', ')}</TableCell>
-                  <TableCell>{new Date(row.lastLogin).toLocaleString()}</TableCell>
                   <TableCell>
-                    <UserStatusChip status={row.status} />
+                    <PrincipalTypeChip type={row.principalType} />
                   </TableCell>
+                  <TableCell>{row.assignedDate ? new Date(row.assignedDate).toLocaleDateString() : '—'}</TableCell>
                   <TableCell align="right">
                     <UserActions
                       onManage={() => {
@@ -163,9 +177,9 @@ export const UsersTable = () => {
 
               {pagedRows.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                     <Typography sx={{ color: theme.palette.text.secondary }}>
-                      No users match the current filters.
+                      {t('users.noResults')}
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -183,4 +197,18 @@ export const UsersTable = () => {
       </Paper>
     </Box>
   );
+};
+
+UsersTable.propTypes = {
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      principalType: PropTypes.string.isRequired,
+      platformRoles: PropTypes.arrayOf(PropTypes.string).isRequired,
+      assignedDate: PropTypes.string,
+    })
+  ),
+  isLoading: PropTypes.bool,
+  error: PropTypes.object,
 };

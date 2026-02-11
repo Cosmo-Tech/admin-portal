@@ -40,5 +40,27 @@
     "resources": "Ressources",
     "roles": "Rôles",
     "helpDocumentation": "Aide et Documentation"
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "subtitle": "Gérer les utilisateurs de la plateforme et les affectations de groupes",
+    "addUser": "Ajouter un utilisateur",
+    "batchInvite": "Invitation groupée",
+    "noResults": "Aucun utilisateur ne correspond aux filtres actuels.",
+    "accessDenied": "Accès refusé. Vous devez avoir le rôle Platform.Admin pour consulter cette page.",
+    "unsupportedProvider": "La gestion des utilisateurs est disponible uniquement pour les API Azure. Cette fonctionnalité n'est pas prise en charge pour l'API sélectionnée.",
+    "missingConfig": "SERVICE_PRINCIPAL_OBJECT_ID manquant dans la configuration API. Veuillez mettre à jour apis.json.",
+    "fetchError": "Échec de la récupération des utilisateurs",
+    "columns": {
+      "name": "Nom",
+      "platformRoles": "Rôles plateforme",
+      "type": "Type",
+      "assignedDate": "Date d'affectation",
+      "actions": "Actions"
+    },
+    "type": {
+      "user": "Utilisateur",
+      "group": "Groupe"
+    }
   }
 }
