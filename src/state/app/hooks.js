@@ -23,8 +23,7 @@ export const useComponentPermissionsMapping = (component) =>
 /**
  * Get the roles for a specific component.
  */
-export const useComponentRoles = (component) =>
-  useSelector((state) => state.app.roles?.[component] ?? []);
+export const useComponentRoles = (component) => useSelector((state) => state.app.roles?.[component] ?? []);
 
 // Action dispatchers
 export const useFetchInitialData = () => {

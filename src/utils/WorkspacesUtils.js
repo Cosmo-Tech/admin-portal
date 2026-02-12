@@ -22,12 +22,15 @@ const patchWorkspaceWithCurrentUserPermissions = (workspace, userEmail, permissi
     ...workspace.security,
     currentUserPermissions: perms,
   };
-  
+
   // Log the patching result
-  const userRole = workspace.security?.accessControlList?.find(
-    acl => acl.id.toLowerCase() === userEmail.toLowerCase()
-  )?.role || workspace.security?.default || 'none';
-  console.log(`[Permissions] Patched ws "${workspace.name || workspace.id}" - role: ${userRole}, permissions: [${perms.join(', ') || 'none'}]`);
+  const userRole =
+    workspace.security?.accessControlList?.find((acl) => acl.id.toLowerCase() === userEmail.toLowerCase())?.role ||
+    workspace.security?.default ||
+    'none';
+  console.log(
+    `[Permissions] Patched ws "${workspace.name || workspace.id}" - role: ${userRole}, permissions: [${perms.join(', ') || 'none'}]`
+  );
 };
 
 export const WorkspacesUtils = {

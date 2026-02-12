@@ -40,5 +40,23 @@
     "resources": "Resources",
     "roles": "Roles",
     "helpDocumentation": "Help & Documentation"
+  },
+  "users": {
+    "loading": "Loading users...",
+    "error": "Failed to load users",
+    "empty": "No users found",
+    "subtitle": "Manage platform users and permissions",
+    "addNewUser": "Add New User",
+    "batchInvite": "Batch Invite",
+    "role": {
+      "admin": "Admin",
+      "user": "User"
+    },
+    "lastLogin": {
+      "unavailable": "N/A"
+    },
+    "permissions": {
+      "title": "Permissions"
+    }
   }
 }

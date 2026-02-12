@@ -40,5 +40,23 @@
     "resources": "Ressources",
     "roles": "Rôles",
     "helpDocumentation": "Aide et Documentation"
+  },
+  "users": {
+    "loading": "Chargement des utilisateurs...",
+    "error": "Échec du chargement des utilisateurs",
+    "empty": "Aucun utilisateur trouvé",
+    "subtitle": "Gérer les utilisateurs et les permissions de la plateforme",
+    "addNewUser": "Ajouter un utilisateur",
+    "batchInvite": "Invitation groupée",
+    "role": {
+      "admin": "Administrateur",
+      "user": "Utilisateur"
+    },
+    "lastLogin": {
+      "unavailable": "N/D"
+    },
+    "permissions": {
+      "title": "Permissions"
+    }
   }
 }

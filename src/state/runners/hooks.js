@@ -15,6 +15,8 @@ export const useRunnersListStatus = () => {
  */
 export const useRunnersForWorkspace = (workspaceId, organizationId) => {
   return useSelector((state) =>
-    state.runners.list.filter((runner) => runner.workspaceId === workspaceId && runner.organizationId === organizationId)
+    state.runners.list.filter(
+      (runner) => runner.workspaceId === workspaceId && runner.organizationId === organizationId
+    )
   );
 };

@@ -22,12 +22,6 @@ const patchRunnerWithCurrentUserPermissions = (runner, userEmail, permissionsMap
     ...runner.security,
     currentUserPermissions: perms,
   };
-  
-  // Log the patching result
-  const userRole = runner.security?.accessControlList?.find(
-    acl => acl.id.toLowerCase() === userEmail.toLowerCase()
-  )?.role || runner.security?.default || 'none';
-  console.log(`[Permissions] Patched runner "${runner.name || runner.id}" - role: ${userRole}, permissions: [${perms.join(', ') || 'none'}]`);
 };
 
 export const RunnersUtils = {

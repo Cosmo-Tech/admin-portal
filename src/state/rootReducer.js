@@ -7,6 +7,7 @@ import authReducer from './auth/reducers.js';
 import organizationsReducer from './organizations/reducers.js';
 import runnersReducer from './runners/reducers.js';
 import themeReducer from './theme/reducers.js';
+import usersReducer from './users/reducers.js';
 import workspacesReducer from './workspaces/reducers.js';
 
 const rootReducer = combineReducers({
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   organizations: organizationsReducer,
   workspaces: workspacesReducer,
   runners: runnersReducer,
+  users: usersReducer,
   [cosmoApi.reducerPath]: cosmoApi.reducer,
 });
 

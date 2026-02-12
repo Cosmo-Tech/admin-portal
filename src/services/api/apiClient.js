@@ -61,6 +61,23 @@ const deriveV5ApiUrl = (apiUrl) => {
   return apiUrl.replace(/\/v\d[^/]*$/, '/v5');
 };
 
+/**
+ * Derive the Keycloak Admin API base URL from a realm URL.
+ * e.g. "https://host/keycloak/realms/brewery" => "https://host/keycloak/admin/realms/brewery"
+ *
+ * The realm URL is stored in apis.json as AUTH_KEYCLOAK_REALM.
+ */
+export const deriveKeycloakAdminUrl = (realmUrl) => {
+  if (!realmUrl) return null;
+  return realmUrl.replace('/realms/', '/admin/realms/');
+};
+
+/**
+ * Expose the authenticated Axios instance so that Keycloak Admin API calls
+ * (made via RTK Query queryFn) can reuse the same token interceptor.
+ */
+export const getAxiosInstance = () => axiosClientApi;
+
 export const getApiClient = (apiUrl) => {
   const v5ApiUrl = deriveV5ApiUrl(apiUrl);
 

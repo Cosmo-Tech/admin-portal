@@ -22,12 +22,15 @@ const patchOrganizationWithCurrentUserPermissions = (organization, userEmail, pe
     ...organization.security,
     currentUserPermissions: perms,
   };
-  
+
   // Log the patching result
-  const userRole = organization.security?.accessControlList?.find(
-    acl => acl.id.toLowerCase() === userEmail.toLowerCase()
-  )?.role || organization.security?.default || 'none';
-  console.log(`[Permissions] Patched org "${organization.name || organization.id}" - role: ${userRole}, permissions: [${perms.join(', ') || 'none'}]`);
+  const userRole =
+    organization.security?.accessControlList?.find((acl) => acl.id.toLowerCase() === userEmail.toLowerCase())?.role ||
+    organization.security?.default ||
+    'none';
+  console.log(
+    `[Permissions] Patched org "${organization.name || organization.id}" - role: ${userRole}, permissions: [${perms.join(', ') || 'none'}]`
+  );
 };
 
 export const OrganizationsUtils = {

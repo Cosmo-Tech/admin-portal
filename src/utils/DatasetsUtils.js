@@ -24,12 +24,15 @@ const patchDatasetWithCurrentUserPermissions = (dataset, userEmail, permissionsM
     ...dataset.security,
     currentUserPermissions: perms,
   };
-  
+
   // Log the patching result
-  const userRole = dataset.security?.accessControlList?.find(
-    acl => acl.id.toLowerCase() === userEmail.toLowerCase()
-  )?.role || dataset.security?.default || 'admin';
-  console.log(`[Permissions] Patched dataset "${dataset.name || dataset.id}" - role: ${userRole}, permissions: [${perms.join(', ')}]`);
+  const userRole =
+    dataset.security?.accessControlList?.find((acl) => acl.id.toLowerCase() === userEmail.toLowerCase())?.role ||
+    dataset.security?.default ||
+    'admin';
+  console.log(
+    `[Permissions] Patched dataset "${dataset.name || dataset.id}" - role: ${userRole}, permissions: [${perms.join(', ')}]`
+  );
 };
 
 export const DatasetsUtils = {

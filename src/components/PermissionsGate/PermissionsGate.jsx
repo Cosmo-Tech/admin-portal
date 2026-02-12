@@ -31,8 +31,7 @@ export const PermissionsGate = ({
   noPermissionProps = {},
 }) => {
   const hasPermission =
-    requiredPermissions.length === 0 ||
-    requiredPermissions.every((permission) => userPermissions.includes(permission));
+    requiredPermissions.length === 0 || requiredPermissions.every((permission) => userPermissions.includes(permission));
 
   if (!hasPermission) {
     console.debug(
@@ -75,8 +74,7 @@ export const PermissionsGateAny = ({
   noPermissionProps = {},
 }) => {
   const hasPermission =
-    requiredPermissions.length === 0 ||
-    requiredPermissions.some((permission) => userPermissions.includes(permission));
+    requiredPermissions.length === 0 || requiredPermissions.some((permission) => userPermissions.includes(permission));
 
   if (!hasPermission) {
     console.debug(

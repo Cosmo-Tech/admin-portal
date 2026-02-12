@@ -1,3 +1,6 @@
+<!-- SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech -->
+<!-- SPDX-License-Identifier: LicenseRef-CosmoTech -->
+
 ## Plan: Permissions and Roles System Implementation
 
 Implement a robust permissions and roles system in the admin portal, inspired by the azure-sample-webapp project. This system will include JWT roles, organization-level mappings, resource-level permissions, and a `PermissionsGate` component. The implementation will integrate the v5 API for permissions while maintaining compatibility with v3.

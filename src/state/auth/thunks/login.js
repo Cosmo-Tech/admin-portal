@@ -16,13 +16,13 @@ export const login = createAsyncThunk('auth/login', async (arg, thunkAPI) => {
       Auth.setProvider(provider);
       await Auth.signIn();
       const isAuthenticated = await Auth.isUserSignedIn();
-      
+
       if (isAuthenticated) {
         const userEmail = Auth.getUserEmail();
         const userId = Auth.getUserId();
         const userName = Auth.getUserName();
         const userRoles = Auth.getUserRoles();
-        
+
         // Log user authentication and roles
         console.log('[Auth] ========== USER LOGIN ==========');
         console.log('[Auth] User:', userName, `(${userEmail})`);
@@ -30,7 +30,12 @@ export const login = createAsyncThunk('auth/login', async (arg, thunkAPI) => {
         console.log('[Auth] JWT Roles:', userRoles);
         console.log('[Auth] ===============================');
       }
-      
+
+      // Resolve app-level permissions from JWT roles.
+      // Platform.Admin grants all permissions; otherwise derive from role names.
+      const userRoles = isAuthenticated ? Auth.getUserRoles() : [];
+      const resolvedPermissions = userRoles.includes('Platform.Admin') ? ['Platform.Admin'] : [...userRoles];
+
       dispatch(
         setAuthData({
           error: '',
@@ -38,8 +43,8 @@ export const login = createAsyncThunk('auth/login', async (arg, thunkAPI) => {
           userId: isAuthenticated ? Auth.getUserId() : '',
           userName: isAuthenticated ? Auth.getUserName() : '',
           profilePic: isAuthenticated ? Auth.getUserPicUrl() : '',
-          roles: isAuthenticated ? Auth.getUserRoles() : [],
-          permissions: [],
+          roles: userRoles,
+          permissions: resolvedPermissions,
           status: isAuthenticated ? AUTH_STATUS.AUTHENTICATED : AUTH_STATUS.ANONYMOUS,
         })
       );
