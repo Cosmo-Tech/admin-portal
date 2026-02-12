@@ -1,12 +1,17 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { createSlice } from '@reduxjs/toolkit';
+import { SecurityUtils } from 'src/utils/SecurityUtils.js';
 import { APP_STATUS } from './constants.js';
 
 const initialState = {
   status: APP_STATUS.IDLE,
   error: null,
   apiVersion: null,
+  // Permissions mapping: { organization: { viewer: ['read'], ... }, workspace: { ... }, ... }
+  roles: {},
+  permissions: {},
+  permissionsMapping: {},
 };
 
 const appSlice = createSlice({
@@ -22,9 +27,21 @@ const appSlice = createSlice({
     setApiVersion: (state, action) => {
       state.apiVersion = action.payload.apiVersion;
     },
+    setPermissionsMapping: (state, action) => {
+      const { organizationPermissions } = action.payload;
+      const parsed = SecurityUtils.parseOrganizationPermissions(
+        organizationPermissions,
+        true // Add the role "none" that is not specified in roles sent by the back-end
+      );
+      if (parsed) {
+        state.roles = parsed.roles;
+        state.permissions = parsed.permissions;
+        state.permissionsMapping = parsed.permissionsMapping;
+      }
+    },
     resetAppState: () => initialState,
   },
 });
 
-export const { setAppStatus, setApiVersion, resetAppState } = appSlice.actions;
+export const { setAppStatus, setApiVersion, setPermissionsMapping, resetAppState } = appSlice.actions;
 export default appSlice.reducer;

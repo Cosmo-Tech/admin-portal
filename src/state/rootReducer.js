@@ -5,6 +5,7 @@ import { cosmoApi } from './api/apiSlice.js';
 import appReducer from './app/reducers.js';
 import authReducer from './auth/reducers.js';
 import organizationsReducer from './organizations/reducers.js';
+import runnersReducer from './runners/reducers.js';
 import themeReducer from './theme/reducers.js';
 import workspacesReducer from './workspaces/reducers.js';
 
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   organizations: organizationsReducer,
   workspaces: workspacesReducer,
+  runners: runnersReducer,
   [cosmoApi.reducerPath]: cosmoApi.reducer,
 });
 

@@ -11,7 +11,13 @@ const initialWorkspacesState = {
 const workspacesSlice = createSlice({
   name: 'workspaces',
   initialState: initialWorkspacesState,
-  reducers: {},
+  reducers: {
+    setWorkspaces: (state, action) => {
+      const { workspaces } = action.payload;
+      state.list = workspaces;
+      state.status = 'IDLE';
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllWorkspaces.pending, (state, action) => {
@@ -27,4 +33,5 @@ const workspacesSlice = createSlice({
   },
 });
 
+export const { setWorkspaces } = workspacesSlice.actions;
 export default workspacesSlice.reducer;

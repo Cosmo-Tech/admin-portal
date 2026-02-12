@@ -10,6 +10,10 @@ import {
   WorkspaceApiFactory,
   OrganizationApiFactory,
 } from '@cosmotech/api-ts-v3';
+import {
+  OrganizationApiFactory as OrganizationApiFactoryV5,
+  MetaApiFactory as MetaApiFactoryV5,
+} from '@cosmotech/api-ts-v5';
 import { Auth } from '@cosmotech/core';
 
 export const getAuthenticationHeaders = async (allowApiKey = false) => {
@@ -48,12 +52,29 @@ const addInterceptors = (axiosInstance) => {
 
 const axiosClientApi = addInterceptors(axios.create());
 
-export const getApiClient = (apiUrl) => ({
-  apiUrl,
-  Solutions: SolutionApiFactory(null, apiUrl, axiosClientApi),
-  Datasets: DatasetApiFactory(null, apiUrl, axiosClientApi),
-  Runners: RunnerApiFactory(null, apiUrl, axiosClientApi),
-  RunnerRuns: RunApiFactory(null, apiUrl, axiosClientApi),
-  Workspaces: WorkspaceApiFactory(null, apiUrl, axiosClientApi),
-  Organizations: OrganizationApiFactory(null, apiUrl, axiosClientApi),
-});
+/**
+ * Derive the v5-compatible base URL from a potentially versioned API URL.
+ * e.g. "https://api.example.com/platform/v3" => "https://api.example.com/platform/v5"
+ * If the URL already contains /v5, it is used as-is.
+ */
+const deriveV5ApiUrl = (apiUrl) => {
+  return apiUrl.replace(/\/v\d[^/]*$/, '/v5');
+};
+
+export const getApiClient = (apiUrl) => {
+  const v5ApiUrl = deriveV5ApiUrl(apiUrl);
+
+  return {
+    apiUrl,
+    // v3 API factories
+    Solutions: SolutionApiFactory(null, apiUrl, axiosClientApi),
+    Datasets: DatasetApiFactory(null, apiUrl, axiosClientApi),
+    Runners: RunnerApiFactory(null, apiUrl, axiosClientApi),
+    RunnerRuns: RunApiFactory(null, apiUrl, axiosClientApi),
+    Workspaces: WorkspaceApiFactory(null, apiUrl, axiosClientApi),
+    Organizations: OrganizationApiFactory(null, apiUrl, axiosClientApi),
+    // v5 API factories (for permissions and meta endpoints)
+    OrganizationsV5: OrganizationApiFactoryV5(null, v5ApiUrl, axiosClientApi),
+    MetaV5: MetaApiFactoryV5(null, v5ApiUrl, axiosClientApi),
+  };
+};

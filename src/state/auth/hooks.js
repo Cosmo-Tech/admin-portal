@@ -30,3 +30,26 @@ export const useIsAuthenticated = () => {
     return authStatus === AUTH_STATUS.AUTHENTICATED || authStatus === AUTH_STATUS.DISCONNECTING;
   }, [authStatus]);
 };
+
+/** Get the current user's JWT/app roles (e.g. ['Platform.Admin', 'Organization.User']) */
+export const useUserRoles = () => {
+  return useSelector((state) => state.auth.roles);
+};
+
+/** Get the current user's email */
+export const useUserEmail = () => {
+  return useSelector((state) => state.auth.userEmail);
+};
+
+/** Get the current user's ID */
+export const useUserId = () => {
+  return useSelector((state) => state.auth.userId);
+};
+
+/**
+ * Get the current user's app-level permissions.
+ * These are resolved from JWT roles and stored during login.
+ */
+export const useUserAppPermissions = () => {
+  return useSelector((state) => state.auth.permissions);
+};

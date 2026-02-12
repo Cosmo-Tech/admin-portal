@@ -16,6 +16,21 @@ export const login = createAsyncThunk('auth/login', async (arg, thunkAPI) => {
       Auth.setProvider(provider);
       await Auth.signIn();
       const isAuthenticated = await Auth.isUserSignedIn();
+      
+      if (isAuthenticated) {
+        const userEmail = Auth.getUserEmail();
+        const userId = Auth.getUserId();
+        const userName = Auth.getUserName();
+        const userRoles = Auth.getUserRoles();
+        
+        // Log user authentication and roles
+        console.log('[Auth] ========== USER LOGIN ==========');
+        console.log('[Auth] User:', userName, `(${userEmail})`);
+        console.log('[Auth] User ID:', userId);
+        console.log('[Auth] JWT Roles:', userRoles);
+        console.log('[Auth] ===============================');
+      }
+      
       dispatch(
         setAuthData({
           error: '',
@@ -30,7 +45,7 @@ export const login = createAsyncThunk('auth/login', async (arg, thunkAPI) => {
       );
     }
   } catch (error) {
-    console.error(error);
+    console.error('[Auth] Login error:', error);
     dispatch(
       setAuthData({
         error: error?.errorMessage ?? UNKNOWN_ERROR_MESSAGE,
