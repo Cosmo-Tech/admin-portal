@@ -31,6 +31,7 @@
     "placeholder": "Filtrer..."
   },
   "navigation": {
+    "dashboard": "Tableau de bord",
     "solutions": "Solutions",
     "workspaces": "Workspaces",
     "organizations": "Organisations",
@@ -39,7 +40,25 @@
     "users": "Utilisateurs",
     "resources": "Ressources",
     "roles": "Rôles",
+    "accessManagement": "Gestion des accès",
+    "settings": "Paramètres",
     "helpDocumentation": "Aide et Documentation"
+  },
+  "accessManagement": {
+    "title": "Gestion des accès",
+    "subtitle": "Gérez les permissions sur toute la hiérarchie des ressources depuis une seule vue.",
+    "searchUserPlaceholder": "Rechercher un utilisateur par nom, e-mail ou ID...",
+    "searchResourcePlaceholder": "Rechercher une ressource par nom ou ID...",
+    "resourceScope": {
+      "organizations": "Organisations",
+      "runners": "Runners",
+      "workspaces": "Workspaces"
+    },
+    "usersLabel": "UTILISATEURS",
+    "assignedRoles": "rôles assignés",
+    "selectUser": "Sélectionnez un utilisateur pour voir ses affectations de ressources.",
+    "noResourcesMatch": "Aucune ressource ne correspond à votre recherche.",
+    "assign": "Assigner"
   },
   "users": {
     "loading": "Chargement des utilisateurs...",

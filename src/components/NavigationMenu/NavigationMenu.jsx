@@ -50,6 +50,11 @@ export const NavigationMenu = () => {
       to: '/organization',
     },
     {
+      text: t('navigation.accessManagement'),
+      icon: <ManageAccountsOutlinedIcon />,
+      to: '/access-management',
+    },
+    {
       text: t('navigation.flowchart'),
       icon: <FlowchartIcon />,
       to: '/flowchart',

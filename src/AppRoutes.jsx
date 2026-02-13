@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
-import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { UserStatusGate } from './components';
@@ -15,6 +14,7 @@ import {
   Flowchart,
   Resources,
   Roles,
+  AccessManagement,
 } from './views';
 
 const AppRoutes = () => {
@@ -29,6 +29,7 @@ const AppRoutes = () => {
             <Route path="workspace" element={<Workspaces />} />
             <Route path="organization" element={<Organizations />} />
             <Route path="scenario" element={<Scenarios />} />
+            <Route path="access-management" element={<AccessManagement />} />
             <Route path="flowchart" element={<Flowchart />} />
             <Route path="resources" element={<Resources />} />
             <Route path="roles" element={<Roles />} />

@@ -31,6 +31,7 @@
     "placeholder": "Filter..."
   },
   "navigation": {
+    "dashboard": "Dashboard",
     "solutions": "Solutions",
     "workspaces": "Workspaces",
     "organizations": "Organizations",
@@ -39,7 +40,25 @@
     "users": "Users",
     "resources": "Resources",
     "roles": "Roles",
+    "accessManagement": "Access Management",
+    "settings": "Settings",
     "helpDocumentation": "Help & Documentation"
+  },
+  "accessManagement": {
+    "title": "Access Management",
+    "subtitle": "Manage permissions across the entire resource hierarchy from a single view.",
+    "searchUserPlaceholder": "Search user by name, email, or ID...",
+    "searchResourcePlaceholder": "Search resource by name or ID...",
+    "resourceScope": {
+      "organizations": "Organizations",
+      "runners": "Runners",
+      "workspaces": "Workspaces"
+    },
+    "usersLabel": "USERS",
+    "assignedRoles": "assigned roles",
+    "selectUser": "Select a user to view their resource assignments.",
+    "noResourcesMatch": "No resources match your search.",
+    "assign": "Assign"
   },
   "users": {
     "loading": "Loading users...",

@@ -10,3 +10,4 @@ export { Workspaces } from './Workspaces';
 export { Flowchart } from './Flowchart';
 export { Resources } from './Resources';
 export { Roles } from './Roles';
+export { AccessManagement } from './AccessManagement';
