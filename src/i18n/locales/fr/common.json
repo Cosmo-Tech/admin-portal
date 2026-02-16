@@ -51,6 +51,7 @@
     "searchResourcePlaceholder": "Rechercher une ressource par nom ou ID...",
     "resourceScope": {
       "organizations": "Organisations",
+      "solutions": "Solutions",
       "runners": "Runners",
       "workspaces": "Workspaces"
     },

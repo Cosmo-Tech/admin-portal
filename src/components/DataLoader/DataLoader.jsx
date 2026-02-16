@@ -30,7 +30,7 @@ export default function DataLoader() {
     }
   }, [status, fetchInitialData]);
 
-  // After initial data (orgs/workspaces/runners/permissions) is loaded,
+  // After initial data (orgs/solutions/workspaces/runners/permissions) is loaded,
   // fetch Keycloak realm users if the current user is a Platform.Admin.
   useEffect(() => {
     if (appStatus === APP_STATUS.SUCCESS && usersStatus === USERS_STATUS.IDLE) {

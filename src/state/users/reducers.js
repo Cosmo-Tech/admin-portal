@@ -32,7 +32,7 @@ const usersSlice = createSlice({
     },
     /**
      * Enrich each user in the list with their computed resource permissions.
-     * Payload: { permissionsByUserId: { [userId]: { organizations: {...}, workspaces: {...}, runners: {...} } } }
+     * Payload: { permissionsByUserId: { [userId]: { organizations: {...}, solutions: {...}, workspaces: {...}, runners: {...} } } }
      */
     setUserPermissions: (state, action) => {
       const { permissionsByUserId } = action.payload;

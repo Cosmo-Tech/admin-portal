@@ -16,7 +16,3 @@ export const useOrganizationsList = () => {
 export const useOrganizationsListStatus = () => {
   return useSelector((state) => state.organizations.status);
 };
-
-export const useSolutions = () => {
-  return useSelector((state) => state.solutions);
-};

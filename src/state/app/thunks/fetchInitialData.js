@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { OrganizationsUtils } from 'src/utils/OrganizationsUtils.js';
 import { RunnersUtils } from 'src/utils/RunnersUtils.js';
+import { SolutionsUtils } from 'src/utils/SolutionsUtils.js';
 import { WorkspacesUtils } from 'src/utils/WorkspacesUtils.js';
 import { setOrganizations } from '../../organizations/reducers.js';
 import { setRunners } from '../../runners/reducers.js';
+import { setSolutions } from '../../solutions/reducers.js';
 import { setWorkspaces } from '../../workspaces/reducers.js';
 import { APP_STATUS } from '../constants.js';
 import { setAppStatus, setPermissionsMapping } from '../reducers.js';
@@ -12,7 +14,7 @@ import { setAppStatus, setPermissionsMapping } from '../reducers.js';
 /**
  * Thunk to fetch all initial data after authentication.
  * 1. Fetches the organization permissions mapping (roles → permissions per component).
- * 2. Fetches organizations, workspaces, and runners.
+ * 2. Fetches organizations, solutions, workspaces, and runners.
  * 3. Patches each resource with `currentUserPermissions` for the logged-in user.
  */
 function fetchInitialData() {
@@ -52,7 +54,30 @@ function fetchInitialData() {
       dispatch(setOrganizations({ organizations }));
       console.log('[Permissions] ✓ Loaded', organizations.length, 'organization(s)');
 
-      // Step 3: Fetch workspaces for each organization and patch with currentUserPermissions
+      // Step 3: Fetch solutions for each organization and patch with currentUserPermissions
+      const allSolutions = [];
+      const solutionPermissionsMapping = permissionsMapping.solution ?? permissionsMapping.organization ?? {};
+
+      for (const org of organizations) {
+        try {
+          const { data: solutions } = await api.SolutionsV5.listSolutions(org.id);
+          for (const solution of solutions) {
+            SolutionsUtils.patchSolutionWithCurrentUserPermissions(solution, userEmail, solutionPermissionsMapping);
+          }
+          allSolutions.push(
+            ...solutions.map((solution) => ({
+              ...solution,
+              organizationId: solution.organizationId ?? org.id,
+            }))
+          );
+        } catch (error) {
+          console.warn(`[Permissions] Could not fetch solutions for org "${org.name}":`, error.message);
+        }
+      }
+      dispatch(setSolutions({ solutions: allSolutions }));
+      console.log('[Permissions] ✓ Loaded', allSolutions.length, 'solution(s)');
+
+      // Step 4: Fetch workspaces for each organization and patch with currentUserPermissions
       const allWorkspaces = [];
       const wsPermissionsMapping = permissionsMapping.workspace ?? {};
 
@@ -70,7 +95,7 @@ function fetchInitialData() {
       dispatch(setWorkspaces({ workspaces: allWorkspaces }));
       console.log('[Permissions] ✓ Loaded', allWorkspaces.length, 'workspace(s)');
 
-      // Step 4: Fetch runners for each workspace and patch with currentUserPermissions
+      // Step 5: Fetch runners for each workspace and patch with currentUserPermissions
       const allRunners = [];
       const runnerPermissionsMapping = permissionsMapping.runner ?? {};
 

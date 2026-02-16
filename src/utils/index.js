@@ -5,3 +5,4 @@ export { OrganizationsUtils } from './OrganizationsUtils';
 export { WorkspacesUtils } from './WorkspacesUtils';
 export { DatasetsUtils } from './DatasetsUtils';
 export { RunnersUtils } from './RunnersUtils';
+export { SolutionsUtils } from './SolutionsUtils';

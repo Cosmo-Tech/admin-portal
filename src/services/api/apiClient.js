@@ -13,6 +13,7 @@ import {
 import {
   OrganizationApiFactory as OrganizationApiFactoryV5,
   MetaApiFactory as MetaApiFactoryV5,
+  SolutionApiFactory as SolutionApiFactoryV5,
 } from '@cosmotech/api-ts-v5';
 import { Auth } from '@cosmotech/core';
 
@@ -93,5 +94,6 @@ export const getApiClient = (apiUrl) => {
     // v5 API factories (for permissions and meta endpoints)
     OrganizationsV5: OrganizationApiFactoryV5(null, v5ApiUrl, axiosClientApi),
     MetaV5: MetaApiFactoryV5(null, v5ApiUrl, axiosClientApi),
+    SolutionsV5: SolutionApiFactoryV5(null, v5ApiUrl, axiosClientApi),
   };
 };
