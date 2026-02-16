@@ -59,7 +59,21 @@
     "assignedRoles": "rôles assignés",
     "selectUser": "Sélectionnez un utilisateur pour voir ses affectations de ressources.",
     "noResourcesMatch": "Aucune ressource ne correspond à votre recherche.",
-    "assign": "Assigner"
+    "assign": "Assigner",
+    "draft": "Brouillon",
+    "validateAll": "Valider tout",
+    "discard": "Ignorer",
+    "autoAssignedRolesSummary": "{{count}} rôles auto-assignés aux ressources parentes",
+    "assignSaveError": "Impossible d'enregistrer les affectations de rôles. Veuillez réessayer.",
+    "assignSaveSuccess": "Affectations de rôles enregistrées avec succès.",
+    "noPermissionAssign": "Vous n'avez pas la permission de gérer l'accès à cette ressource.",
+    "roles": {
+      "admin": "Administrateur",
+      "editor": "Éditeur",
+      "viewer": "Lecteur",
+      "user": "Utilisateur",
+      "none": "Aucun"
+    }
   },
   "users": {
     "loading": "Chargement des utilisateurs...",

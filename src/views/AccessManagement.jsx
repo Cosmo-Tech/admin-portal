@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
-import { Children, useState, useMemo } from 'react';
+import { Children, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import {
@@ -13,33 +13,49 @@ import {
   ExpandMoreRounded as ExpandMoreIcon,
   ChevronRightRounded as ChevronRightIcon,
   Lock as LockIcon,
+  CheckRounded as CheckIcon,
+  KeyboardArrowDownRounded as ArrowDownIcon,
 } from '@mui/icons-material';
 import {
+  Alert,
+  Avatar,
   Box,
-  Typography,
-  ToggleButton,
-  ToggleButtonGroup,
-  TextField,
+  Button,
+  CircularProgress,
+  Collapse,
+  IconButton,
   InputAdornment,
   List,
   ListItem,
-  ListItemButton,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
-  Avatar,
-  Button,
-  Chip,
-  IconButton,
-  Collapse,
-  CircularProgress,
+  Menu,
+  MenuItem,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
+import { apiManager } from 'src/services/api/apiManager.js';
+import { APP_ROLES } from 'src/services/config/accessControl/Roles.js';
+import { useFetchInitialData } from 'src/state/app/hooks.js';
+import { useUserRoles } from 'src/state/auth/hooks.js';
 import { useOrganizationsList } from 'src/state/organizations/hooks.js';
 import { useRunnersList } from 'src/state/runners/hooks.js';
 import { useSolutionsList } from 'src/state/solutions/hooks.js';
 import { USERS_STATUS } from 'src/state/users/constants.js';
-import { useUsersList, useUsersListStatus } from 'src/state/users/hooks.js';
+import { useFetchRealmUsers, useUsersList, useUsersListStatus } from 'src/state/users/hooks.js';
 import { useWorkspacesList } from 'src/state/workspaces/hooks.js';
+import { SecurityUtils } from 'src/utils/SecurityUtils.js';
+import {
+  ROLE_OPTIONS,
+  buildAclOperation,
+  buildResourceKey,
+  computeEffectiveAssignments,
+  normalizeRole,
+} from './accessManagement/assignmentUtils.js';
 
 const DEFAULT_AVATAR_COLORS = ['#6B4A1E', '#725024', '#7A5828', '#81602D', '#896833', '#917238'];
 const DEFAULT_TREE_ICON_COLORS = {
@@ -49,6 +65,76 @@ const DEFAULT_TREE_ICON_COLORS = {
   RUNNER: '#A6ACB5',
   RUN: '#9098A3',
 };
+const RESOURCE_ROW_DENSITY = {
+  ORGANIZATION: {
+    minHeight: 58,
+    verticalPadding: 1.1,
+    nameFontSize: '1rem',
+    metaFontSize: '0.68rem',
+    metaLetterSpacing: 0.8,
+    iconSize: '1.1rem',
+    buttonMinWidth: 78,
+    buttonHeight: 30,
+    buttonFontSize: '0.8rem',
+    buttonHorizontalPadding: 1.25,
+    marginBottom: 0.82,
+  },
+  SOLUTION: {
+    minHeight: 48,
+    verticalPadding: 0.75,
+    nameFontSize: '0.93rem',
+    metaFontSize: '0.63rem',
+    metaLetterSpacing: 0.7,
+    iconSize: '0.98rem',
+    buttonMinWidth: 70,
+    buttonHeight: 27,
+    buttonFontSize: '0.75rem',
+    buttonHorizontalPadding: 1.05,
+    marginBottom: 0.5,
+  },
+  WORKSPACE: {
+    minHeight: 48,
+    verticalPadding: 0.75,
+    nameFontSize: '0.93rem',
+    metaFontSize: '0.63rem',
+    metaLetterSpacing: 0.7,
+    iconSize: '0.98rem',
+    buttonMinWidth: 70,
+    buttonHeight: 27,
+    buttonFontSize: '0.75rem',
+    buttonHorizontalPadding: 1.05,
+    marginBottom: 0.45,
+  },
+  RUNNER: {
+    minHeight: 44,
+    verticalPadding: 0.55,
+    nameFontSize: '0.93rem',
+    metaFontSize: '0.63rem',
+    metaLetterSpacing: 0.64,
+    iconSize: '0.9rem',
+    buttonMinWidth: 62,
+    buttonHeight: 24,
+    buttonFontSize: '0.71rem',
+    buttonHorizontalPadding: 0.9,
+    marginBottom: 0.35,
+  },
+  RUN: {
+    minHeight: 44,
+    verticalPadding: 0.55,
+    nameFontSize: '0.93rem',
+    metaFontSize: '0.63rem',
+    metaLetterSpacing: 0.64,
+    iconSize: '0.9rem',
+    buttonMinWidth: 62,
+    buttonHeight: 24,
+    buttonFontSize: '0.71rem',
+    buttonHorizontalPadding: 0.9,
+    marginBottom: 0.35,
+  },
+};
+
+const ASSIGNABLE_RESOURCE_TYPES = new Set(['organizations', 'solutions', 'workspaces', 'runners']);
+const WRITE_SECURITY_PERMISSION = 'write_security';
 
 const normalizeSearchValue = (value) => (value == null ? '' : String(value)).toLowerCase();
 
@@ -83,79 +169,143 @@ const matchesSearchQuery = (query, ...values) => {
   return values.some((value) => normalizeSearchValue(value).includes(normalizedQuery));
 };
 
-const getAssignedRolesCountForUser = (user) => {
-  const resourcePermissions = user?.resourcePermissions;
-  if (!resourcePermissions) return 0;
-
-  const permissionScopes = ['organizations', 'solutions', 'workspaces', 'runners'];
-  return permissionScopes.reduce((total, scope) => {
-    const scopedPermissions = Object.values(resourcePermissions[scope] ?? {});
-    const assignedInScope = scopedPermissions.filter((permission) => {
-      const role = permission?.role;
-      return typeof role === 'string' && role.toLowerCase() !== 'none';
-    }).length;
-    return total + assignedInScope;
-  }, 0);
-};
-
-const formatRoleLabel = (role) => {
-  if (!role || typeof role !== 'string') return '';
-  return role
-    .toLowerCase()
-    .split(/[\s_.-]+/)
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
-const getRoleChipStyle = (role, theme) => {
-  const normalizedRole = String(role || '')
+const toLowerCaseOrEmpty = (value) =>
+  String(value ?? '')
     .toLowerCase()
     .trim();
 
-  if (normalizedRole === 'admin') {
-    return {
-      bgcolor: alpha('#FF9F1C', 0.18),
-      color: theme.palette.mode === 'dark' ? '#FFD08A' : '#B45309',
-      border: `1px solid ${alpha('#FF9F1C', 0.45)}`,
-    };
-  }
-  if (normalizedRole === 'editor' || normalizedRole === 'validator') {
-    return {
-      bgcolor: alpha('#3B82F6', 0.18),
-      color: theme.palette.mode === 'dark' ? '#BFDBFE' : '#1D4ED8',
-      border: `1px solid ${alpha('#3B82F6', 0.45)}`,
-    };
-  }
-  if (normalizedRole === 'viewer') {
-    return {
-      bgcolor: alpha('#7A869A', 0.18),
-      color: theme.palette.mode === 'dark' ? '#D5DCE7' : '#4B5563',
-      border: `1px solid ${alpha('#7A869A', 0.45)}`,
-    };
-  }
-  return {
-    bgcolor: alpha('#7A869A', 0.18),
-    color: theme.palette.mode === 'dark' ? '#D5DCE7' : '#4B5563',
-    border: `1px solid ${alpha('#7A869A', 0.45)}`,
-  };
+const getUserIdentifiers = (user) => {
+  const values = [user?.email, user?.username, user?.id];
+  const seen = new Set();
+  return values.map(toLowerCaseOrEmpty).filter((value) => {
+    if (!value || seen.has(value)) return false;
+    seen.add(value);
+    return true;
+  });
 };
 
-const ResourceTreeItem = ({ icon, name, type, itemCount, depth = 0, children, theme, assignLabel, role }) => {
+const getRoleLabelText = (t, role) => t(`accessManagement.roles.${normalizeRole(role)}`);
+
+const getLinkedSolutionId = (workspace) => {
+  return workspace?.solution?.solutionId ?? workspace?.solution?.id ?? workspace?.solutionId ?? null;
+};
+
+const findExplicitAclEntry = (security, userIdentifiers) => {
+  const aclList = Array.isArray(security?.accessControlList) ? security.accessControlList : [];
+  return aclList.find((entry) => userIdentifiers.includes(toLowerCaseOrEmpty(entry?.id))) ?? null;
+};
+
+const getRoleFromUserPermissions = (user, resourceType, resourceId) => {
+  const role = user?.resourcePermissions?.[resourceType]?.[resourceId]?.role;
+  return role != null ? role : null;
+};
+
+const getFallbackRoleFromSecurity = (security, user) => {
+  const identity = user?.email ?? user?.username ?? user?.id;
+  if (!security || !identity) return security?.default ?? 'none';
+  return SecurityUtils.getUserRoleForResource(security, identity) ?? security?.default ?? 'none';
+};
+
+const hasWriteSecurityPermission = (resource) => {
+  const currentPermissions = Array.isArray(resource?.security?.currentUserPermissions)
+    ? resource.security.currentUserPermissions
+    : [];
+  return currentPermissions.some((permission) => toLowerCaseOrEmpty(permission) === WRITE_SECURITY_PERMISSION);
+};
+
+const getAssignedRolesCountFromPermissions = (user) => {
+  if (!user?.resourcePermissions) return 0;
+  const resourceGroups = ['organizations', 'solutions', 'workspaces', 'runners'];
+  let assignedCount = 0;
+
+  for (const resourceGroup of resourceGroups) {
+    const entries = Object.values(user.resourcePermissions?.[resourceGroup] ?? {});
+    for (const entry of entries) {
+      if (normalizeRole(entry?.role) !== 'none') assignedCount += 1;
+    }
+  }
+
+  return assignedCount;
+};
+
+const buildSaveErrorMessage = (baseMessage, error) => {
+  const statusCode = error?.response?.status;
+  const apiMessage =
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    error?.toString?.() ||
+    'Unknown error';
+
+  if (statusCode) return `${baseMessage} (${statusCode}: ${apiMessage})`;
+  return `${baseMessage} (${apiMessage})`;
+};
+
+const ScopeToggleLabel = ({ icon, label }) => (
+  <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.6 }}>
+    {icon}
+    <Typography component="span" variant="body2" sx={{ fontSize: 'inherit', fontWeight: 'inherit', lineHeight: 1 }}>
+      {label}
+    </Typography>
+  </Box>
+);
+
+ScopeToggleLabel.propTypes = {
+  icon: PropTypes.node.isRequired,
+  label: PropTypes.string.isRequired,
+};
+
+const ResourceTreeItem = ({
+  icon,
+  name,
+  type,
+  itemCount,
+  depth = 0,
+  children,
+  theme,
+  assignLabel,
+  roleLabel,
+  isDraft,
+  isAutoDraft,
+  isDirectDraft,
+  canAssign,
+  isSaving,
+  onAssignClick,
+  resourceKey,
+}) => {
   const [expanded, setExpanded] = useState(type === 'ORGANIZATION' || type === 'WORKSPACE');
   const amColors = theme.palette.accessManagement || {};
   const treeIconColors = amColors.treeIconColors || DEFAULT_TREE_ICON_COLORS;
 
   const hasChildren = Children.count(children) > 0;
-  const hasRole = typeof role === 'string' && role.toLowerCase() !== 'none';
-  const roleLabel = hasRole ? formatRoleLabel(role) : null;
-  const roleChipStyle = hasRole ? getRoleChipStyle(role, theme) : null;
   const connectorLeft = 24 + (depth - 1) * 36;
   const itemType = type || 'RUNNER';
+  const rowDensity = RESOURCE_ROW_DENSITY[itemType] || RESOURCE_ROW_DENSITY.RUNNER;
   const iconColor = treeIconColors[itemType] || amColors.resourceItemSubtext || theme.palette.text.secondary;
 
+  const isRoleAssigned = Boolean(roleLabel);
+  const buttonDisabled = !canAssign || isSaving || !resourceKey;
+
+  const rowBorderColor = isAutoDraft
+    ? amColors.draftAutoBorder || theme.palette.secondary.main
+    : isDirectDraft
+      ? amColors.draftDirectBorder || theme.palette.success.main
+      : amColors.resourceItemBorder || theme.palette.divider;
+
+  const rowBackgroundColor = isAutoDraft
+    ? amColors.draftAutoBg || alpha(theme.palette.secondary.main, 0.08)
+    : isDirectDraft
+      ? amColors.draftDirectBg || alpha(theme.palette.success.main, 0.1)
+      : amColors.resourceItemBg || theme.palette.background.surface;
+
+  const onAssignButtonClick = (event) => {
+    event.stopPropagation();
+    if (buttonDisabled) return;
+    onAssignClick(event, resourceKey);
+  };
+
   return (
-    <Box sx={{ position: 'relative', mb: 0.85 }}>
+    <Box sx={{ position: 'relative', mb: rowDensity.marginBottom }}>
       {depth > 0 && (
         <>
           <Box
@@ -180,24 +330,26 @@ const ResourceTreeItem = ({ icon, name, type, itemCount, depth = 0, children, th
           />
         </>
       )}
+
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
-          py: 1.05,
+          minHeight: rowDensity.minHeight,
+          py: rowDensity.verticalPadding,
           px: 1.5,
           pl: 1.5 + depth * 4.5,
-          borderRadius: 1.35,
-          border: `1px solid ${amColors.resourceItemBorder || '#CFD4DB'}`,
-          bgcolor: amColors.resourceItemBg || theme.palette.background.paper,
+          borderRadius: 1.5,
+          border: `1px ${isAutoDraft ? 'dashed' : 'solid'} ${rowBorderColor}`,
+          bgcolor: rowBackgroundColor,
           transition: 'border-color 0.2s ease, background-color 0.2s ease',
           cursor: hasChildren ? 'pointer' : 'default',
           '&:hover': {
-            bgcolor: amColors.resourceItemHoverBg || theme.palette.action.hover,
-            borderColor: amColors.resourceItemHoverBorder || '#BEC6CF',
+            bgcolor: isDraft ? rowBackgroundColor : amColors.resourceItemHoverBg || theme.palette.action.hover,
+            borderColor: isDraft ? rowBorderColor : alpha(theme.palette.secondary.main, 0.6),
           },
         }}
-        onClick={() => hasChildren && setExpanded(!expanded)}
+        onClick={() => hasChildren && setExpanded((value) => !value)}
       >
         {hasChildren && (
           <IconButton
@@ -207,17 +359,19 @@ const ResourceTreeItem = ({ icon, name, type, itemCount, depth = 0, children, th
             {expanded ? <ExpandMoreIcon fontSize="small" /> : <ChevronRightIcon fontSize="small" />}
           </IconButton>
         )}
+
         <Box
           sx={{
             color: iconColor,
             mr: 1.25,
             display: 'flex',
             alignItems: 'center',
-            '& svg': { fontSize: '1.05rem' },
+            '& svg': { fontSize: rowDensity.iconSize },
           }}
         >
           {icon}
         </Box>
+
         <Box sx={{ flex: 1, minWidth: 0, pr: 1 }}>
           <Typography
             variant="body2"
@@ -225,7 +379,7 @@ const ResourceTreeItem = ({ icon, name, type, itemCount, depth = 0, children, th
               fontWeight: 500,
               color: amColors.resourceItemText || theme.palette.text.primary,
               lineHeight: 1.25,
-              fontSize: '0.97rem',
+              fontSize: rowDensity.nameFontSize,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -237,8 +391,8 @@ const ResourceTreeItem = ({ icon, name, type, itemCount, depth = 0, children, th
             variant="caption"
             sx={{
               color: amColors.resourceItemSubtext || theme.palette.text.secondary,
-              fontSize: '0.66rem',
-              letterSpacing: 0.75,
+              fontSize: rowDensity.metaFontSize,
+              letterSpacing: rowDensity.metaLetterSpacing,
               textTransform: 'uppercase',
             }}
           >
@@ -246,42 +400,59 @@ const ResourceTreeItem = ({ icon, name, type, itemCount, depth = 0, children, th
             {itemCount != null && ` · ${itemCount} items`}
           </Typography>
         </Box>
-        {roleLabel && (
-          <Chip
-            label={roleLabel}
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.65, pl: 0.4 }}>
+          <Button
+            variant={isRoleAssigned ? 'contained' : 'outlined'}
             size="small"
+            disableElevation
+            onClick={onAssignButtonClick}
+            disabled={buttonDisabled}
             sx={{
-              ml: 1,
-              height: 28,
-              fontWeight: 600,
-              fontSize: '0.74rem',
-              ...roleChipStyle,
+              minWidth: rowDensity.buttonMinWidth,
+              height: rowDensity.buttonHeight,
+              px: rowDensity.buttonHorizontalPadding,
+              borderRadius: 2,
+              fontSize: rowDensity.buttonFontSize,
+              fontWeight: 500,
+              textTransform: 'none',
+              borderColor: isRoleAssigned
+                ? amColors.roleButtonBorder || theme.palette.primary.main
+                : amColors.assignButtonBorder || theme.palette.divider,
+              borderStyle: isRoleAssigned ? 'solid' : 'dashed',
+              color: isRoleAssigned
+                ? amColors.roleButtonText || theme.palette.text.primary
+                : amColors.assignButtonText || theme.palette.text.secondary,
+              bgcolor: isRoleAssigned ? amColors.roleButtonBg || theme.palette.background.paper : 'transparent',
+              '&:hover': {
+                borderColor: isRoleAssigned
+                  ? amColors.roleButtonHoverBorder || theme.palette.primary.main
+                  : theme.palette.secondary.main,
+                color: isRoleAssigned ? amColors.roleButtonText || theme.palette.text.primary : '#FFB752',
+                bgcolor: isRoleAssigned
+                  ? amColors.roleButtonHoverBg || alpha(theme.palette.primary.main, 0.08)
+                  : alpha(theme.palette.secondary.main, 0.08),
+              },
+              '&.Mui-disabled': {
+                borderColor:
+                  amColors.assignButtonDisabledBorder || amColors.assignButtonBorder || theme.palette.divider,
+                color: amColors.assignButtonDisabledText || amColors.assignButtonText || theme.palette.text.disabled,
+                bgcolor: amColors.assignButtonDisabledBg || 'transparent',
+              },
             }}
-          />
-        )}
-        <Button
-          variant="outlined"
-          size="small"
-          sx={{
-            ml: 1,
-            minWidth: 76,
-            borderRadius: 2,
-            borderColor: amColors.assignButtonBorder || theme.palette.divider,
-            borderStyle: 'dashed',
-            color: amColors.assignButtonText || theme.palette.text.secondary,
-            fontSize: '0.8rem',
-            fontWeight: 500,
-            textTransform: 'none',
-            '&:hover': {
-              borderColor: theme.palette.secondary.main,
-              color: '#FFB752',
-              bgcolor: alpha(theme.palette.secondary.main, 0.08),
-            },
-          }}
-        >
-          {assignLabel}
-        </Button>
+          >
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.25 }}>
+              {isRoleAssigned ? roleLabel : assignLabel}
+              {resourceKey && <ArrowDownIcon sx={{ fontSize: '0.95rem' }} />}
+            </Box>
+          </Button>
+
+          {isAutoDraft && (
+            <CheckIcon sx={{ fontSize: '1rem', color: amColors.autoDraftCheck || theme.palette.success.main }} />
+          )}
+        </Box>
       </Box>
+
       {hasChildren && <Collapse in={expanded}>{children}</Collapse>}
     </Box>
   );
@@ -295,7 +466,14 @@ ResourceTreeItem.propTypes = {
   depth: PropTypes.number,
   children: PropTypes.node,
   assignLabel: PropTypes.string.isRequired,
-  role: PropTypes.string,
+  roleLabel: PropTypes.string,
+  isDraft: PropTypes.bool,
+  isAutoDraft: PropTypes.bool,
+  isDirectDraft: PropTypes.bool,
+  canAssign: PropTypes.bool,
+  isSaving: PropTypes.bool,
+  onAssignClick: PropTypes.func.isRequired,
+  resourceKey: PropTypes.string,
   theme: PropTypes.shape({
     palette: PropTypes.object.isRequired,
   }).isRequired,
@@ -306,11 +484,17 @@ export const AccessManagement = () => {
   const theme = useTheme();
   const amColors = theme.palette.accessManagement || {};
   const avatarColors = amColors.avatarColors || DEFAULT_AVATAR_COLORS;
-  const accentColor = amColors.accent || theme.palette.secondary.main;
+
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [resourceSearchQuery, setResourceSearchQuery] = useState('');
   const [resourceSearchScope, setResourceSearchScope] = useState('organizations');
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [draftAssignments, setDraftAssignments] = useState({});
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [menuResourceKey, setMenuResourceKey] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(null);
 
   const users = useUsersList();
   const usersStatus = useUsersListStatus();
@@ -318,159 +502,553 @@ export const AccessManagement = () => {
   const solutions = useSolutionsList();
   const workspaces = useWorkspacesList();
   const runners = useRunnersList();
+  const userRoles = useUserRoles();
 
-  const searchFieldSx = {
-    minWidth: 260,
-    '& .MuiOutlinedInput-root': {
-      bgcolor: amColors.searchBg || theme.palette.background.paper,
-      borderRadius: 1.5,
-      fontSize: '0.82rem',
-      color: theme.palette.text.primary,
-      '& fieldset': { borderColor: amColors.searchBorder || theme.palette.divider },
-      '&:hover fieldset': { borderColor: amColors.searchHoverBorder || theme.palette.divider },
-      '&.Mui-focused fieldset': { borderColor: `${amColors.searchFocusBorder || accentColor} !important` },
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: amColors.searchPlaceholder || theme.palette.text.secondary,
-      opacity: 1,
-    },
-  };
+  const fetchInitialData = useFetchInitialData();
+  const fetchRealmUsers = useFetchRealmUsers();
+
+  const api = apiManager.getApiClient();
+  const isPlatformAdmin = userRoles?.includes(APP_ROLES.PlatformAdmin) === true;
+
+  const clearTransientState = useCallback(() => {
+    setDraftAssignments({});
+    setMenuAnchorEl(null);
+    setMenuResourceKey(null);
+    setSaveError(null);
+    setSaveSuccess(null);
+  }, []);
 
   const displayUsers = useMemo(() => {
-    if (users && users.length > 0) {
-      return users.map((u, index) => ({
-        id: u.id || u.username || u.email || `user-${index}`,
-        name: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.username || u.email || 'Unknown User',
-        email: u.email || '',
-        username: u.username || '',
-        isPlatformAdmin: Boolean(u.isPlatformAdmin),
-        resourcePermissions: u.resourcePermissions,
-      }));
-    }
-    return [];
+    if (!Array.isArray(users) || users.length === 0) return [];
+    return users.map((user, index) => ({
+      ...user,
+      id: user.id || user.username || user.email || `user-${index}`,
+      name:
+        user.name ||
+        `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
+        user.username ||
+        user.email ||
+        'Unknown User',
+      email: user.email || '',
+      username: user.username || '',
+    }));
   }, [users]);
 
   const filteredUsers = useMemo(() => {
     if (!userSearchQuery) return displayUsers;
-    return displayUsers.filter((u) => matchesSearchQuery(userSearchQuery, u.id, u.name, u.email, u.username));
+    return displayUsers.filter((user) =>
+      matchesSearchQuery(userSearchQuery, user.id, user.name, user.email, user.username)
+    );
   }, [displayUsers, userSearchQuery]);
 
   const currentUser = useMemo(() => {
     if (filteredUsers.length === 0) return null;
-    if (selectedUser == null) return filteredUsers[0];
-    return filteredUsers.find((u) => u.id === selectedUser.id) || filteredUsers[0];
-  }, [filteredUsers, selectedUser]);
+    if (selectedUserId == null) return filteredUsers[0];
+    return filteredUsers.find((user) => user.id === selectedUserId) || filteredUsers[0];
+  }, [filteredUsers, selectedUserId]);
 
-  // Build resource tree from real state
+  const previousUserIdRef = useRef(null);
+  useEffect(() => {
+    const previousUserId = previousUserIdRef.current;
+    const currentUserId = currentUser?.id ?? null;
+    if (previousUserId && currentUserId && previousUserId !== currentUserId) clearTransientState();
+    previousUserIdRef.current = currentUserId;
+  }, [clearTransientState, currentUser?.id]);
+
   const orgTree = useMemo(() => {
-    if (organizations && organizations.length > 0) {
-      return organizations.map((org) => {
-        const orgSolutions =
-          solutions
-            ?.filter((solution) => solution.organizationId === org.id)
-            .map((solution) => ({
-              ...solution,
-              name: solution.name || solution.id,
-            })) || [];
-        const orgWorkspaces =
-          workspaces
-            ?.filter((ws) => ws.organizationId === org.id)
-            .map((ws) => ({
-              ...ws,
-              name: ws.name || ws.id,
-              runners:
-                runners
-                  ?.filter((runner) => runner.organizationId === org.id && runner.workspaceId === ws.id)
-                  .map((runner) => ({
-                    ...runner,
-                    name: runner.name || runner.id,
-                  })) || [],
-            })) || [];
-        return {
-          ...org,
-          name: org.name || org.id,
-          solutions: orgSolutions,
-          workspaces: orgWorkspaces,
-        };
-      });
-    }
-    return [];
-  }, [organizations, solutions, workspaces, runners]);
+    if (!Array.isArray(organizations) || organizations.length === 0) return [];
+
+    return organizations.map((organization) => {
+      const orgSolutions = (solutions || []).filter((solution) => solution.organizationId === organization.id);
+
+      const orgWorkspaces = (workspaces || [])
+        .filter((workspace) => workspace.organizationId === organization.id)
+        .map((workspace) => {
+          const workspaceSolutionId = getLinkedSolutionId(workspace);
+          const workspaceRunners = (runners || [])
+            .filter((runner) => runner.organizationId === organization.id && runner.workspaceId === workspace.id)
+            .map((runner) => ({
+              ...runner,
+              name: runner.name || runner.id,
+              type: runner.type || 'RUNNER',
+              solutionId: runner.solution?.solutionId ?? runner.solutionId ?? workspaceSolutionId ?? null,
+            }));
+
+          return {
+            ...workspace,
+            name: workspace.name || workspace.id,
+            solutionId: workspaceSolutionId,
+            runners: workspaceRunners,
+          };
+        });
+
+      return {
+        ...organization,
+        name: organization.name || organization.id,
+        solutions: orgSolutions,
+        workspaces: orgWorkspaces,
+      };
+    });
+  }, [organizations, runners, solutions, workspaces]);
 
   const filteredOrgTree = useMemo(() => {
     if (!resourceSearchQuery) return orgTree;
 
     if (resourceSearchScope === 'organizations') {
-      return orgTree.filter((org) => matchesSearchQuery(resourceSearchQuery, org.name, org.id));
-    }
-
-    if (resourceSearchScope === 'workspaces') {
-      return orgTree
-        .map((org) => {
-          const matchedWorkspaces = (org.workspaces || []).filter((ws) =>
-            matchesSearchQuery(resourceSearchQuery, ws.name, ws.id)
-          );
-          if (matchedWorkspaces.length === 0) return null;
-          return { ...org, workspaces: matchedWorkspaces };
-        })
-        .filter(Boolean);
+      return orgTree.filter((organization) =>
+        matchesSearchQuery(resourceSearchQuery, organization.name, organization.id)
+      );
     }
 
     if (resourceSearchScope === 'solutions') {
       return orgTree
-        .map((org) => {
-          const matchedSolutions = (org.solutions || []).filter((solution) =>
+        .map((organization) => {
+          const matchedSolutions = (organization.solutions || []).filter((solution) =>
             matchesSearchQuery(resourceSearchQuery, solution.name, solution.id)
           );
           if (matchedSolutions.length === 0) return null;
-          return { ...org, solutions: matchedSolutions, workspaces: [] };
+          return { ...organization, solutions: matchedSolutions, workspaces: [] };
         })
         .filter(Boolean);
     }
 
-    if (resourceSearchScope === 'runners') {
+    if (resourceSearchScope === 'workspaces') {
       return orgTree
-        .map((org) => {
-          const matchedWorkspaces = (org.workspaces || [])
-            .map((ws) => {
-              const matchedRunners = (ws.runners || []).filter((runner) => {
-                const runnerType = String(runner.type || 'RUNNER').toUpperCase();
-                return runnerType !== 'RUN' && matchesSearchQuery(resourceSearchQuery, runner.name, runner.id);
-              });
-              if (matchedRunners.length === 0) return null;
-              return { ...ws, runners: matchedRunners };
-            })
-            .filter(Boolean);
-
+        .map((organization) => {
+          const matchedWorkspaces = (organization.workspaces || []).filter((workspace) =>
+            matchesSearchQuery(resourceSearchQuery, workspace.name, workspace.id)
+          );
           if (matchedWorkspaces.length === 0) return null;
-          return { ...org, workspaces: matchedWorkspaces, solutions: [] };
+          return { ...organization, workspaces: matchedWorkspaces };
         })
         .filter(Boolean);
     }
 
     return orgTree
-      .map((org) => {
-        const matchedWorkspaces = (org.workspaces || [])
-          .map((ws) => {
-            const matchedRunners = (ws.runners || []).filter((runner) =>
+      .map((organization) => {
+        const matchedWorkspaces = (organization.workspaces || [])
+          .map((workspace) => {
+            const matchedRunners = (workspace.runners || []).filter((runner) =>
               matchesSearchQuery(resourceSearchQuery, runner.name, runner.id)
             );
             if (matchedRunners.length === 0) return null;
-            return { ...ws, runners: matchedRunners };
+            return { ...workspace, runners: matchedRunners };
           })
           .filter(Boolean);
 
         if (matchedWorkspaces.length === 0) return null;
-        return { ...org, workspaces: matchedWorkspaces };
+        return { ...organization, workspaces: matchedWorkspaces, solutions: [] };
       })
       .filter(Boolean);
   }, [orgTree, resourceSearchQuery, resourceSearchScope]);
 
-  const assignedRolesCount = getAssignedRolesCountForUser(currentUser);
-  const selectedUserResourcePermissions = currentUser?.resourcePermissions || {};
-  const getCurrentUserRoleForResource = (resourceType, resourceId) => {
-    const role = selectedUserResourcePermissions?.[resourceType]?.[resourceId]?.role;
-    return typeof role === 'string' ? role : null;
+  const resourceViewModels = useMemo(() => {
+    if (!currentUser) return [];
+
+    const userIdentifiers = getUserIdentifiers(currentUser);
+    const preferredIdentityId = currentUser.email || currentUser.username || currentUser.id || null;
+
+    const models = [];
+
+    for (const organization of orgTree) {
+      const organizationExplicitAcl = findExplicitAclEntry(organization.security, userIdentifiers);
+      const organizationBaseRole =
+        getRoleFromUserPermissions(currentUser, 'organizations', organization.id) ||
+        getFallbackRoleFromSecurity(organization.security, currentUser);
+
+      models.push({
+        resourceKey: buildResourceKey('organizations', organization.id),
+        resourceType: 'organizations',
+        resourceId: organization.id,
+        organizationId: organization.id,
+        workspaceId: null,
+        solutionId: null,
+        runnerId: null,
+        baseRole: normalizeRole(organizationBaseRole),
+        effectiveRole: normalizeRole(organizationBaseRole),
+        draftSource: null,
+        hasExplicitAccess: Boolean(organizationExplicitAcl),
+        explicitIdentityId: organizationExplicitAcl?.id || null,
+        preferredIdentityId,
+        canAssign:
+          ASSIGNABLE_RESOURCE_TYPES.has('organizations') &&
+          (isPlatformAdmin || hasWriteSecurityPermission(organization)),
+      });
+
+      for (const solution of organization.solutions || []) {
+        const solutionExplicitAcl = findExplicitAclEntry(solution.security, userIdentifiers);
+        const solutionBaseRole =
+          getRoleFromUserPermissions(currentUser, 'solutions', solution.id) ||
+          getFallbackRoleFromSecurity(solution.security, currentUser);
+
+        models.push({
+          resourceKey: buildResourceKey('solutions', solution.id),
+          resourceType: 'solutions',
+          resourceId: solution.id,
+          organizationId: solution.organizationId ?? organization.id,
+          workspaceId: null,
+          solutionId: solution.id,
+          runnerId: null,
+          baseRole: normalizeRole(solutionBaseRole),
+          effectiveRole: normalizeRole(solutionBaseRole),
+          draftSource: null,
+          hasExplicitAccess: Boolean(solutionExplicitAcl),
+          explicitIdentityId: solutionExplicitAcl?.id || null,
+          preferredIdentityId,
+          canAssign:
+            ASSIGNABLE_RESOURCE_TYPES.has('solutions') && (isPlatformAdmin || hasWriteSecurityPermission(solution)),
+        });
+      }
+
+      for (const workspace of organization.workspaces || []) {
+        const workspaceExplicitAcl = findExplicitAclEntry(workspace.security, userIdentifiers);
+        const workspaceBaseRole =
+          getRoleFromUserPermissions(currentUser, 'workspaces', workspace.id) ||
+          getFallbackRoleFromSecurity(workspace.security, currentUser);
+
+        models.push({
+          resourceKey: buildResourceKey('workspaces', workspace.id),
+          resourceType: 'workspaces',
+          resourceId: workspace.id,
+          organizationId: workspace.organizationId ?? organization.id,
+          workspaceId: workspace.id,
+          solutionId: workspace.solutionId,
+          runnerId: null,
+          baseRole: normalizeRole(workspaceBaseRole),
+          effectiveRole: normalizeRole(workspaceBaseRole),
+          draftSource: null,
+          hasExplicitAccess: Boolean(workspaceExplicitAcl),
+          explicitIdentityId: workspaceExplicitAcl?.id || null,
+          preferredIdentityId,
+          canAssign:
+            ASSIGNABLE_RESOURCE_TYPES.has('workspaces') && (isPlatformAdmin || hasWriteSecurityPermission(workspace)),
+        });
+
+        for (const runner of workspace.runners || []) {
+          const runnerType = String(runner.type || 'RUNNER').toUpperCase();
+          if (runnerType === 'RUN') continue;
+
+          const runnerExplicitAcl = findExplicitAclEntry(runner.security, userIdentifiers);
+          const runnerBaseRole =
+            getRoleFromUserPermissions(currentUser, 'runners', runner.id) ||
+            getFallbackRoleFromSecurity(runner.security, currentUser);
+
+          models.push({
+            resourceKey: buildResourceKey('runners', runner.id),
+            resourceType: 'runners',
+            resourceId: runner.id,
+            organizationId: runner.organizationId ?? workspace.organizationId ?? organization.id,
+            workspaceId: runner.workspaceId ?? workspace.id,
+            solutionId: runner.solutionId ?? workspace.solutionId ?? null,
+            runnerId: runner.id,
+            baseRole: normalizeRole(runnerBaseRole),
+            effectiveRole: normalizeRole(runnerBaseRole),
+            draftSource: null,
+            hasExplicitAccess: Boolean(runnerExplicitAcl),
+            explicitIdentityId: runnerExplicitAcl?.id || null,
+            preferredIdentityId,
+            canAssign:
+              ASSIGNABLE_RESOURCE_TYPES.has('runners') && (isPlatformAdmin || hasWriteSecurityPermission(runner)),
+          });
+        }
+      }
+    }
+
+    return models;
+  }, [currentUser, isPlatformAdmin, orgTree]);
+
+  const resourceModelByKey = useMemo(() => {
+    return new Map(resourceViewModels.map((model) => [model.resourceKey, model]));
+  }, [resourceViewModels]);
+
+  const effectiveAssignments = useMemo(() => {
+    return computeEffectiveAssignments(resourceViewModels, draftAssignments);
+  }, [draftAssignments, resourceViewModels]);
+
+  const hasDrafts = useMemo(() => {
+    return Object.values(effectiveAssignments).some((assignment) => assignment.isDraft);
+  }, [effectiveAssignments]);
+
+  const autoDraftCount = useMemo(() => {
+    return Object.values(effectiveAssignments).filter((assignment) => assignment.draftSource === 'auto').length;
+  }, [effectiveAssignments]);
+
+  const assignedRolesCount = useMemo(() => {
+    return Object.values(effectiveAssignments).filter(
+      (assignment) => normalizeRole(assignment.effectiveRole) !== 'none'
+    ).length;
+  }, [effectiveAssignments]);
+
+  const pendingOperations = useMemo(() => {
+    const operations = [];
+    for (const resourceModel of resourceViewModels) {
+      const assignment = effectiveAssignments[resourceModel.resourceKey];
+      if (!assignment || !assignment.isDraft) continue;
+      const operation = buildAclOperation(resourceModel, assignment.effectiveRole);
+      if (operation) operations.push(operation);
+    }
+    return operations;
+  }, [effectiveAssignments, resourceViewModels]);
+
+  const getResourceAssignmentData = useCallback(
+    (resourceType, resourceId) => {
+      const resourceKey = buildResourceKey(resourceType, resourceId);
+      const assignment = effectiveAssignments[resourceKey];
+      const resourceModel = resourceModelByKey.get(resourceKey);
+
+      const effectiveRole = normalizeRole(assignment?.effectiveRole || resourceModel?.baseRole || 'none');
+      const isDraft = assignment?.isDraft === true;
+      const isAutoDraft = assignment?.draftSource === 'auto';
+      const isDirectDraft = assignment?.draftSource === 'direct';
+      const canAssign = Boolean(resourceModel?.canAssign);
+
+      const roleLabel =
+        effectiveRole === 'none'
+          ? null
+          : isAutoDraft
+            ? `${getRoleLabelText(t, effectiveRole)} ${t('accessManagement.draft')}`
+            : getRoleLabelText(t, effectiveRole);
+
+      return {
+        resourceKey: resourceModel?.resourceKey ?? null,
+        roleLabel,
+        isDraft,
+        isAutoDraft,
+        isDirectDraft,
+        canAssign,
+      };
+    },
+    [effectiveAssignments, resourceModelByKey, t]
+  );
+
+  const handleOpenRoleMenu = useCallback((event, resourceKey) => {
+    setMenuAnchorEl(event.currentTarget);
+    setMenuResourceKey(resourceKey);
+    setSaveError(null);
+    setSaveSuccess(null);
+  }, []);
+
+  const handleCloseRoleMenu = useCallback(() => {
+    setMenuAnchorEl(null);
+    setMenuResourceKey(null);
+  }, []);
+
+  const handleRoleSelect = useCallback(
+    (role) => {
+      if (!menuResourceKey) return;
+
+      const resourceModel = resourceModelByKey.get(menuResourceKey);
+      if (!resourceModel) return;
+
+      const selectedRole = normalizeRole(role);
+      setDraftAssignments((previousDrafts) => {
+        const nextDrafts = { ...previousDrafts };
+        if (selectedRole === normalizeRole(resourceModel.baseRole)) {
+          delete nextDrafts[menuResourceKey];
+        } else {
+          nextDrafts[menuResourceKey] = {
+            role: selectedRole,
+            source: 'direct',
+            touchedAt: Date.now(),
+          };
+        }
+        return nextDrafts;
+      });
+
+      setSaveError(null);
+      setSaveSuccess(null);
+      handleCloseRoleMenu();
+    },
+    [handleCloseRoleMenu, menuResourceKey, resourceModelByKey]
+  );
+
+  const handleDiscardDrafts = useCallback(() => {
+    clearTransientState();
+  }, [clearTransientState]);
+
+  const applyAclOperation = useCallback(
+    async (operation) => {
+      const rolePayload = { role: operation.role };
+      if (operation.resourceType === 'organizations') {
+        if (operation.operationType === 'add') {
+          await api.Organizations.addOrganizationAccessControl(operation.organizationId, {
+            id: operation.identityId,
+            role: operation.role,
+          });
+          return;
+        }
+        if (operation.operationType === 'update') {
+          await api.Organizations.updateOrganizationAccessControl(
+            operation.organizationId,
+            operation.identityId,
+            rolePayload
+          );
+          return;
+        }
+        if (operation.operationType === 'remove') {
+          await api.Organizations.removeOrganizationAccessControl(operation.organizationId, operation.identityId);
+        }
+        return;
+      }
+
+      if (operation.resourceType === 'solutions') {
+        if (!operation.organizationId || !operation.solutionId) return;
+        if (operation.operationType === 'add') {
+          await api.Solutions.addSolutionAccessControl(operation.organizationId, operation.solutionId, {
+            id: operation.identityId,
+            role: operation.role,
+          });
+          return;
+        }
+        if (operation.operationType === 'update') {
+          await api.Solutions.updateSolutionAccessControl(
+            operation.organizationId,
+            operation.solutionId,
+            operation.identityId,
+            rolePayload
+          );
+          return;
+        }
+        if (operation.operationType === 'remove') {
+          await api.Solutions.removeSolutionAccessControl(
+            operation.organizationId,
+            operation.solutionId,
+            operation.identityId
+          );
+        }
+        return;
+      }
+
+      if (operation.resourceType === 'workspaces') {
+        if (!operation.organizationId || !operation.workspaceId) return;
+        if (operation.operationType === 'add') {
+          await api.Workspaces.addWorkspaceAccessControl(operation.organizationId, operation.workspaceId, {
+            id: operation.identityId,
+            role: operation.role,
+          });
+          return;
+        }
+        if (operation.operationType === 'update') {
+          await api.Workspaces.updateWorkspaceAccessControl(
+            operation.organizationId,
+            operation.workspaceId,
+            operation.identityId,
+            rolePayload
+          );
+          return;
+        }
+        if (operation.operationType === 'remove') {
+          await api.Workspaces.removeWorkspaceAccessControl(
+            operation.organizationId,
+            operation.workspaceId,
+            operation.identityId
+          );
+        }
+        return;
+      }
+
+      if (operation.resourceType === 'runners') {
+        if (!operation.organizationId || !operation.workspaceId || !operation.runnerId) return;
+        if (operation.operationType === 'add') {
+          await api.Runners.addRunnerAccessControl(
+            operation.organizationId,
+            operation.workspaceId,
+            operation.runnerId,
+            {
+              id: operation.identityId,
+              role: operation.role,
+            }
+          );
+          return;
+        }
+        if (operation.operationType === 'update') {
+          await api.Runners.updateRunnerAccessControl(
+            operation.organizationId,
+            operation.workspaceId,
+            operation.runnerId,
+            operation.identityId,
+            rolePayload
+          );
+          return;
+        }
+        if (operation.operationType === 'remove') {
+          await api.Runners.removeRunnerAccessControl(
+            operation.organizationId,
+            operation.workspaceId,
+            operation.runnerId,
+            operation.identityId
+          );
+        }
+      }
+    },
+    [api]
+  );
+
+  const handleValidateAll = useCallback(async () => {
+    if (!hasDrafts || isSaving) return;
+
+    setIsSaving(true);
+    setSaveError(null);
+    setSaveSuccess(null);
+
+    try {
+      for (const operation of pendingOperations) {
+        await applyAclOperation(operation);
+      }
+
+      clearTransientState();
+      setSaveSuccess(t('accessManagement.assignSaveSuccess'));
+
+      await fetchInitialData();
+      try {
+        await fetchRealmUsers();
+      } catch (error) {
+        console.warn('[AccessManagement] Unable to refresh realm users after ACL update:', error);
+      }
+    } catch (error) {
+      setSaveError(buildSaveErrorMessage(t('accessManagement.assignSaveError'), error));
+    } finally {
+      setIsSaving(false);
+    }
+  }, [
+    applyAclOperation,
+    clearTransientState,
+    fetchInitialData,
+    fetchRealmUsers,
+    hasDrafts,
+    isSaving,
+    pendingOperations,
+    t,
+  ]);
+
+  const menuCurrentRole = useMemo(() => {
+    if (!menuResourceKey) return null;
+    return normalizeRole(
+      effectiveAssignments[menuResourceKey]?.effectiveRole ||
+        resourceModelByKey.get(menuResourceKey)?.baseRole ||
+        'none'
+    );
+  }, [effectiveAssignments, menuResourceKey, resourceModelByKey]);
+
+  const searchFieldSx = {
+    minWidth: 260,
+    '& .MuiOutlinedInput-root': {
+      bgcolor: amColors.searchBg || theme.palette.background.surface,
+      borderRadius: 1.25,
+      minHeight: 34,
+      fontSize: '0.86rem',
+      color: theme.palette.text.primary,
+      '& fieldset': { borderColor: amColors.searchBorder || theme.palette.divider },
+      '&:hover fieldset': { borderColor: amColors.searchHoverBorder || theme.palette.divider },
+      '&.Mui-focused fieldset': { borderColor: theme.palette.secondary.main },
+    },
+    '& .MuiInputBase-input': {
+      py: 0.9,
+    },
+    '& .MuiInputBase-input::placeholder': {
+      color: amColors.searchPlaceholder || theme.palette.text.secondary,
+      opacity: 1,
+    },
   };
 
   return (
@@ -483,7 +1061,6 @@ export const AccessManagement = () => {
         color: amColors.pageText || theme.palette.text.primary,
       }}
     >
-      {/* Header */}
       <Box sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <LockIcon sx={{ color: theme.palette.secondary.main, fontSize: '1.2rem' }} />
@@ -496,22 +1073,25 @@ export const AccessManagement = () => {
         </Typography>
       </Box>
 
-      {/* Toolbar: User Search + Resource Search */}
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 2,
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', lg: '1fr auto' },
+          alignItems: 'start',
+          columnGap: 2,
+          rowGap: 1.1,
           mb: 2,
-          flexWrap: 'wrap',
         }}
       >
         <TextField
           size="small"
           placeholder={t('accessManagement.searchUserPlaceholder')}
           value={userSearchQuery}
-          onChange={(e) => setUserSearchQuery(e.target.value)}
-          sx={{ ...searchFieldSx, flex: { xs: '1 1 100%', md: '0 1 340px' } }}
+          onChange={(event) => setUserSearchQuery(event.target.value)}
+          sx={{
+            ...searchFieldSx,
+            width: { xs: '100%', md: 340 },
+          }}
           slotProps={{
             input: {
               startAdornment: (
@@ -525,78 +1105,79 @@ export const AccessManagement = () => {
           }}
         />
 
-        <Box sx={{ flex: 1 }} />
-
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            flexWrap: 'wrap',
-            justifyContent: { xs: 'flex-start', md: 'flex-end' },
-            flex: { xs: '1 1 100%', md: '0 1 auto' },
+            display: 'grid',
+            justifyItems: { xs: 'start', lg: 'end' },
+            gap: 0.65,
+            width: { xs: '100%', lg: 460 },
+            justifySelf: { xs: 'stretch', lg: 'end' },
           }}
         >
           <ToggleButtonGroup
             value={resourceSearchScope}
             exclusive
-            onChange={(_, v) => v && setResourceSearchScope(v)}
+            onChange={(_, value) => value && setResourceSearchScope(value)}
             size="small"
             sx={{
-              bgcolor: 'transparent',
-              borderRadius: 1.5,
-              gap: 0.75,
-              '& .MuiToggleButton-root': {
-                textTransform: 'none',
-                fontSize: '0.8rem',
-                px: 1.4,
-                py: 0.4,
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.55,
-                borderRadius: 1.2,
-                bgcolor: amColors.toggleBg || theme.palette.background.surface,
-                border: `1px solid ${amColors.toggleBorder || theme.palette.divider} !important`,
-                color: amColors.toggleText || theme.palette.text.secondary,
-                '& .scopeIcon': {
-                  fontSize: '0.95rem',
-                },
-                '&:hover': {
-                  bgcolor: amColors.toggleHoverBg || theme.palette.action.hover,
-                  borderColor: `${amColors.toggleHoverBorder || theme.palette.divider} !important`,
-                },
-                '&.Mui-selected': {
-                  bgcolor: `${amColors.toggleSelectedBg || alpha(theme.palette.secondary.main, 0.18)} !important`,
-                  borderColor: `${amColors.toggleSelectedBorder || accentColor} !important`,
-                  color: `${amColors.toggleSelectedText || theme.palette.secondary.main} !important`,
-                  fontWeight: 600,
-                  boxShadow: `inset 0 0 0 1px ${amColors.toggleSelectedBorder || accentColor}`,
-                },
-                '&.Mui-selected:hover': {
-                  bgcolor: `${amColors.toggleSelectedHoverBg || alpha(theme.palette.secondary.main, 0.24)} !important`,
-                },
-              },
+              bgcolor: amColors.toggleBg || theme.palette.background.surface,
+              borderRadius: 1,
+              border: `1px solid ${amColors.toggleBorder || theme.palette.divider}`,
+              overflow: 'hidden',
               '& .MuiToggleButtonGroup-grouped': {
                 margin: 0,
-                borderRadius: '10px !important',
+                border: 0,
+                borderRight: `1px solid ${amColors.toggleBorder || theme.palette.divider}`,
+                borderRadius: 0,
+              },
+              '& .MuiToggleButtonGroup-grouped:last-of-type': {
+                borderRight: 0,
+              },
+              '& .MuiToggleButton-root': {
+                textTransform: 'none',
+                fontSize: '0.84rem',
+                px: 1.2,
+                py: 0.38,
+                gap: 0.5,
+                color: amColors.toggleText || theme.palette.text.secondary,
+                minHeight: 30,
+                '&:hover': {
+                  bgcolor: amColors.toggleHoverBg || theme.palette.action.hover,
+                },
+                '&.Mui-selected': {
+                  bgcolor: amColors.toggleSelectedBg || theme.palette.background.surfaceVariant,
+                  color: amColors.toggleSelectedText || theme.palette.text.primary,
+                  fontWeight: 600,
+                  '&:hover': {
+                    bgcolor: amColors.toggleSelectedHoverBg || theme.palette.background.surfaceVariant,
+                  },
+                },
               },
             }}
           >
             <ToggleButton value="organizations">
-              <OrgIcon className="scopeIcon" />
-              {t('accessManagement.resourceScope.organizations')}
+              <ScopeToggleLabel
+                icon={<OrgIcon sx={{ fontSize: '0.9rem' }} />}
+                label={t('accessManagement.resourceScope.organizations')}
+              />
             </ToggleButton>
             <ToggleButton value="solutions">
-              <SolutionIcon className="scopeIcon" />
-              {t('accessManagement.resourceScope.solutions')}
+              <ScopeToggleLabel
+                icon={<SolutionIcon sx={{ fontSize: '0.9rem' }} />}
+                label={t('accessManagement.resourceScope.solutions')}
+              />
             </ToggleButton>
             <ToggleButton value="workspaces">
-              <WorkspaceIcon className="scopeIcon" />
-              {t('accessManagement.resourceScope.workspaces')}
+              <ScopeToggleLabel
+                icon={<WorkspaceIcon sx={{ fontSize: '0.9rem' }} />}
+                label={t('accessManagement.resourceScope.workspaces')}
+              />
             </ToggleButton>
             <ToggleButton value="runners">
-              <RunnerIcon className="scopeIcon" />
-              {t('accessManagement.resourceScope.runners')}
+              <ScopeToggleLabel
+                icon={<RunnerIcon sx={{ fontSize: '0.9rem' }} />}
+                label={t('accessManagement.resourceScope.runners')}
+              />
             </ToggleButton>
           </ToggleButtonGroup>
 
@@ -604,8 +1185,12 @@ export const AccessManagement = () => {
             size="small"
             placeholder={t('accessManagement.searchResourcePlaceholder')}
             value={resourceSearchQuery}
-            onChange={(e) => setResourceSearchQuery(e.target.value)}
-            sx={{ ...searchFieldSx, flex: { xs: '1 1 100%', md: '0 1 330px' } }}
+            onChange={(event) => setResourceSearchQuery(event.target.value)}
+            sx={{
+              ...searchFieldSx,
+              width: '100%',
+              justifySelf: { xs: 'stretch', lg: 'end' },
+            }}
             slotProps={{
               input: {
                 startAdornment: (
@@ -621,7 +1206,6 @@ export const AccessManagement = () => {
         </Box>
       </Box>
 
-      {/* Main Content: Users Panel + Resource Panel */}
       <Box
         sx={{
           display: 'grid',
@@ -632,7 +1216,6 @@ export const AccessManagement = () => {
           overflow: 'hidden',
         }}
       >
-        {/* Left Panel — Users List */}
         <Box
           sx={{
             borderRadius: 2,
@@ -659,22 +1242,18 @@ export const AccessManagement = () => {
           >
             {t('accessManagement.usersLabel')}
           </Typography>
+
           <List sx={{ flex: 1, overflowY: 'auto', py: 0 }}>
             {usersStatus === USERS_STATUS.LOADING && (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                 <CircularProgress size={24} />
               </Box>
             )}
-            {usersStatus !== USERS_STATUS.LOADING && filteredUsers.length === 0 && (
-              <Box sx={{ px: 2, py: 2 }}>
-                <Typography variant="body2" sx={{ color: amColors.subtitle || theme.palette.text.secondary }}>
-                  {t('users.empty')}
-                </Typography>
-              </Box>
-            )}
+
             {filteredUsers.map((user) => {
               const isSelected = currentUser?.id === user.id;
-              const userAssignedRolesCount = getAssignedRolesCountForUser(user);
+              const userAssignedRolesCount = getAssignedRolesCountFromPermissions(user);
+
               return (
                 <ListItem
                   key={user.id}
@@ -683,13 +1262,13 @@ export const AccessManagement = () => {
                 >
                   <ListItemButton
                     selected={isSelected}
-                    onClick={() => setSelectedUser(user)}
+                    onClick={() => setSelectedUserId(user.id)}
                     sx={{
                       py: 1.25,
                       px: 1.75,
                       '&.Mui-selected': {
                         bgcolor: amColors.selectedUserBg || theme.palette.action.selected,
-                        borderLeft: `2px solid ${accentColor}`,
+                        borderLeft: `2px solid ${theme.palette.secondary.main}`,
                         '&:hover': {
                           bgcolor: amColors.selectedUserHoverBg || theme.palette.action.selected,
                         },
@@ -713,6 +1292,7 @@ export const AccessManagement = () => {
                         {getInitials(user.name)}
                       </Avatar>
                     </ListItemAvatar>
+
                     <ListItemText
                       primary={user.name}
                       secondary={user.email}
@@ -732,20 +1312,25 @@ export const AccessManagement = () => {
                         },
                       }}
                     />
+
                     {userAssignedRolesCount > 0 && (
-                      <Chip
-                        label={userAssignedRolesCount}
-                        size="small"
+                      <Box
                         sx={{
-                          height: 22,
                           minWidth: 22,
+                          height: 22,
+                          px: 0.8,
                           borderRadius: '999px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                           bgcolor: amColors.countChipBg || theme.palette.background.surfaceVariant,
                           color: amColors.countChipText || theme.palette.secondary.main,
                           fontWeight: 600,
-                          '& .MuiChip-label': { px: 0.8 },
+                          fontSize: '0.76rem',
                         }}
-                      />
+                      >
+                        {userAssignedRolesCount}
+                      </Box>
                     )}
                   </ListItemButton>
                 </ListItem>
@@ -754,7 +1339,6 @@ export const AccessManagement = () => {
           </List>
         </Box>
 
-        {/* Right Panel — Resource Tree */}
         <Box
           sx={{
             display: 'flex',
@@ -768,7 +1352,6 @@ export const AccessManagement = () => {
         >
           {currentUser ? (
             <>
-              {/* User Header */}
               <Box
                 sx={{
                   display: 'flex',
@@ -792,6 +1375,7 @@ export const AccessManagement = () => {
                 >
                   {getInitials(currentUser.name)}
                 </Avatar>
+
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography
                     variant="h6"
@@ -811,102 +1395,216 @@ export const AccessManagement = () => {
                     {currentUser.email}
                   </Typography>
                 </Box>
-                <Chip
-                  label={currentUser.isPlatformAdmin ? 'Platform Admin' : t('users.role.user')}
-                  size="small"
-                  sx={{
-                    bgcolor: currentUser.isPlatformAdmin ? alpha('#FF9F1C', 0.18) : alpha('#7A869A', 0.18),
-                    color: currentUser.isPlatformAdmin
-                      ? theme.palette.mode === 'dark'
-                        ? '#FFD08A'
-                        : '#B45309'
-                      : theme.palette.mode === 'dark'
-                        ? '#D5DCE7'
-                        : '#4B5563',
-                    border: `1px solid ${currentUser.isPlatformAdmin ? alpha('#FF9F1C', 0.45) : alpha('#7A869A', 0.45)}`,
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                    height: 28,
-                  }}
-                />
-                <Chip
-                  label={`${assignedRolesCount} ${t('accessManagement.assignedRoles')}`}
-                  size="small"
-                  sx={{
-                    bgcolor: amColors.assignedRolesChipBg || theme.palette.background.surfaceVariant,
-                    color: amColors.assignedRolesChipText || theme.palette.text.secondary,
-                    fontWeight: 500,
-                    fontSize: '0.75rem',
-                    height: 28,
-                  }}
-                />
+
+                <Typography
+                  variant="body2"
+                  sx={{ color: amColors.assignedRolesChipText || theme.palette.text.secondary }}
+                >
+                  {assignedRolesCount} {t('accessManagement.assignedRoles')}
+                </Typography>
               </Box>
 
-              {/* Resource Tree */}
               <Box
                 sx={{ flex: 1, overflowY: 'auto', p: 1.6, bgcolor: amColors.panelBg || theme.palette.background.paper }}
               >
                 {filteredOrgTree.length > 0 ? (
-                  filteredOrgTree.map((org) => (
-                    <ResourceTreeItem
-                      key={org.id}
-                      icon={<OrgIcon fontSize="small" />}
-                      name={org.name}
-                      type="ORGANIZATION"
-                      itemCount={(org.solutions?.length || 0) + (org.workspaces?.length || 0)}
-                      depth={0}
-                      assignLabel={t('accessManagement.assign')}
-                      role={getCurrentUserRoleForResource('organizations', org.id)}
-                      color={amColors.organizationIcon || theme.palette.primary.main}
-                      theme={theme}
-                    >
-                      {(org.solutions || []).map((sol) => (
-                        <ResourceTreeItem
-                          key={sol.id}
-                          icon={<SolutionIcon fontSize="small" />}
-                          name={sol.name}
-                          type="SOLUTION"
-                          depth={1}
-                          assignLabel={t('accessManagement.assign')}
-                          role={getCurrentUserRoleForResource('solutions', sol.id)}
-                          theme={theme}
-                        />
-                      ))}
-                      {(org.workspaces || []).map((ws) => (
-                        <ResourceTreeItem
-                          key={ws.id}
-                          icon={<WorkspaceIcon fontSize="small" />}
-                          name={ws.name}
-                          type="WORKSPACE"
-                          itemCount={ws.runners?.length || ws.itemCount}
-                          depth={1}
-                          assignLabel={t('accessManagement.assign')}
-                          role={getCurrentUserRoleForResource('workspaces', ws.id)}
-                          theme={theme}
-                        >
-                          {(ws.runners || []).map((runner) => (
+                  filteredOrgTree.map((organization) => {
+                    const organizationAssignment = getResourceAssignmentData('organizations', organization.id);
+
+                    return (
+                      <ResourceTreeItem
+                        key={organization.id}
+                        icon={<OrgIcon fontSize="small" />}
+                        name={organization.name}
+                        type="ORGANIZATION"
+                        itemCount={(organization.solutions?.length || 0) + (organization.workspaces?.length || 0)}
+                        depth={0}
+                        assignLabel={t('accessManagement.assign')}
+                        roleLabel={organizationAssignment.roleLabel}
+                        isDraft={organizationAssignment.isDraft}
+                        isAutoDraft={organizationAssignment.isAutoDraft}
+                        isDirectDraft={organizationAssignment.isDirectDraft}
+                        canAssign={organizationAssignment.canAssign}
+                        isSaving={isSaving}
+                        onAssignClick={handleOpenRoleMenu}
+                        resourceKey={organizationAssignment.resourceKey}
+                        theme={theme}
+                      >
+                        {(organization.solutions || []).map((solution) => {
+                          const solutionAssignment = getResourceAssignmentData('solutions', solution.id);
+
+                          return (
                             <ResourceTreeItem
-                              key={runner.id}
-                              icon={
-                                runner.type === 'RUN' ? <RunIcon fontSize="small" /> : <RunnerIcon fontSize="small" />
-                              }
-                              name={runner.name}
-                              type={runner.type || 'RUNNER'}
-                              depth={2}
+                              key={solution.id}
+                              icon={<SolutionIcon fontSize="small" />}
+                              name={solution.name || solution.id}
+                              type="SOLUTION"
+                              depth={1}
                               assignLabel={t('accessManagement.assign')}
-                              role={getCurrentUserRoleForResource('runners', runner.id)}
+                              roleLabel={solutionAssignment.roleLabel}
+                              isDraft={solutionAssignment.isDraft}
+                              isAutoDraft={solutionAssignment.isAutoDraft}
+                              isDirectDraft={solutionAssignment.isDirectDraft}
+                              canAssign={solutionAssignment.canAssign}
+                              isSaving={isSaving}
+                              onAssignClick={handleOpenRoleMenu}
+                              resourceKey={solutionAssignment.resourceKey}
                               theme={theme}
                             />
-                          ))}
-                        </ResourceTreeItem>
-                      ))}
-                    </ResourceTreeItem>
-                  ))
+                          );
+                        })}
+
+                        {(organization.workspaces || []).map((workspace) => {
+                          const workspaceAssignment = getResourceAssignmentData('workspaces', workspace.id);
+
+                          return (
+                            <ResourceTreeItem
+                              key={workspace.id}
+                              icon={<WorkspaceIcon fontSize="small" />}
+                              name={workspace.name || workspace.id}
+                              type="WORKSPACE"
+                              itemCount={workspace.runners?.length || workspace.itemCount}
+                              depth={1}
+                              assignLabel={t('accessManagement.assign')}
+                              roleLabel={workspaceAssignment.roleLabel}
+                              isDraft={workspaceAssignment.isDraft}
+                              isAutoDraft={workspaceAssignment.isAutoDraft}
+                              isDirectDraft={workspaceAssignment.isDirectDraft}
+                              canAssign={workspaceAssignment.canAssign}
+                              isSaving={isSaving}
+                              onAssignClick={handleOpenRoleMenu}
+                              resourceKey={workspaceAssignment.resourceKey}
+                              theme={theme}
+                            >
+                              {(workspace.runners || []).map((runner) => {
+                                const runnerType = String(runner.type || 'RUNNER').toUpperCase();
+                                const isRun = runnerType === 'RUN';
+                                const runnerAssignment = isRun
+                                  ? {
+                                      resourceKey: null,
+                                      roleLabel: null,
+                                      isDraft: false,
+                                      isAutoDraft: false,
+                                      isDirectDraft: false,
+                                      canAssign: false,
+                                    }
+                                  : getResourceAssignmentData('runners', runner.id);
+
+                                return (
+                                  <ResourceTreeItem
+                                    key={`${workspace.id}-${runner.id}`}
+                                    icon={isRun ? <RunIcon fontSize="small" /> : <RunnerIcon fontSize="small" />}
+                                    name={runner.name || runner.id}
+                                    type={runnerType}
+                                    depth={2}
+                                    assignLabel={t('accessManagement.assign')}
+                                    roleLabel={runnerAssignment.roleLabel}
+                                    isDraft={runnerAssignment.isDraft}
+                                    isAutoDraft={runnerAssignment.isAutoDraft}
+                                    isDirectDraft={runnerAssignment.isDirectDraft}
+                                    canAssign={runnerAssignment.canAssign}
+                                    isSaving={isSaving}
+                                    onAssignClick={handleOpenRoleMenu}
+                                    resourceKey={runnerAssignment.resourceKey}
+                                    theme={theme}
+                                  />
+                                );
+                              })}
+                            </ResourceTreeItem>
+                          );
+                        })}
+                      </ResourceTreeItem>
+                    );
+                  })
                 ) : (
                   <Box sx={{ px: 2, py: 2 }}>
                     <Typography variant="body2" sx={{ color: amColors.subtitle || theme.palette.text.secondary }}>
                       {t('accessManagement.noResourcesMatch')}
                     </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              <Box sx={{ px: 2, pb: 1.5 }}>
+                {saveError && (
+                  <Alert
+                    severity="error"
+                    sx={{
+                      mb: 1,
+                      bgcolor: amColors.inlineErrorBg,
+                      border: `1px solid ${amColors.inlineErrorBorder}`,
+                      color: amColors.inlineErrorText,
+                    }}
+                  >
+                    {saveError}
+                  </Alert>
+                )}
+
+                {saveSuccess && (
+                  <Alert
+                    severity="success"
+                    sx={{
+                      mb: hasDrafts ? 1 : 0,
+                      bgcolor: amColors.inlineSuccessBg,
+                      border: `1px solid ${amColors.inlineSuccessBorder}`,
+                      color: amColors.inlineSuccessText,
+                    }}
+                  >
+                    {saveSuccess}
+                  </Alert>
+                )}
+
+                {hasDrafts && (
+                  <Box
+                    sx={{
+                      borderRadius: 1.5,
+                      border: `1px solid ${amColors.footerBorder || theme.palette.divider}`,
+                      bgcolor: amColors.footerBg || theme.palette.background.surface,
+                      px: 2,
+                      py: 1.2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 1,
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ color: amColors.footerText || theme.palette.text.secondary }}>
+                      {t('accessManagement.autoAssignedRolesSummary', { count: autoDraftCount })}
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleValidateAll}
+                        disabled={isSaving}
+                        sx={{
+                          bgcolor: amColors.footerPrimaryBg || theme.palette.secondary.main,
+                          color: amColors.footerPrimaryText || theme.palette.secondary.contrastText,
+                          '&:hover': {
+                            bgcolor: amColors.footerPrimaryHoverBg || theme.palette.secondary.dark,
+                          },
+                        }}
+                      >
+                        {t('accessManagement.validateAll')}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleDiscardDrafts}
+                        disabled={isSaving}
+                        sx={{
+                          bgcolor: amColors.footerSecondaryBg || theme.palette.background.surfaceVariant,
+                          color: amColors.footerSecondaryText || theme.palette.text.secondary,
+                          '&:hover': {
+                            bgcolor: amColors.footerSecondaryHoverBg || theme.palette.action.hover,
+                          },
+                        }}
+                      >
+                        {t('accessManagement.discard')}
+                      </Button>
+                    </Box>
                   </Box>
                 )}
               </Box>
@@ -920,6 +1618,47 @@ export const AccessManagement = () => {
           )}
         </Box>
       </Box>
+
+      <Menu
+        anchorEl={menuAnchorEl}
+        open={Boolean(menuAnchorEl && menuResourceKey)}
+        onClose={handleCloseRoleMenu}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            mt: 0.5,
+            minWidth: 126,
+            bgcolor: amColors.menuBg || theme.palette.background.paper,
+            border: `1px solid ${amColors.menuBorder || theme.palette.divider}`,
+            boxShadow: theme.shadows[3],
+          },
+        }}
+      >
+        {ROLE_OPTIONS.map((role) => {
+          const normalizedRole = normalizeRole(role);
+          const selected = normalizedRole === menuCurrentRole;
+          return (
+            <MenuItem
+              key={role}
+              selected={selected}
+              onClick={() => handleRoleSelect(normalizedRole)}
+              sx={{
+                fontSize: '0.86rem',
+                color: theme.palette.text.primary,
+                '&.Mui-selected': {
+                  bgcolor: alpha(theme.palette.secondary.main, 0.16),
+                  '&:hover': {
+                    bgcolor: alpha(theme.palette.secondary.main, 0.24),
+                  },
+                },
+              }}
+            >
+              {getRoleLabelText(t, normalizedRole)}
+            </MenuItem>
+          );
+        })}
+      </Menu>
     </Box>
   );
 };

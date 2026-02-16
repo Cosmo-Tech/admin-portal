@@ -59,7 +59,21 @@
     "assignedRoles": "assigned roles",
     "selectUser": "Select a user to view their resource assignments.",
     "noResourcesMatch": "No resources match your search.",
-    "assign": "Assign"
+    "assign": "Assign",
+    "draft": "Draft",
+    "validateAll": "Validate All",
+    "discard": "Discard",
+    "autoAssignedRolesSummary": "{{count}} roles auto-assigned to parent resources",
+    "assignSaveError": "Failed to save role assignments. Please retry.",
+    "assignSaveSuccess": "Role assignments saved successfully.",
+    "noPermissionAssign": "You do not have permission to manage access for this resource.",
+    "roles": {
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Viewer",
+      "user": "User",
+      "none": "None"
+    }
   },
   "users": {
     "loading": "Loading users...",
