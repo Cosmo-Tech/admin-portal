@@ -57,6 +57,11 @@
     },
     "usersLabel": "UTILISATEURS",
     "assignedRoles": "rôles assignés",
+    "platformRoles": {
+      "label": "Rôle",
+      "platformAdmin": "Administrateur Plateforme",
+      "user": "Utilisateur"
+    },
     "selectUser": "Sélectionnez un utilisateur pour voir ses affectations de ressources.",
     "noResourcesMatch": "Aucune ressource ne correspond à votre recherche.",
     "assign": "Assigner",

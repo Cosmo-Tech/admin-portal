@@ -57,6 +57,11 @@
     },
     "usersLabel": "USERS",
     "assignedRoles": "assigned roles",
+    "platformRoles": {
+      "label": "Role",
+      "platformAdmin": "Platform Admin",
+      "user": "User"
+    },
     "selectUser": "Select a user to view their resource assignments.",
     "noResourcesMatch": "No resources match your search.",
     "assign": "Assign",

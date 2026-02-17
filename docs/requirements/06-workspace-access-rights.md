@@ -30,7 +30,7 @@ The Access Management page now provides:
   - Organization -> Solutions + Workspaces -> Runners
 
 3. Assignment interactions (staged workflow)
-- Each assignable resource row has an `Assign` button (except `RUN` rows).
+- Each assignable resource row has an `Assign` button 
 - Role menu supports fixed values: `Admin`, `Editor`, `Viewer`, `User`, `None`.
 - `None` removes explicit ACL access.
 - Changes are staged as local drafts and persisted only on `Validate All`.
@@ -55,7 +55,6 @@ The Access Management page now provides:
   - Add access control
   - Update access control
   - Remove access control
-- Update payloads follow API v5 object format (`{ role: "..." }`).
 - After successful writes, data is refreshed to keep users/resources in sync.
 
 6. Propagation behavior (implemented)
@@ -75,25 +74,3 @@ The Access Management page now provides:
   - `write_security` on the target resource
 - If operator lacks permission:
   - Assign button remains visible but disabled (grey, non-clickable).
-
-
-## Target Business Flow
-Most used workflow remains:
-1. From a workspace, assign a user `Editor` -> user should also get `Editor` on parent Solution and Organization.
-2. From a workspace, assign a user `Viewer` -> user should also get `Viewer` on parent Solution and Organization.
-3. From a workspace, view all users having access and their effective rights.
-
-## Remaining Work / Open Points
-1. Propagation policy validation with business owners
-- Current implementation avoids overwriting non-empty parent roles.
-- Confirm whether future behavior should support forced upgrade/downgrade of non-empty parent roles.
-
-2. Run-level (`RUN`) assignment support
-- `RUN` rows are currently display-only for assignment actions.
-
-3. Advanced UX scope
-- Tree pagination/virtualization (`Show N more`) is not part of current assignment implementation.
-- No bulk multi-user assignment workflow yet.
-
-4. Error experience hardening
-- Inline errors are implemented; future enhancement can add richer diagnostics/retry strategies per failed operation.

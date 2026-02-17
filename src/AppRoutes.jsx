@@ -34,7 +34,6 @@ const AppRoutes = () => {
             <Route path="resources" element={<Resources />} />
             <Route path="roles" element={<Roles />} />
           </Route>
-
           <Route path="sign-in" element={<Login />} />
         </Route>
       </>

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router';
 import {
   AccountTree as FlowchartIcon,
+  ShieldOutlined as AccessManagementIcon,
   ManageAccountsOutlined as ManageAccountsOutlinedIcon,
   HelpOutlineOutlined as HelpOutlineIcon,
 } from '@mui/icons-material';
@@ -28,6 +29,7 @@ export const NavigationMenu = () => {
   const location = useLocation();
   const theme = useTheme();
   const auth = useAuth();
+  const selectedNavTextColor = theme.palette.getContrastText(theme.palette.secondary.main);
 
   const userInitials = useMemo(() => {
     if (!auth.userName) return 'UN';
@@ -45,13 +47,8 @@ export const NavigationMenu = () => {
       to: '/users',
     },
     {
-      text: t('navigation.organizations'),
-      icon: <ManageAccountsOutlinedIcon />,
-      to: '/organization',
-    },
-    {
       text: t('navigation.accessManagement'),
-      icon: <ManageAccountsOutlinedIcon />,
+      icon: <AccessManagementIcon />,
       to: '/access-management',
     },
     {
@@ -122,7 +119,7 @@ export const NavigationMenu = () => {
                 <ListItemIcon
                   sx={{
                     minWidth: 40,
-                    color: isSelected ? theme.palette.common.white : theme.palette.text.primary,
+                    color: isSelected ? selectedNavTextColor : theme.palette.text.primary,
                     '& .MuiSvgIcon-root': {
                       fontSize: '1.1rem',
                     },
@@ -136,7 +133,7 @@ export const NavigationMenu = () => {
                     '& .MuiTypography-root': {
                       fontSize: '0.9rem',
                       fontWeight: isSelected ? 600 : 400,
-                      color: isSelected ? theme.palette.common.white : theme.palette.text.primary,
+                      color: isSelected ? selectedNavTextColor : theme.palette.text.primary,
                     },
                   }}
                 />
