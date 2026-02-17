@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import createKeycloakUser from './thunks/createKeycloakUser.js';
+import deleteKeycloakUser from './thunks/deleteKeycloakUser.js';
 import fetchRealmUsers from './thunks/fetchRealmUsers.js';
 
 /** Get the list of Keycloak users (enriched with permissions & roles). */
@@ -20,4 +22,16 @@ export const useLastLoginMap = () => useSelector((state) => state.users.lastLogi
 export const useFetchRealmUsers = () => {
   const dispatch = useDispatch();
   return useCallback(() => dispatch(fetchRealmUsers()), [dispatch]);
+};
+
+/** Create a new Keycloak user with a temporary password. */
+export const useCreateKeycloakUser = () => {
+  const dispatch = useDispatch();
+  return useCallback((userData) => dispatch(createKeycloakUser(userData)), [dispatch]);
+};
+
+/** Delete a Keycloak user by ID. */
+export const useDeleteKeycloakUser = () => {
+  const dispatch = useDispatch();
+  return useCallback((userId) => dispatch(deleteKeycloakUser(userId)), [dispatch]);
 };

@@ -96,6 +96,32 @@
     },
     "permissions": {
       "title": "Permissions"
+    },
+    "addDialog": {
+      "title": "Add New User",
+      "subtitle": "Enter the user's details to create an account.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "John Doe",
+      "email": "Email Address",
+      "emailPlaceholder": "john@example.com",
+      "tempPassword": "Temporary Password",
+      "platformRole": "Platform Role",
+      "roleUser": "User",
+      "roleAdmin": "Platform Admin",
+      "cancel": "Cancel",
+      "create": "Create User",
+      "creating": "Creating...",
+      "regenerate": "Generate new password",
+      "error": "Failed to create user",
+      "success": "User created successfully"
+    },
+    "deleteDialog": {
+      "title": "Delete User",
+      "message": "Are you sure you want to delete <strong>{{name}}</strong>? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "deleting": "Deleting...",
+      "error": "Failed to delete user"
     }
   }
 }

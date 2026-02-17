@@ -96,6 +96,32 @@
     },
     "permissions": {
       "title": "Permissions"
+    },
+    "addDialog": {
+      "title": "Ajouter un utilisateur",
+      "subtitle": "Entrez les détails de l'utilisateur pour créer un compte.",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "jean@exemple.com",
+      "tempPassword": "Mot de passe temporaire",
+      "platformRole": "Rôle plateforme",
+      "roleUser": "Utilisateur",
+      "roleAdmin": "Administrateur Plateforme",
+      "cancel": "Annuler",
+      "create": "Créer l'utilisateur",
+      "creating": "Création...",
+      "regenerate": "Générer un nouveau mot de passe",
+      "error": "Échec de la création de l'utilisateur",
+      "success": "Utilisateur créé avec succès"
+    },
+    "deleteDialog": {
+      "title": "Supprimer l'utilisateur",
+      "message": "Êtes-vous sûr de vouloir supprimer <strong>{{name}}</strong> ? Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer",
+      "deleting": "Suppression...",
+      "error": "Échec de la suppression de l'utilisateur"
     }
   }
 }
