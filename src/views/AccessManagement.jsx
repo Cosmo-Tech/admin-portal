@@ -28,8 +28,25 @@ import {
   Typography,
 } from '@mui/material';
 import { alpha, useTheme } from '@mui/material/styles';
-import { apiManager } from 'src/services/api/apiManager.js';
+import { ResourceTreeItem, ScopeFilterButtons, UserHeaderBadges } from 'src/components/AccessManagement';
 import { APP_ROLES } from 'src/services/config/accessControl/Roles.js';
+import { useSaveAclAssignments } from 'src/state/accessManagement/hooks.js';
+import {
+  ROLE_OPTIONS,
+  buildAclOperation,
+  buildResourceKey,
+  buildSaveErrorMessage,
+  computeEffectiveAssignments,
+  findExplicitAclEntry,
+  getAssignedRolesCountFromPermissions,
+  getFallbackRoleFromSecurity,
+  getLinkedSolutionId,
+  getRoleFromUserPermissions,
+  getUserIdentifiers,
+  hasWriteSecurityPermission,
+  normalizeRole,
+} from 'src/state/accessManagement/assignmentUtils.js';
+import { ASSIGNABLE_RESOURCE_TYPES } from 'src/state/accessManagement/constants.js';
 import { useFetchInitialData } from 'src/state/app/hooks.js';
 import { useUserRoles } from 'src/state/auth/hooks.js';
 import { useOrganizationsList } from 'src/state/organizations/hooks.js';
@@ -38,127 +55,10 @@ import { useSolutionsList } from 'src/state/solutions/hooks.js';
 import { USERS_STATUS } from 'src/state/users/constants.js';
 import { useFetchRealmUsers, useUsersList, useUsersListStatus } from 'src/state/users/hooks.js';
 import { useWorkspacesList } from 'src/state/workspaces/hooks.js';
-import { SecurityUtils } from 'src/utils/SecurityUtils.js';
-import { ResourceTreeItem } from './accessManagement/ResourceTreeItem.jsx';
-import { ScopeFilterButtons } from './accessManagement/ScopeFilterButtons.jsx';
-import { UserHeaderBadges } from './accessManagement/UserHeaderBadges.jsx';
-import {
-  ROLE_OPTIONS,
-  buildAclOperation,
-  buildResourceKey,
-  computeEffectiveAssignments,
-  normalizeRole,
-} from './accessManagement/assignmentUtils.js';
-
-const ASSIGNABLE_RESOURCE_TYPES = new Set(['organizations', 'solutions', 'workspaces', 'runners']);
-const WRITE_SECURITY_PERMISSION = 'write_security';
-
-const normalizeSearchValue = (value) => (value == null ? '' : String(value)).toLowerCase();
-
-const getStableNumber = (value, maxExclusive) => {
-  if (maxExclusive <= 0) return 0;
-  const normalized = normalizeSearchValue(value);
-  if (!normalized) return 0;
-
-  let hash = 0;
-  for (let i = 0; i < normalized.length; i++) {
-    hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return Math.abs(hash) % maxExclusive;
-};
-
-const getAvatarColor = (name, avatarColors, fallbackColor) => {
-  const fallbackPalette = fallbackColor ? [fallbackColor] : [];
-  const paletteColors = avatarColors?.length > 0 ? avatarColors : fallbackPalette;
-  if (paletteColors.length === 0) return undefined;
-  if (!name) return paletteColors[0];
-  return paletteColors[getStableNumber(name, paletteColors.length)];
-};
-
-const getInitials = (name) => {
-  if (!name) return '??';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  return parts[0].substring(0, 2).toUpperCase();
-};
-
-const matchesSearchQuery = (query, ...values) => {
-  const normalizedQuery = normalizeSearchValue(query).trim();
-  if (!normalizedQuery) return true;
-  return values.some((value) => normalizeSearchValue(value).includes(normalizedQuery));
-};
-
-const toLowerCaseOrEmpty = (value) =>
-  String(value ?? '')
-    .toLowerCase()
-    .trim();
-
-const getUserIdentifiers = (user) => {
-  const values = [user?.email, user?.username, user?.id];
-  const seen = new Set();
-  return values.map(toLowerCaseOrEmpty).filter((value) => {
-    if (!value || seen.has(value)) return false;
-    seen.add(value);
-    return true;
-  });
-};
+import { getAvatarColor, getInitials } from 'src/utils/AvatarUtils.js';
+import { matchesSearchQuery } from 'src/utils/SearchUtils.js';
 
 const getRoleLabelText = (t, role) => t(`accessManagement.roles.${normalizeRole(role)}`);
-
-const getLinkedSolutionId = (workspace) => {
-  return workspace?.solution?.solutionId ?? workspace?.solution?.id ?? workspace?.solutionId ?? null;
-};
-
-const findExplicitAclEntry = (security, userIdentifiers) => {
-  const aclList = Array.isArray(security?.accessControlList) ? security.accessControlList : [];
-  return aclList.find((entry) => userIdentifiers.includes(toLowerCaseOrEmpty(entry?.id))) ?? null;
-};
-
-const getRoleFromUserPermissions = (user, resourceType, resourceId) => {
-  const role = user?.resourcePermissions?.[resourceType]?.[resourceId]?.role;
-  return role != null ? role : null;
-};
-
-const getFallbackRoleFromSecurity = (security, user) => {
-  const identity = user?.email ?? user?.username ?? user?.id;
-  if (!security || !identity) return security?.default ?? 'none';
-  return SecurityUtils.getUserRoleForResource(security, identity) ?? security?.default ?? 'none';
-};
-
-const hasWriteSecurityPermission = (resource) => {
-  const currentPermissions = Array.isArray(resource?.security?.currentUserPermissions)
-    ? resource.security.currentUserPermissions
-    : [];
-  return currentPermissions.some((permission) => toLowerCaseOrEmpty(permission) === WRITE_SECURITY_PERMISSION);
-};
-
-const getAssignedRolesCountFromPermissions = (user) => {
-  if (!user?.resourcePermissions) return 0;
-  const resourceGroups = ['organizations', 'solutions', 'workspaces', 'runners'];
-  let assignedCount = 0;
-
-  for (const resourceGroup of resourceGroups) {
-    const entries = Object.values(user.resourcePermissions?.[resourceGroup] ?? {});
-    for (const entry of entries) {
-      if (normalizeRole(entry?.role) !== 'none') assignedCount += 1;
-    }
-  }
-
-  return assignedCount;
-};
-
-const buildSaveErrorMessage = (baseMessage, error) => {
-  const statusCode = error?.response?.status;
-  const apiMessage =
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    error?.toString?.() ||
-    'Unknown error';
-
-  if (statusCode) return `${baseMessage} (${statusCode}: ${apiMessage})`;
-  return `${baseMessage} (${apiMessage})`;
-};
 
 export const AccessManagement = () => {
   const { t } = useTranslation();
@@ -188,8 +88,8 @@ export const AccessManagement = () => {
 
   const fetchInitialData = useFetchInitialData();
   const fetchRealmUsers = useFetchRealmUsers();
+  const saveAclAssignments = useSaveAclAssignments();
 
-  const api = apiManager.getApiClient();
   const isPlatformAdmin = userRoles?.includes(APP_ROLES.PlatformAdmin) === true;
 
   const clearTransientState = useCallback(() => {
@@ -199,6 +99,10 @@ export const AccessManagement = () => {
     setSaveError(null);
     setSaveSuccess(null);
   }, []);
+
+  // ---------------------------------------------------------------------------
+  // User list logic
+  // ---------------------------------------------------------------------------
 
   const displayUsers = useMemo(() => {
     if (!Array.isArray(users) || users.length === 0) return [];
@@ -236,6 +140,10 @@ export const AccessManagement = () => {
     if (previousUserId && currentUserId && previousUserId !== currentUserId) clearTransientState();
     previousUserIdRef.current = currentUserId;
   }, [clearTransientState, currentUser?.id]);
+
+  // ---------------------------------------------------------------------------
+  // Resource tree logic
+  // ---------------------------------------------------------------------------
 
   const orgTree = useMemo(() => {
     if (!Array.isArray(organizations) || organizations.length === 0) return [];
@@ -328,6 +236,10 @@ export const AccessManagement = () => {
       })
       .filter(Boolean);
   }, [orgTree, resourceSearchQuery, resourceSearchScope]);
+
+  // ---------------------------------------------------------------------------
+  // Assignment model logic
+  // ---------------------------------------------------------------------------
 
   const resourceViewModels = useMemo(() => {
     if (!currentUser) return [];
@@ -474,6 +386,10 @@ export const AccessManagement = () => {
     return operations;
   }, [effectiveAssignments, resourceViewModels]);
 
+  // ---------------------------------------------------------------------------
+  // Assignment data accessor
+  // ---------------------------------------------------------------------------
+
   const getResourceAssignmentData = useCallback(
     (resourceType, resourceId) => {
       const resourceKey = buildResourceKey(resourceType, resourceId);
@@ -504,6 +420,10 @@ export const AccessManagement = () => {
     },
     [effectiveAssignments, resourceModelByKey, t]
   );
+
+  // ---------------------------------------------------------------------------
+  // Role menu handlers
+  // ---------------------------------------------------------------------------
 
   const handleOpenRoleMenu = useCallback((event, resourceKey) => {
     setMenuAnchorEl(event.currentTarget);
@@ -550,123 +470,9 @@ export const AccessManagement = () => {
     clearTransientState();
   }, [clearTransientState]);
 
-  const applyAclOperation = useCallback(
-    async (operation) => {
-      const rolePayload = { role: operation.role };
-      if (operation.resourceType === 'organizations') {
-        if (operation.operationType === 'add') {
-          await api.Organizations.addOrganizationAccessControl(operation.organizationId, {
-            id: operation.identityId,
-            role: operation.role,
-          });
-          return;
-        }
-        if (operation.operationType === 'update') {
-          await api.Organizations.updateOrganizationAccessControl(
-            operation.organizationId,
-            operation.identityId,
-            rolePayload
-          );
-          return;
-        }
-        if (operation.operationType === 'remove') {
-          await api.Organizations.removeOrganizationAccessControl(operation.organizationId, operation.identityId);
-        }
-        return;
-      }
-
-      if (operation.resourceType === 'solutions') {
-        if (!operation.organizationId || !operation.solutionId) return;
-        if (operation.operationType === 'add') {
-          await api.Solutions.addSolutionAccessControl(operation.organizationId, operation.solutionId, {
-            id: operation.identityId,
-            role: operation.role,
-          });
-          return;
-        }
-        if (operation.operationType === 'update') {
-          await api.Solutions.updateSolutionAccessControl(
-            operation.organizationId,
-            operation.solutionId,
-            operation.identityId,
-            rolePayload
-          );
-          return;
-        }
-        if (operation.operationType === 'remove') {
-          await api.Solutions.removeSolutionAccessControl(
-            operation.organizationId,
-            operation.solutionId,
-            operation.identityId
-          );
-        }
-        return;
-      }
-
-      if (operation.resourceType === 'workspaces') {
-        if (!operation.organizationId || !operation.workspaceId) return;
-        if (operation.operationType === 'add') {
-          await api.Workspaces.addWorkspaceAccessControl(operation.organizationId, operation.workspaceId, {
-            id: operation.identityId,
-            role: operation.role,
-          });
-          return;
-        }
-        if (operation.operationType === 'update') {
-          await api.Workspaces.updateWorkspaceAccessControl(
-            operation.organizationId,
-            operation.workspaceId,
-            operation.identityId,
-            rolePayload
-          );
-          return;
-        }
-        if (operation.operationType === 'remove') {
-          await api.Workspaces.removeWorkspaceAccessControl(
-            operation.organizationId,
-            operation.workspaceId,
-            operation.identityId
-          );
-        }
-        return;
-      }
-
-      if (operation.resourceType === 'runners') {
-        if (!operation.organizationId || !operation.workspaceId || !operation.runnerId) return;
-        if (operation.operationType === 'add') {
-          await api.Runners.addRunnerAccessControl(
-            operation.organizationId,
-            operation.workspaceId,
-            operation.runnerId,
-            {
-              id: operation.identityId,
-              role: operation.role,
-            }
-          );
-          return;
-        }
-        if (operation.operationType === 'update') {
-          await api.Runners.updateRunnerAccessControl(
-            operation.organizationId,
-            operation.workspaceId,
-            operation.runnerId,
-            operation.identityId,
-            rolePayload
-          );
-          return;
-        }
-        if (operation.operationType === 'remove') {
-          await api.Runners.removeRunnerAccessControl(
-            operation.organizationId,
-            operation.workspaceId,
-            operation.runnerId,
-            operation.identityId
-          );
-        }
-      }
-    },
-    [api]
-  );
+  // ---------------------------------------------------------------------------
+  // Save handler (delegates to Redux thunk)
+  // ---------------------------------------------------------------------------
 
   const handleValidateAll = useCallback(async () => {
     if (!hasDrafts || isSaving) return;
@@ -676,9 +482,7 @@ export const AccessManagement = () => {
     setSaveSuccess(null);
 
     try {
-      for (const operation of pendingOperations) {
-        await applyAclOperation(operation);
-      }
+      await saveAclAssignments(pendingOperations);
 
       clearTransientState();
       setSaveSuccess(t('accessManagement.assignSaveSuccess'));
@@ -695,13 +499,13 @@ export const AccessManagement = () => {
       setIsSaving(false);
     }
   }, [
-    applyAclOperation,
     clearTransientState,
     fetchInitialData,
     fetchRealmUsers,
     hasDrafts,
     isSaving,
     pendingOperations,
+    saveAclAssignments,
     t,
   ]);
 
@@ -713,6 +517,10 @@ export const AccessManagement = () => {
         'none'
     );
   }, [effectiveAssignments, menuResourceKey, resourceModelByKey]);
+
+  // ---------------------------------------------------------------------------
+  // Shared styles
+  // ---------------------------------------------------------------------------
 
   const searchFieldSx = {
     minWidth: 260,
@@ -735,6 +543,10 @@ export const AccessManagement = () => {
       opacity: 1,
     },
   };
+
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
 
   return (
     <Box
@@ -836,6 +648,7 @@ export const AccessManagement = () => {
           overflow: 'hidden',
         }}
       >
+        {/* Users panel */}
         <Box
           sx={{
             borderRadius: 2,
@@ -959,6 +772,7 @@ export const AccessManagement = () => {
           </List>
         </Box>
 
+        {/* Resource panel */}
         <Box
           sx={{
             display: 'flex',
@@ -1130,6 +944,7 @@ export const AccessManagement = () => {
                 )}
               </Box>
 
+              {/* Footer: alerts + action bar */}
               <Box sx={{ px: 2, pb: 1.5 }}>
                 {saveError && (
                   <Alert
@@ -1224,6 +1039,7 @@ export const AccessManagement = () => {
         </Box>
       </Box>
 
+      {/* Role selection menu */}
       <Menu
         anchorEl={menuAnchorEl}
         open={Boolean(menuAnchorEl && menuResourceKey)}
