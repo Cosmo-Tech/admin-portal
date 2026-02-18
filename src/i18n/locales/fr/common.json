@@ -106,14 +106,16 @@
       "emailPlaceholder": "jean@exemple.com",
       "tempPassword": "Mot de passe temporaire",
       "platformRole": "Rôle plateforme",
-      "roleUser": "Utilisateur",
+      "roleUser": "Utilisateur d'organisation",
       "roleAdmin": "Administrateur Plateforme",
       "cancel": "Annuler",
       "create": "Créer l'utilisateur",
       "creating": "Création...",
       "regenerate": "Générer un nouveau mot de passe",
       "error": "Échec de la création de l'utilisateur",
-      "success": "Utilisateur créé avec succès"
+      "success": "Utilisateur créé avec succès",
+      "adminAssignmentFailed": "L'attribution du rôle Administrateur Plateforme a échoué. Le nouvel utilisateur a été annulé automatiquement. Vérifiez la configuration du rôle Keycloak puis réessayez.",
+      "adminAssignmentRollbackFailed": "L'attribution du rôle Administrateur Plateforme a échoué et l'annulation automatique a aussi échoué. Supprimez l'utilisateur manuellement dans Keycloak : {{email}}{{userId}}."
     },
     "deleteDialog": {
       "title": "Supprimer l'utilisateur",

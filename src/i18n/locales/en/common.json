@@ -106,14 +106,16 @@
       "emailPlaceholder": "john@example.com",
       "tempPassword": "Temporary Password",
       "platformRole": "Platform Role",
-      "roleUser": "User",
+      "roleUser": "Organization User",
       "roleAdmin": "Platform Admin",
       "cancel": "Cancel",
       "create": "Create User",
       "creating": "Creating...",
       "regenerate": "Generate new password",
       "error": "Failed to create user",
-      "success": "User created successfully"
+      "success": "User created successfully",
+      "adminAssignmentFailed": "Platform Admin assignment failed. The new user was rolled back automatically. Please verify Keycloak role configuration and retry.",
+      "adminAssignmentRollbackFailed": "Platform Admin assignment failed and automatic rollback also failed. Please delete the user manually in Keycloak: {{email}}{{userId}}."
     },
     "deleteDialog": {
       "title": "Delete User",

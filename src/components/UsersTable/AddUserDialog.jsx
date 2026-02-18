@@ -63,6 +63,29 @@ const generatePassword = () => {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const getCreateUserErrorMessage = (err, t) => {
+  if (err?.code === 'ADMIN_ROLE_ASSIGNMENT_FAILED') {
+    return t(
+      'users.addDialog.adminAssignmentFailed',
+      'Platform Admin assignment failed. The new user was rolled back automatically. Please verify Keycloak role configuration and retry.'
+    );
+  }
+
+  if (err?.code === 'ADMIN_ROLE_ASSIGNMENT_ROLLBACK_FAILED') {
+    const email = err?.email || '';
+    const userId = err?.userId ? ` (ID: ${err.userId})` : '';
+    return t('users.addDialog.adminAssignmentRollbackFailed', {
+      email,
+      userId,
+      defaultValue:
+        'Platform Admin assignment failed and automatic rollback also failed. ' +
+        'Please delete the user manually in Keycloak: {{email}}{{userId}}.',
+    });
+  }
+
+  return err?.response?.data?.errorMessage || err?.message || t('users.addDialog.error');
+};
+
 export const AddUserDialog = ({ open, onClose }) => {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -110,8 +133,7 @@ export const AddUserDialog = ({ open, onClose }) => {
       await createUser({ fullName: fullName.trim(), email: email.trim(), password, role });
       onClose();
     } catch (err) {
-      const message = err?.response?.data?.errorMessage || err?.message || t('users.addDialog.error');
-      setError(message);
+      setError(getCreateUserErrorMessage(err, t));
     } finally {
       setIsSubmitting(false);
     }
