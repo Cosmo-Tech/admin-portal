@@ -76,19 +76,6 @@ Each tree node displays:
 - **Item count** — Number of child items (for organizations and workspaces)
 - **Assign/Role button** — Shows current role or "Assign" if no role
 
-### Tree density
-Each resource type has its own row density to create visual hierarchy:
-- **Organization** — Largest (58 px min height, 1 rem font)
-- **Solution / Workspace** — Medium (48 px, 0.93 rem)
-- **Runner** — Compact (44 px, 0.93 rem)
-
-### Tree connectors
-Nested items (depth > 0) display vertical and horizontal connector lines to visually associate children with their parent.
-
-### Expand / collapse
-- Organizations and workspaces start expanded by default.
-- Clicking a row with children toggles its collapsed/expanded state.
-
 ---
 
 ## Assignment workflow
@@ -113,13 +100,6 @@ Role changes are **not applied immediately**. Instead:
 3. All drafts accumulate until the user clicks **Validate All** or **Discard**.
 
 This prevents accidental role assignments and allows reviewing changes before persisting.
-
-### Draft visual states
-| State | Border style | Background | Indicator |
-|-------|-------------|------------|-----------|
-| **No change** | Solid, default | Default surface | — |
-| **Direct draft** (user picked a role) | Solid, success color | Light success tint | Role label shown |
-| **Auto-propagated draft** | Dashed, secondary color | Light secondary tint | Role label + "(draft)" suffix + check icon |
 
 ---
 
@@ -155,24 +135,6 @@ Appears only when there are pending drafts. Contains:
 
 Both buttons are disabled while a save operation is in progress.
 
----
-
-## API persistence
-
-When the user clicks **Validate All**, the system computes a minimal set of ACL operations by comparing each draft against the resource's current state.
-
-### Operation types
-| Operation | When |
-|-----------|------|
-| **Add** | User has no explicit ACL entry on the resource and the new role differs from the default |
-| **Update** | User already has an explicit ACL entry and the new role differs |
-| **Remove** | New role is `none` and user has an explicit ACL entry to delete |
-
-### API endpoints called (per resource type)
-- **Organization** — `addOrganizationAccessControl`, `updateOrganizationAccessControl`, `removeOrganizationAccessControl`
-- **Solution** — `addSolutionAccessControl`, `updateSolutionAccessControl`, `removeSolutionAccessControl`
-- **Workspace** — `addWorkspaceAccessControl`, `updateWorkspaceAccessControl`, `removeWorkspaceAccessControl`
-- **Runner** — `addRunnerAccessControl`, `updateRunnerAccessControl`, `removeRunnerAccessControl`
 
 ### Post-save behavior
 1. All drafts are cleared.
@@ -199,7 +161,5 @@ When neither condition is met, the button is rendered in a disabled state.
 ## Remaining work
 
 - [ ] Bulk role assignment (select multiple users → assign the same role across resources)
-- [ ] Undo last save operation
-- [ ] Show diff summary before validation (list of add/update/remove operations)
-- [ ] Handle user groups in ACL entries
-- [ ] Keyboard navigation within the resource tree
+- [ ] Handle user groups in ACL entries 
+- [ ] Hnald the v3

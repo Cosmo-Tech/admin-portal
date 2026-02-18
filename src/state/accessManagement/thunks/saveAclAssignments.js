@@ -89,15 +89,10 @@ const applyAclOperation = async (api, operation) => {
   if (operation.resourceType === 'runners') {
     if (!operation.organizationId || !operation.workspaceId || !operation.runnerId) return;
     if (operation.operationType === 'add') {
-      await api.Runners.addRunnerAccessControl(
-        operation.organizationId,
-        operation.workspaceId,
-        operation.runnerId,
-        {
-          id: operation.identityId,
-          role: operation.role,
-        }
-      );
+      await api.Runners.addRunnerAccessControl(operation.organizationId, operation.workspaceId, operation.runnerId, {
+        id: operation.identityId,
+        role: operation.role,
+      });
       return;
     }
     if (operation.operationType === 'update') {

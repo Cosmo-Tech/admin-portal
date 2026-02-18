@@ -30,7 +30,6 @@ import {
 import { alpha, useTheme } from '@mui/material/styles';
 import { ResourceTreeItem, ScopeFilterButtons, UserHeaderBadges } from 'src/components/AccessManagement';
 import { APP_ROLES } from 'src/services/config/accessControl/Roles.js';
-import { useSaveAclAssignments } from 'src/state/accessManagement/hooks.js';
 import {
   ROLE_OPTIONS,
   buildAclOperation,
@@ -47,6 +46,7 @@ import {
   normalizeRole,
 } from 'src/state/accessManagement/assignmentUtils.js';
 import { ASSIGNABLE_RESOURCE_TYPES } from 'src/state/accessManagement/constants.js';
+import { useSaveAclAssignments } from 'src/state/accessManagement/hooks.js';
 import { useFetchInitialData } from 'src/state/app/hooks.js';
 import { useUserRoles } from 'src/state/auth/hooks.js';
 import { useOrganizationsList } from 'src/state/organizations/hooks.js';
