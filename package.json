@@ -21,7 +21,7 @@
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
     "@reduxjs/toolkit": "^2.5.1",
-    "axios": "^1.7.9",
+    "axios": "^1.13.5",
     "i18next": "^25.8.0",
     "i18next-browser-languagedetector": "^8.2.0",
     "jwt-decode": "^4.0.0",
@@ -58,5 +58,8 @@
     "node": "^18",
     "yarn": "4.5.3"
   },
-  "packageManager": "yarn@4.5.3"
+  "packageManager": "yarn@4.5.3",
+  "resolutions": {
+    "axios": ">=1.13.5"
+  }
 }
