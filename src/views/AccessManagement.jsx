@@ -60,6 +60,107 @@ import { matchesSearchQuery } from 'src/utils/SearchUtils.js';
 
 const getRoleLabelText = (t, role) => t(`accessManagement.roles.${normalizeRole(role)}`);
 
+const buildWorkspaceRunners = (runners, organizationId, workspaceId, workspaceSolutionId) => {
+  const workspaceRunners = [];
+  for (const runner of runners) {
+    if (runner.organizationId !== organizationId) continue;
+    if (runner.workspaceId !== workspaceId) continue;
+    if (String(runner.type || 'RUNNER').toUpperCase() === 'RUN') continue;
+
+    workspaceRunners.push({
+      ...runner,
+      name: runner.name || runner.id,
+      type: runner.type || 'RUNNER',
+      solutionId: runner.solution?.solutionId ?? runner.solutionId ?? workspaceSolutionId ?? null,
+    });
+  }
+  return workspaceRunners;
+};
+
+const buildOrganizationTree = (organizations, solutions, workspaces, runners) => {
+  if (!Array.isArray(organizations) || organizations.length === 0) return [];
+
+  const safeSolutions = Array.isArray(solutions) ? solutions : [];
+  const safeWorkspaces = Array.isArray(workspaces) ? workspaces : [];
+  const safeRunners = Array.isArray(runners) ? runners : [];
+
+  return organizations.map((organization) => {
+    const orgSolutions = safeSolutions.filter((solution) => solution.organizationId === organization.id);
+    const orgWorkspaces = safeWorkspaces
+      .filter((workspace) => workspace.organizationId === organization.id)
+      .map((workspace) => {
+        const workspaceSolutionId = getLinkedSolutionId(workspace);
+        return {
+          ...workspace,
+          name: workspace.name || workspace.id,
+          solutionId: workspaceSolutionId,
+          runners: buildWorkspaceRunners(safeRunners, organization.id, workspace.id, workspaceSolutionId),
+        };
+      });
+
+    return {
+      ...organization,
+      name: organization.name || organization.id,
+      solutions: orgSolutions,
+      workspaces: orgWorkspaces,
+    };
+  });
+};
+
+const filterOrganizationsByName = (orgTree, resourceSearchQuery) =>
+  orgTree.filter((organization) => matchesSearchQuery(resourceSearchQuery, organization.name, organization.id));
+
+const filterOrganizationsBySolutions = (orgTree, resourceSearchQuery) => {
+  const filtered = [];
+  for (const organization of orgTree) {
+    const matchedSolutions = [];
+    for (const solution of organization.solutions || []) {
+      if (matchesSearchQuery(resourceSearchQuery, solution.name, solution.id)) matchedSolutions.push(solution);
+    }
+    if (matchedSolutions.length === 0) continue;
+    filtered.push({ ...organization, solutions: matchedSolutions, workspaces: [] });
+  }
+  return filtered;
+};
+
+const filterOrganizationsByWorkspaces = (orgTree, resourceSearchQuery) => {
+  const filtered = [];
+  for (const organization of orgTree) {
+    const matchedWorkspaces = [];
+    for (const workspace of organization.workspaces || []) {
+      if (matchesSearchQuery(resourceSearchQuery, workspace.name, workspace.id)) matchedWorkspaces.push(workspace);
+    }
+    if (matchedWorkspaces.length === 0) continue;
+    filtered.push({ ...organization, workspaces: matchedWorkspaces });
+  }
+  return filtered;
+};
+
+const filterOrganizationsByRunners = (orgTree, resourceSearchQuery) => {
+  const filtered = [];
+  for (const organization of orgTree) {
+    const matchedWorkspaces = [];
+    for (const workspace of organization.workspaces || []) {
+      const matchedRunners = [];
+      for (const runner of workspace.runners || []) {
+        if (matchesSearchQuery(resourceSearchQuery, runner.name, runner.id)) matchedRunners.push(runner);
+      }
+      if (matchedRunners.length > 0) matchedWorkspaces.push({ ...workspace, runners: matchedRunners });
+    }
+    if (matchedWorkspaces.length === 0) continue;
+    filtered.push({ ...organization, workspaces: matchedWorkspaces, solutions: [] });
+  }
+  return filtered;
+};
+
+const filterResourceTreeByScope = (orgTree, resourceSearchQuery, resourceSearchScope) => {
+  if (!resourceSearchQuery) return orgTree;
+  if (resourceSearchScope === 'organizations') return filterOrganizationsByName(orgTree, resourceSearchQuery);
+  if (resourceSearchScope === 'solutions') return filterOrganizationsBySolutions(orgTree, resourceSearchQuery);
+  if (resourceSearchScope === 'workspaces') return filterOrganizationsByWorkspaces(orgTree, resourceSearchQuery);
+  return filterOrganizationsByRunners(orgTree, resourceSearchQuery);
+};
+
 export const AccessManagement = () => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -145,97 +246,15 @@ export const AccessManagement = () => {
   // Resource tree logic
   // ---------------------------------------------------------------------------
 
-  const orgTree = useMemo(() => {
-    if (!Array.isArray(organizations) || organizations.length === 0) return [];
+  const orgTree = useMemo(
+    () => buildOrganizationTree(organizations, solutions, workspaces, runners),
+    [organizations, runners, solutions, workspaces]
+  );
 
-    return organizations.map((organization) => {
-      const orgSolutions = (solutions || []).filter((solution) => solution.organizationId === organization.id);
-
-      const orgWorkspaces = (workspaces || [])
-        .filter((workspace) => workspace.organizationId === organization.id)
-        .map((workspace) => {
-          const workspaceSolutionId = getLinkedSolutionId(workspace);
-          const workspaceRunners = (runners || [])
-            .filter(
-              (runner) =>
-                runner.organizationId === organization.id &&
-                runner.workspaceId === workspace.id &&
-                String(runner.type || 'RUNNER').toUpperCase() !== 'RUN'
-            )
-            .map((runner) => ({
-              ...runner,
-              name: runner.name || runner.id,
-              type: runner.type || 'RUNNER',
-              solutionId: runner.solution?.solutionId ?? runner.solutionId ?? workspaceSolutionId ?? null,
-            }));
-
-          return {
-            ...workspace,
-            name: workspace.name || workspace.id,
-            solutionId: workspaceSolutionId,
-            runners: workspaceRunners,
-          };
-        });
-
-      return {
-        ...organization,
-        name: organization.name || organization.id,
-        solutions: orgSolutions,
-        workspaces: orgWorkspaces,
-      };
-    });
-  }, [organizations, runners, solutions, workspaces]);
-
-  const filteredOrgTree = useMemo(() => {
-    if (!resourceSearchQuery) return orgTree;
-
-    if (resourceSearchScope === 'organizations') {
-      return orgTree.filter((organization) =>
-        matchesSearchQuery(resourceSearchQuery, organization.name, organization.id)
-      );
-    }
-
-    if (resourceSearchScope === 'solutions') {
-      return orgTree
-        .map((organization) => {
-          const matchedSolutions = (organization.solutions || []).filter((solution) =>
-            matchesSearchQuery(resourceSearchQuery, solution.name, solution.id)
-          );
-          if (matchedSolutions.length === 0) return null;
-          return { ...organization, solutions: matchedSolutions, workspaces: [] };
-        })
-        .filter(Boolean);
-    }
-
-    if (resourceSearchScope === 'workspaces') {
-      return orgTree
-        .map((organization) => {
-          const matchedWorkspaces = (organization.workspaces || []).filter((workspace) =>
-            matchesSearchQuery(resourceSearchQuery, workspace.name, workspace.id)
-          );
-          if (matchedWorkspaces.length === 0) return null;
-          return { ...organization, workspaces: matchedWorkspaces };
-        })
-        .filter(Boolean);
-    }
-
-    return orgTree
-      .map((organization) => {
-        const matchedWorkspaces = (organization.workspaces || [])
-          .map((workspace) => {
-            const matchedRunners = (workspace.runners || []).filter((runner) =>
-              matchesSearchQuery(resourceSearchQuery, runner.name, runner.id)
-            );
-            if (matchedRunners.length === 0) return null;
-            return { ...workspace, runners: matchedRunners };
-          })
-          .filter(Boolean);
-
-        if (matchedWorkspaces.length === 0) return null;
-        return { ...organization, workspaces: matchedWorkspaces, solutions: [] };
-      })
-      .filter(Boolean);
-  }, [orgTree, resourceSearchQuery, resourceSearchScope]);
+  const filteredOrgTree = useMemo(
+    () => filterResourceTreeByScope(orgTree, resourceSearchQuery, resourceSearchScope),
+    [orgTree, resourceSearchQuery, resourceSearchScope]
+  );
 
   // ---------------------------------------------------------------------------
   // Assignment model logic
