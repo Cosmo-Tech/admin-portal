@@ -13,25 +13,36 @@ function App() {
 
   useEffect(() => {
     async function checkLogin() {
-      if (localStorage.getItem('authProvider')) {
-        try {
-          const isAuthenticated = await Auth.isUserSignedIn();
-          setAuthData({
-            error: '',
-            userEmail: isAuthenticated ? Auth.getUserEmail() : '',
-            userId: isAuthenticated ? Auth.getUserId() : '',
-            userName: isAuthenticated ? Auth.getUserName() : '',
-            profilePic: isAuthenticated ? Auth.getUserPicUrl() : '',
-            roles: isAuthenticated ? Auth.getUserRoles() : [],
-            permissions: [],
-            status: isAuthenticated ? AUTH_STATUS.AUTHENTICATED : AUTH_STATUS.ANONYMOUS,
-          });
-        } catch (error) {
-          if (error?.name === 'BrowserAuthError') {
-            // Ignore "token acquisition failed" error, it may happen when previously used MSAL config is not compatible
-            // (e.g. when using local webapp and switching between environments & login providers)
-            console.error(error);
-          }
+      if (!localStorage.getItem('authProvider')) return;
+
+      try {
+        const isAuthenticated = await Auth.isUserSignedIn();
+        const authData = {
+          error: '',
+          userEmail: '',
+          userId: '',
+          userName: '',
+          profilePic: '',
+          roles: [],
+          permissions: [],
+          status: AUTH_STATUS.ANONYMOUS,
+        };
+
+        if (isAuthenticated) {
+          authData.userEmail = Auth.getUserEmail();
+          authData.userId = Auth.getUserId();
+          authData.userName = Auth.getUserName();
+          authData.profilePic = Auth.getUserPicUrl();
+          authData.roles = Auth.getUserRoles();
+          authData.status = AUTH_STATUS.AUTHENTICATED;
+        }
+
+        setAuthData(authData);
+      } catch (error) {
+        if (error?.name === 'BrowserAuthError') {
+          // Ignore "token acquisition failed" error, it may happen when previously used MSAL config is not compatible
+          // (e.g. when using local webapp and switching between environments & login providers)
+          console.error(error);
         }
       }
     }

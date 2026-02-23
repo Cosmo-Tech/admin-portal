@@ -57,7 +57,7 @@ When a user is selected, the panel header shows:
 
 ### Resource hierarchy tree
 
-Resources are displayed in a collapsible tree structure:
+Resources are displayed in a collapsible tree structure, sorted alphabetically by name at each level:
 
 ```
 Organization

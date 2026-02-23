@@ -74,6 +74,7 @@ const buildWorkspaceRunners = (runners, organizationId, workspaceId, workspaceSo
       solutionId: runner.solution?.solutionId ?? runner.solutionId ?? workspaceSolutionId ?? null,
     });
   }
+  workspaceRunners.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
   return workspaceRunners;
 };
 
@@ -98,13 +99,16 @@ const buildOrganizationTree = (organizations, solutions, workspaces, runners) =>
         };
       });
 
+    orgSolutions.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+    orgWorkspaces.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+
     return {
       ...organization,
       name: organization.name || organization.id,
       solutions: orgSolutions,
       workspaces: orgWorkspaces,
     };
-  });
+  }).sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
 };
 
 const filterOrganizationsByName = (orgTree, resourceSearchQuery) =>
