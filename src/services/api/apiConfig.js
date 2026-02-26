@@ -7,7 +7,7 @@ class ApiConfig {
   #apis = null;
 
   constructor() {
-    this.#apis = validateApis(APIS);
+    this.#apis = validateApis(window?.publicWebappConfig?.APIS ?? APIS);
   }
 
   getApis = () => this.#apis;

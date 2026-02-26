@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
+#
+# Local Minikube override values for testing
+#
+
+name: cosmotech-admin-portal
+
+webapp:
+  domainName: ""
+  publicUrl: ""
+  server:
+    replicaCount: 1
+    nodeSelector: {}
+    image:
+      pullSecret: ""
+      # Image built locally inside Minikube's Docker daemon
+      repository: cosmotech-admin-portal
+      tag: local
+      # Never pull from registry — use the local image
+      pullPolicy: Never
+
+# Runtime config injected via ConfigMap (apis.json)
+# Using the Keycloak brewery dev environment as an example.
+# Replace with your own values if needed.
+config:
+  apis:
+    KoB brewery dev:
+      AUTH_KEYCLOAK_CLIENT_ID: "cosmotech-webapp-client"
+      AUTH_KEYCLOAK_REALM: "https://kubernetes.cosmotech.com/keycloak/realms/brewery"
+      AUTH_KEYCLOAK_ROLES_JWT_CLAIM: "userRoles"
+      COSMOTECH_API_PATH: "https://kubernetes.cosmotech.com/cosmotech-api/brewery/v4"
+
+# Disable ingress for local testing (use port-forward instead)
+ingress:
+  enabled: false
+
+# Lower resources for Minikube
+resources:
+  limits:
+    cpu: 500m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi

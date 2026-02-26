@@ -1,0 +1,12 @@
+{{/*
+SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+SPDX-License-Identifier: LicenseRef-CosmoTech
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cosmotech-admin-portal.server-name" . }}-config
+  namespace: {{ .Release.Namespace }}
+data:
+  apis.json: |
+    {{ .Values.config.apis | toJson }}

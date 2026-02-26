@@ -1,0 +1,74 @@
+{{/*
+SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+SPDX-License-Identifier: LicenseRef-CosmoTech
+*/}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cosmotech-admin-portal.server-name" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cosmotech.com/service: {{ include "cosmotech-admin-portal.server-name" . }}
+spec:
+  replicas: {{ .Values.webapp.server.replicaCount }}
+  selector:
+    matchLabels:
+      cosmotech.com/service: {{ include "cosmotech-admin-portal.server-name" . }}
+  template:
+    metadata:
+      labels:
+        cosmotech.com/service: {{ include "cosmotech-admin-portal.server-name" . }}
+        networking/traffic-allowed: "yes"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      {{- if .Values.webapp.server.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.webapp.server.image.pullSecret }}
+      {{- end }}
+      {{- with .Values.webapp.server.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: admin-portal
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: false
+          runAsUser: 1000
+        image: "{{ .Values.webapp.server.image.repository }}:{{ .Values.webapp.server.image.tag }}"
+        imagePullPolicy: {{ .Values.webapp.server.image.pullPolicy }}
+        ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-tmp-volume
+          mountPath: /tmp/webapp
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-config-volume
+          mountPath: /webapp/patch_config/config
+          readOnly: true
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-nginx-cache
+          mountPath: /var/cache/nginx
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-nginx-run
+          mountPath: /var/run
+      volumes:
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-tmp-volume
+          emptyDir: {}
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-config-volume
+          configMap:
+            name: {{ include "cosmotech-admin-portal.server-name" . }}-config
+            items:
+            - key: apis.json
+              path: apis.json
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-nginx-cache
+          emptyDir: {}
+        - name: {{ include "cosmotech-admin-portal.server-name" . }}-nginx-run
+          emptyDir: {}
