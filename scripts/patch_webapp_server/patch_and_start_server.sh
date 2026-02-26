@@ -38,11 +38,7 @@ else
   echo "No config file found at $CONFIG_FILE, using build-time defaults"
 fi
 
-# Replace nginx default html with patched build
-#rm -rf /usr/share/nginx/html
-#ln -s "$BUILD_DIR" /usr/share/nginx/html
-rm -rf /usr/share/nginx/html/*
-cp -r "$BUILD_DIR"/. /usr/share/nginx/html/
+# nginx-universal.conf already points to /tmp/webapp/build, so no copy-back needed
 
 echo "Starting nginx..."
 exec nginx -g "daemon off;"

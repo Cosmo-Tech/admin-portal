@@ -53,7 +53,7 @@ RUN apk add --no-cache bash
 RUN rm -rf /usr/share/nginx/html/*
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY webapp_server/nginx.conf /etc/nginx/conf.d/default.conf
+COPY webapp_server/nginx-universal.conf /etc/nginx/conf.d/default.conf
 COPY scripts/patch_webapp_server/patch_and_start_server.sh /webapp/patch_and_start_server.sh
 
 RUN chmod +x /webapp/patch_and_start_server.sh
