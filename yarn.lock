@@ -61,12 +61,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-browser@npm:^4.27.0":
-  version: 4.28.1
-  resolution: "@azure/msal-browser@npm:4.28.1"
+"@azure/msal-browser@npm:^4.28.2":
+  version: 4.29.0
+  resolution: "@azure/msal-browser@npm:4.29.0"
   dependencies:
-    "@azure/msal-common": "npm:15.14.1"
-  checksum: 10c0/cf69fd06ab9f7343302e53233f197cd009e4f1cb304025f8e62dc13df858ebcb14362ab0b326980070cace75d7ce8d37a642debb4ef09ca646a9cd6ee0282e6b
+    "@azure/msal-common": "npm:15.15.0"
+  checksum: 10c0/a25a57bf0928ef5f0d41c04f0961b93cbc70f5cb33e1f332ee7bcfc5224b0c1b836d8fc4bd01a2fcc0856397026c1dda422053b044a8027293aa46f49761b1ea
   languageName: node
   linkType: hard
 
@@ -77,10 +77,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-common@npm:15.14.1":
-  version: 15.14.1
-  resolution: "@azure/msal-common@npm:15.14.1"
-  checksum: 10c0/0782278648609e13a67361d1c4600d0bb2c74d85b3580ff045acc19b352b206e8d021266420bce59f40d69da3789da060c03291aa3f83d31ed0569bc2c3e89bb
+"@azure/msal-common@npm:15.15.0":
+  version: 15.15.0
+  resolution: "@azure/msal-common@npm:15.15.0"
+  checksum: 10c0/1b2cae4950dff473c957afc725ceba4f0e00486eb110671f25af0ec40a5c905ebe56ea688e9651cb8ff28e9d1025f817faed7245c5103070be439daa33a01b86
   languageName: node
   linkType: hard
 
@@ -324,7 +324,7 @@ __metadata:
     "@azure/msal-browser": "npm:^3.26.1"
     "@cosmotech/api-ts-v3": "npm:@cosmotech/api-ts@^3.3.4"
     "@cosmotech/api-ts-v5": "npm:@cosmotech/api-ts@^5.0.0-rc5"
-    "@cosmotech/azure": "npm:^3.0.1"
+    "@cosmotech/azure": "npm:^4.0.1"
     "@cosmotech/core": "npm:^2.0.0"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.0"
@@ -387,12 +387,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmotech/azure@npm:^3.0.1":
-  version: 3.0.3
-  resolution: "@cosmotech/azure@npm:3.0.3"
+"@cosmotech/azure@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@cosmotech/azure@npm:4.0.1"
   dependencies:
-    "@azure/msal-browser": "npm:^4.27.0"
-  checksum: 10c0/8aa9598372bc30a30e33e4ba7cab85d79e8a94232a508820c6cfb6e74536488cea79148fabc9616feea6f1b6f669925448c9bb0fb8484d257887d5aec34ac60c
+    "@azure/msal-browser": "npm:^4.28.2"
+  checksum: 10c0/98844531cb71211d00c0501de09e0097dcc2c0dcf8b92036d6cb149a26847b19eea221188a53531b7b99291db2625e7d9f7869bbcdad174dcf6e436ea23a7cdf
   languageName: node
   linkType: hard
 
