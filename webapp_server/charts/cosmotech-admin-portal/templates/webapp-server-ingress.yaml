@@ -27,7 +27,7 @@ spec:
   - host: {{ .Values.webapp.domainName }}
     http:
       paths:
-      - path: "{{ .Values.webapp.publicUrl }}()(?:/|$)(.*)"
+      - path: "/{{ trimPrefix "/" .Values.webapp.publicUrl }}(/|$)(.*)"
         pathType: ImplementationSpecific
         backend:
           service:
