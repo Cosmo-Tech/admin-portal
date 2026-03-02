@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
+name: Package cosmotech-admin-portal chart
+
+on:
+  push:
+    tags:
+      - 'cosmotech-admin-portal-chart-*'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: azure/setup-helm@v4
+
+      - name: Helm lint
+        working-directory: webapp_server/charts/cosmotech-admin-portal
+        run: |
+          helm lint --strict .
+
+      - name: Helm package
+        working-directory: webapp_server/charts/cosmotech-admin-portal
+        run: |
+          helm package .
+
+      - name: Login to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+            helm registry login ghcr.io \
+              --username "${{ github.actor }}" \
+              --password-stdin
+
+      - name: Helm push
+        working-directory: webapp_server/charts/cosmotech-admin-portal
+        run: |
+          helm push cosmotech-admin-portal-*.tgz oci://ghcr.io/cosmo-tech

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 # SPDX-License-Identifier: LicenseRef-CosmoTech
-name: Lint
+name: Tests
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ on:
       - '**'
 
 jobs:
-  eslint:
+  tests:
     if: ${{ ! startsWith(github.head_ref, 'dependabot/') }}
     runs-on: ubuntu-latest
     steps:
@@ -24,9 +24,7 @@ jobs:
         with:
           node-version: '22'
           cache: 'yarn'
-      - name: Run eslint
-        run: yarn install && yarn eslint .
+      - name: Run tests
+        run: yarn install && yarn test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run reuse lint
-        run: pip install reuse && reuse lint

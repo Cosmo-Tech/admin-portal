@@ -1,0 +1,81 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
+name: Create and publish the admin-portal docker images
+
+on:
+  workflow_dispatch:
+    inputs:
+      targetRef:
+        description: 'Tag, branch or commit from which to build the server image'
+        default: ''
+        required: true
+        type: string
+      imageTag:
+        description: 'Tag to set when building the docker image (optional)'
+        default: ''
+        required: false
+        type: string
+      buildNumber:
+        description: 'Build number to display in the Technical Information dialog (optional)'
+        default: ''
+        required: false
+        type: string
+  push:
+    branches: ['main']
+    tags:
+      - '*'
+
+env:
+  LATEST_BRANCH: 'main'
+  DOCKER_BUILDKIT: 1
+  REGISTRY: ghcr.io
+  REPOSITORY_NAME: ${{ github.repository }}
+  # Use workflow input "buildNumber" if provided, or the commit SHA otherwise
+  VITE_BUILD_NUMBER: ${{ inputs.buildNumber != '' && inputs.buildNumber || github.sha }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout git repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.targetRef != '' && inputs.targetRef || github.ref_name }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "webapp-server: extract Docker metadata (tags, labels)"
+        id: webapp-server-metadata
+        uses: docker/metadata-action@v5
+        with:
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', env.LATEST_BRANCH) }},priority=1200
+            type=raw,value=${{ inputs.imageTag }},enable=${{ inputs.imageTag != '' }},priority=1100
+            type=ref,event=branch
+            type=ref,event=tag
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY_NAME }}/webapp-server
+
+      - name: "webapp-server: build and push Docker image"
+        uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+        with:
+          context: .
+          file: webapp_server/webapp-server.Dockerfile
+          push: true
+          tags: ${{ steps.webapp-server-metadata.outputs.tags }}
+          labels: ${{ steps.webapp-server-metadata.outputs.labels }}
+          # Target stage can be either server-universal or server-specific (default)
+          target: server-universal
+          build-args: |
+            "VITE_BUILD_NUMBER=${{ env.VITE_BUILD_NUMBER }}"
