@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-CosmoTech
 
 # ── Stage 1: Install dependencies ─────────────────────────────────────────────
-FROM node:22-alpine AS install_build_dependencies
+FROM node:18-alpine AS install_build_dependencies
 
 RUN corepack enable
 
