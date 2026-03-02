@@ -27,3 +27,4 @@ dist-ssr
 *.sln
 *.sw?
 /plans
+webapp_server/charts/cosmotech-admin-portal/values-minikube.yaml
