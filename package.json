@@ -17,7 +17,7 @@
     "@cosmotech/api-ts-v3": "npm:@cosmotech/api-ts@^3.3.4",
     "@cosmotech/api-ts-v5": "npm:@cosmotech/api-ts@^5.0.0-rc5",
     "@cosmotech/azure": "^3.0.1",
-    "@cosmotech/core": "^2.0.0",
+    "@cosmotech/core": "^3.0.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.3.7",
