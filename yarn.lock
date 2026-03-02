@@ -361,7 +361,7 @@ __metadata:
     react-hook-form: "npm:^7.54.2"
     react-i18next: "npm:^16.5.4"
     react-redux: "npm:^9.2.0"
-    react-router: "npm:^7.1.5"
+    react-router: "npm:^7.13.1"
     typescript: "npm:^5.9.3"
     vite: "npm:^6.1.0"
     vite-plugin-node-polyfills: "npm:^0.23.0"
@@ -6192,9 +6192,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:^7.1.5":
-  version: 7.12.0
-  resolution: "react-router@npm:7.12.0"
+"react-router@npm:^7.13.1":
+  version: 7.13.1
+  resolution: "react-router@npm:7.13.1"
   dependencies:
     cookie: "npm:^1.0.1"
     set-cookie-parser: "npm:^2.6.0"
@@ -6204,7 +6204,7 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 10c0/abde366f716cb3961a5a390c278375c0591bace5773e1b4420001f0a913b4dd53d490e7dea866acebcac2c0fa07378aa83702769d449449027406ed517a8ea00
+  checksum: 10c0/a64c645cede74251f21483fbfad740b36dc5133522d6f53f12317a873a22865fce659d4c2377d5e19c912f85c7b12b88224a2c70d8f70c082496b569cc4abc31
   languageName: node
   linkType: hard
 
