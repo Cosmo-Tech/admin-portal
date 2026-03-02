@@ -1,0 +1,17 @@
+{{/*
+SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+SPDX-License-Identifier: LicenseRef-CosmoTech
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cosmotech-admin-portal.server-name" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    cosmotech.com/service: {{ include "cosmotech-admin-portal.server-name" . }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 80

@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
+apiVersion: v2
+name: cosmotech-admin-portal
+description: Cosmo Tech Administration Portal Web Application
+type: application
+version: 0.1.0
+home: https://cosmotech.com
+sources:
+  - https://github.com/Cosmo-Tech/admin-portal

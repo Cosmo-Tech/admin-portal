@@ -1,0 +1,55 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
+
+#
+# Default values for cosmotech-admin-portal.
+#
+
+# -- prefix of the deployments, ingress and services that will be created
+name: cosmotech-admin-portal
+
+webapp:
+  # -- domain name to use to host the webapp server (e.g. mytenant.cosmotech.com)
+  domainName: ""
+  # -- URL path to use as root of the webapp (e.g. /admin-portal)
+  publicUrl: ""
+  server:
+    # -- number of replicas for the webapp server deployment
+    replicaCount: 1
+    # -- node selector for webapp server deployment
+    nodeSelector: {}
+    image:
+      # -- name of the secret containing registry credentials to pull private images
+      pullSecret: ""
+      # -- container image to use as webapp server (e.g. ghcr.io/cosmo-tech/admin-portal/webapp-server)
+      repository: ""
+      # -- container image tag
+      tag: latest
+      # -- [policy](https://kubernetes.io/docs/concepts/containers/images/#updating-images) to pull the image
+      pullPolicy: Always
+
+# -- APIs configuration injected at runtime via ConfigMap.
+# This replaces the build-time src/config/apis.json.
+# Example:
+#   config:
+#     apis:
+#       my-environment:
+#         AUTH_KEYCLOAK_CLIENT_ID: "cosmotech-webapp-client"
+#         AUTH_KEYCLOAK_REALM: "https://example.com/keycloak/realms/myrealm"
+#         AUTH_KEYCLOAK_ROLES_JWT_CLAIM: "userRoles"
+#         COSMOTECH_API_PATH: "https://example.com/cosmotech-api/v4"
+config:
+  apis: {}
+
+ingress:
+  # -- whether to deploy the ingress for the webapp server
+  enabled: true
+
+# -- resource limits for the webapp server pod
+resources:
+  limits:
+    cpu: 1000m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 128Mi

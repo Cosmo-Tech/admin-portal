@@ -85,30 +85,32 @@ const buildOrganizationTree = (organizations, solutions, workspaces, runners) =>
   const safeWorkspaces = Array.isArray(workspaces) ? workspaces : [];
   const safeRunners = Array.isArray(runners) ? runners : [];
 
-  return organizations.map((organization) => {
-    const orgSolutions = safeSolutions.filter((solution) => solution.organizationId === organization.id);
-    const orgWorkspaces = safeWorkspaces
-      .filter((workspace) => workspace.organizationId === organization.id)
-      .map((workspace) => {
-        const workspaceSolutionId = getLinkedSolutionId(workspace);
-        return {
-          ...workspace,
-          name: workspace.name || workspace.id,
-          solutionId: workspaceSolutionId,
-          runners: buildWorkspaceRunners(safeRunners, organization.id, workspace.id, workspaceSolutionId),
-        };
-      });
+  return organizations
+    .map((organization) => {
+      const orgSolutions = safeSolutions.filter((solution) => solution.organizationId === organization.id);
+      const orgWorkspaces = safeWorkspaces
+        .filter((workspace) => workspace.organizationId === organization.id)
+        .map((workspace) => {
+          const workspaceSolutionId = getLinkedSolutionId(workspace);
+          return {
+            ...workspace,
+            name: workspace.name || workspace.id,
+            solutionId: workspaceSolutionId,
+            runners: buildWorkspaceRunners(safeRunners, organization.id, workspace.id, workspaceSolutionId),
+          };
+        });
 
-    orgSolutions.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
-    orgWorkspaces.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+      orgSolutions.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+      orgWorkspaces.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
 
-    return {
-      ...organization,
-      name: organization.name || organization.id,
-      solutions: orgSolutions,
-      workspaces: orgWorkspaces,
-    };
-  }).sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
+      return {
+        ...organization,
+        name: organization.name || organization.id,
+        solutions: orgSolutions,
+        workspaces: orgWorkspaces,
+      };
+    })
+    .sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
 };
 
 const filterOrganizationsByName = (orgTree, resourceSearchQuery) =>

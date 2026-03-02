@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
+
+node_modules/
+.yarn/cache/
+.git/
+.gitignore
+docs/
+sandbox/
+plans/
+k8s/
+webapp_server/charts/
+*.md
+LICENSE
+LICENSES/
+REUSE.toml
+.github/
