@@ -41,7 +41,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout git repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.targetRef != '' && inputs.targetRef || github.ref_name }}
 
