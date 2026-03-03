@@ -38,7 +38,7 @@ const AppRoutes = () => {
         </Route>
       </>
     ),
-    { basename: '' }
+    { basename: window.publicWebappConfig?.PUBLIC_URL ?? '' }
   );
   return <RouterProvider router={router} />;
 };

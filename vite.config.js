@@ -6,6 +6,10 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Relative base ensures assets are loaded relative to the page URL.
+  // This makes the build work at any URL prefix (e.g. /admin-portal/) without
+  // knowing the prefix at build time, and without breaking the Ingress rewrite.
+  base: './',
   plugins: [react(), nodePolyfills()],
   resolve: {
     alias: {

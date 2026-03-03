@@ -43,6 +43,9 @@ spec:
           runAsUser: 1000
         image: "{{ .Values.webapp.server.image.repository }}:{{ .Values.webapp.server.image.tag }}"
         imagePullPolicy: {{ .Values.webapp.server.image.pullPolicy }}
+        env:
+          - name: PUBLIC_URL
+            value: {{ .Values.webapp.publicUrl | default "" | trimSuffix "/" | quote }}
         ports:
           - name: http
             containerPort: 8080
