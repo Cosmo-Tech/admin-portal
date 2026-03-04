@@ -14,7 +14,8 @@ const getConfig = (apiConfig) => {
   } catch (e) {
     console.error(`Failed to parse authority domain name from keycloak realm: "${AUTH_KEYCLOAK_REALM}"`);
   }
-  const redirectUrl = `${window.location.protocol}//${window.location.host}/sign-in`;
+  const PUBLIC_URL = window?.publicWebappConfig?.PUBLIC_URL ?? '';
+  const redirectUrl = `${window.location.protocol}//${window.location.host}${PUBLIC_URL}/sign-in`;
 
   return {
     rolesJwtClaim: AUTH_KEYCLOAK_ROLES_JWT_CLAIM,

@@ -17,6 +17,10 @@ import {
   AccessManagement,
 } from './views';
 
+// Read the PUBLIC_URL injected at runtime by publicWebappConfig.js (e.g. "/admin-portal").
+// This tells React Router that all routes are relative to this base path.
+const basename = window?.publicWebappConfig?.PUBLIC_URL || '';
+
 const AppRoutes = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -38,7 +42,7 @@ const AppRoutes = () => {
         </Route>
       </>
     ),
-    { basename: '' }
+    { basename }
   );
   return <RouterProvider router={router} />;
 };
