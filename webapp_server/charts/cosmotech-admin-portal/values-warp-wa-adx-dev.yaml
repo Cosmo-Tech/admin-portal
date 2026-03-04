@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+# SPDX-License-Identifier: LicenseRef-CosmoTech
+#
+# Production override values for the warp wa-adx-dev environment
+#
+
+name: cosmotech-admin-portal
+
+webapp:
+  # -- domain name of the cluster (e.g. mytenant.cosmotech.com)
+  domainName: "warp.api.cosmotech.com"
+  # -- URL path prefix for the portal (e.g. /admin-portal)
+  publicUrl: /admin-portal
+  server:
+    replicaCount: 1
+    nodeSelector: {}
+    image:
+      pullSecret: "ghcr-secret"
+      repository: "ghcr.io/cosmo-tech/admin-portal/webapp-server"
+      tag: main
+      pullPolicy: Always
+
+# Runtime config injected via ConfigMap (apis.json)
+config:
+  apis:
+    warp wa-adx-dev:
+      APP_REGISTRATION_CLIENT_ID: "d104fbd6-9464-45d5-a022-83c90ad56906"
+      AZURE_TENANT_ID: "e413b834-8be8-4822-a370-be619545cb49"
+      COSMOTECH_API_SCOPE: "https://warp.api.cosmotech.com/wa-adx-dev/.default"
+      COSMOTECH_API_PATH: "https://warp.api.cosmotech.com/wa-adx-dev/v3"
+    warp-eng-api-ci:
+      AUTH_KEYCLOAK_CLIENT_ID: "cosmotech-portal-admin-client"
+      AUTH_KEYCLOAK_REALM: "https://warp.api.cosmotech.com/keycloak/realms/eng-api-ci"
+      AUTH_KEYCLOAK_ROLES_JWT_CLAIM: "userRoles"
+      COSMOTECH_API_PATH: "https://warp.api.cosmotech.com/eng-api-ci/ci/"
+
+ingress:
+  enabled: true
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 128Mi
