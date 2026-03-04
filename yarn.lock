@@ -340,7 +340,7 @@ __metadata:
     "@types/react": "npm:^19.0.8"
     "@types/react-dom": "npm:^19.0.3"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    axios: "npm:^1.13.5"
+    axios: "npm:^1.13.6"
     eslint: "npm:^9.20.0"
     eslint-config-prettier: "npm:^10.0.1"
     eslint-plugin-cypress: "npm:^4.1.0"
