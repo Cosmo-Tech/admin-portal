@@ -21,12 +21,6 @@ COPY . .
 ARG VITE_BUILD_NUMBER
 ENV VITE_BUILD_NUMBER=${VITE_BUILD_NUMBER}
 
-# Sub-path prefix for the deployed app (e.g. /admin-portal).
-# When set, Vite bakes the correct base into all asset references in index.html
-# so the browser requests assets under the same path where the ingress routes traffic.
-ARG VITE_PUBLIC_URL
-ENV VITE_PUBLIC_URL=${VITE_PUBLIC_URL}
-
 RUN yarn build
 
 

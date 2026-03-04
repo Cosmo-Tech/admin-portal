@@ -7,9 +7,10 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), nodePolyfills()],
-  // When built for a sub-path deployment (e.g. /admin-portal), set VITE_PUBLIC_URL
-  // at build time so Vite emits the correct base in index.html asset references.
-  base: process.env.VITE_PUBLIC_URL || '/',
+  // Use relative base so Vite emits ./assets/… paths in index.html.
+  // This makes the build work correctly under any sub-path deployment (e.g. /admin-portal)
+  // without needing a build-time VITE_PUBLIC_URL environment variable.
+  base: './',
   resolve: {
     alias: {
       src: '/src',
