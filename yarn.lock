@@ -52,7 +52,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-browser@npm:^3.26.1, @azure/msal-browser@npm:^3.30.0":
+"@azure/msal-browser@npm:^3.30.0":
   version: 3.30.0
   resolution: "@azure/msal-browser@npm:3.30.0"
   dependencies:
@@ -70,6 +70,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@azure/msal-browser@npm:^5.4.0":
+  version: 5.4.0
+  resolution: "@azure/msal-browser@npm:5.4.0"
+  dependencies:
+    "@azure/msal-common": "npm:16.2.0"
+  checksum: 10c0/a18ffb6d39180a3f098d6252a73fdc175fc0249def02ffc5816d4c64ac3cc24faa4f30c02ae8be7d60f217d59188df4b8166679e1a4dab57ead75e5f5c9936b8
+  languageName: node
+  linkType: hard
+
 "@azure/msal-common@npm:14.16.1":
   version: 14.16.1
   resolution: "@azure/msal-common@npm:14.16.1"
@@ -81,6 +90,13 @@ __metadata:
   version: 15.14.1
   resolution: "@azure/msal-common@npm:15.14.1"
   checksum: 10c0/0782278648609e13a67361d1c4600d0bb2c74d85b3580ff045acc19b352b206e8d021266420bce59f40d69da3789da060c03291aa3f83d31ed0569bc2c3e89bb
+  languageName: node
+  linkType: hard
+
+"@azure/msal-common@npm:16.2.0":
+  version: 16.2.0
+  resolution: "@azure/msal-common@npm:16.2.0"
+  checksum: 10c0/bdadb35742991d26f204ee7b620d4f7e8da3d5ed48103af169b9103d8cd3be0e3a08156740374d23308edaa1c5a0782d607974e4466e2e233fda6b0ceb0fd239
   languageName: node
   linkType: hard
 
@@ -321,7 +337,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@cosmotech/admin-portal@workspace:."
   dependencies:
-    "@azure/msal-browser": "npm:^3.26.1"
+    "@azure/msal-browser": "npm:^5.4.0"
     "@cosmotech/api-ts-v3": "npm:@cosmotech/api-ts@^3.3.4"
     "@cosmotech/api-ts-v5": "npm:@cosmotech/api-ts@^5.0.0-rc5"
     "@cosmotech/azure": "npm:^3.0.1"
