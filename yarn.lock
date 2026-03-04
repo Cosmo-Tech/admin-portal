@@ -349,7 +349,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^5.1.0"
     eslint-plugin-react-refresh: "npm:^0.4.19"
     globals: "npm:^15.14.0"
-    i18next: "npm:^25.8.0"
+    i18next: "npm:^25.8.14"
     i18next-browser-languagedetector: "npm:^8.2.0"
     jsdom: "npm:^28.1.0"
     jwt-decode: "npm:^4.0.0"
@@ -4663,9 +4663,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^25.8.0":
-  version: 25.8.0
-  resolution: "i18next@npm:25.8.0"
+"i18next@npm:^25.8.14":
+  version: 25.8.14
+  resolution: "i18next@npm:25.8.14"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
   peerDependencies:
@@ -4673,7 +4673,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/20451fcaa86584b7395ee0375d2038270cce84e1541ec154bacfa32efbb420a2bafd1c71184242927f0eb8be6ec379ea132850f847b39b2eebcea6a49d746cac
+  checksum: 10c0/1c736a48ab66c0e1b8094d4359d7864efd77bb0086b37021b0031ed76cfbe595c3c1ea2664b80589f4e5a5e61a94026959ce98218785db61781dce26d8595500
   languageName: node
   linkType: hard
 
