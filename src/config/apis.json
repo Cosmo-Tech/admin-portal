@@ -18,9 +18,21 @@
     "COSMOTECH_API_PATH": "https://warp.api.cosmotech.com/wa-adx-dev/v3"
   },
   "wa-vela-dev": {
-    "AUTH_KEYCLOAK_CLIENT_ID": "cosmotech-webapp-client",
+    "AUTH_KEYCLOAK_CLIENT_ID": "cosmotech-portal-admin-client",
     "AUTH_KEYCLOAK_REALM": "https://kubernetes.cosmotech.com/keycloak/realms/wa-vela-dev",
     "AUTH_KEYCLOAK_ROLES_JWT_CLAIM": "userRoles",
     "COSMOTECH_API_PATH": "https://kubernetes.cosmotech.com/wa-vela-dev/v5"
+  },
+  "warp sphinx": {
+    "AUTH_KEYCLOAK_CLIENT_ID": "cosmotech-portal-admin-client",
+    "AUTH_KEYCLOAK_REALM": "https://warp.api.cosmotech.com/keycloak/realms/sphinx",
+    "AUTH_KEYCLOAK_ROLES_JWT_CLAIM": "userRoles",
+    "COSMOTECH_API_PATH": "https://warp.api.cosmotech.com/sphinx/v5"
+  },
+  "warp-eng-api-ci": {
+    "AUTH_KEYCLOAK_CLIENT_ID":"cosmotech-portal-admin-client",
+    "AUTH_KEYCLOAK_REALM":"https://warp.api.cosmotech.com/keycloak/realms/eng-api-ci",
+    "AUTH_KEYCLOAK_ROLES_JWT_CLAIM":"userRoles",
+    "COSMOTECH_API_PATH":"https://warp.api.cosmotech.com/eng-api-ci/ci/"
   }
 }

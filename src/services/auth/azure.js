@@ -36,5 +36,5 @@ export const resetAuthProviderConfig = (name, apiConfig) => {
   Auth.setProvider(name);
   const MSAL_AZURE_CONFIG = getConfig(apiConfig);
   // FIXME: update core lib to prevent console warning when provider already exists
-  Auth.addProvider({ ...AuthMSAL, name }).setConfig(MSAL_AZURE_CONFIG);
+  return Auth.addProvider({ ...AuthMSAL, name }).setConfig(MSAL_AZURE_CONFIG);
 };

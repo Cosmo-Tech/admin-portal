@@ -54,5 +54,5 @@ export const resetAuthProviderConfig = (name, apiConfig) => {
   Auth.setProvider(name);
   const MSAL_KEYCLOAK_CONFIG = getConfig(apiConfig);
   // FIXME: update core lib to prevent console warning when provider already exists
-  Auth.addProvider({ ...AuthKeycloakRedirect, name }).setConfig(MSAL_KEYCLOAK_CONFIG);
+  return Auth.addProvider({ ...AuthKeycloakRedirect, name }).setConfig(MSAL_KEYCLOAK_CONFIG);
 };

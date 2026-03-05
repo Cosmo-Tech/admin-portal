@@ -62,6 +62,20 @@ class ApiManager {
   getApi = () => this.#api;
   getApiClient = () => this.#apiClient;
   getAuthProviderType = () => detectApiAuthProviderType(this.#api);
+
+  /**
+   * Re-initialize the MSAL instance for the given API so that the shared
+   * singleton inside @cosmotech/core points to the correct Keycloak realm
+   * (or Azure tenant) before signIn() is called.
+   */
+  resetAuthProvider = async (apiName) => {
+    const apis = this.#apiConfig.getApis();
+    const api = apis[apiName];
+    if (!api) return;
+    const authProviderType = detectApiAuthProviderType(api);
+    if (authProviderType === 'azure') await resetAzureAuthProviderConfig(apiName, api);
+    else if (authProviderType === 'keycloak') await resetKeycloakAuthProviderConfig(apiName, api);
+  };
 }
 
 export const apiManager = new ApiManager();
