@@ -86,34 +86,6 @@ const applyAclOperation = async (api, operation) => {
     return;
   }
 
-  if (operation.resourceType === 'runners') {
-    if (!operation.organizationId || !operation.workspaceId || !operation.runnerId) return;
-    if (operation.operationType === 'add') {
-      await api.Runners.addRunnerAccessControl(operation.organizationId, operation.workspaceId, operation.runnerId, {
-        id: operation.identityId,
-        role: operation.role,
-      });
-      return;
-    }
-    if (operation.operationType === 'update') {
-      await api.Runners.updateRunnerAccessControl(
-        operation.organizationId,
-        operation.workspaceId,
-        operation.runnerId,
-        operation.identityId,
-        rolePayload
-      );
-      return;
-    }
-    if (operation.operationType === 'remove') {
-      await api.Runners.removeRunnerAccessControl(
-        operation.organizationId,
-        operation.workspaceId,
-        operation.runnerId,
-        operation.identityId
-      );
-    }
-  }
 };
 
 /**

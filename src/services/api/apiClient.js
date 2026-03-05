@@ -4,8 +4,6 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import {
   DatasetApiFactory,
-  RunnerApiFactory,
-  RunApiFactory,
   SolutionApiFactory,
   WorkspaceApiFactory,
   OrganizationApiFactory,
@@ -87,8 +85,6 @@ export const getApiClient = (apiUrl) => {
     // v3 API factories
     Solutions: SolutionApiFactory(null, apiUrl, axiosClientApi),
     Datasets: DatasetApiFactory(null, apiUrl, axiosClientApi),
-    Runners: RunnerApiFactory(null, apiUrl, axiosClientApi),
-    RunnerRuns: RunApiFactory(null, apiUrl, axiosClientApi),
     Workspaces: WorkspaceApiFactory(null, apiUrl, axiosClientApi),
     Organizations: OrganizationApiFactory(null, apiUrl, axiosClientApi),
     // v5 API factories (for permissions and meta endpoints)

@@ -86,7 +86,7 @@ export const hasWriteSecurityPermission = (resource) => {
 
 export const getAssignedRolesCountFromPermissions = (user) => {
   if (!user?.resourcePermissions) return 0;
-  const resourceGroups = ['organizations', 'solutions', 'workspaces', 'runners'];
+  const resourceGroups = ['organizations', 'solutions', 'workspaces'];
   let assignedCount = 0;
 
   for (const resourceGroup of resourceGroups) {
@@ -123,29 +123,6 @@ export const computeWorkspacePropagationTargets = (resourceByKey, workspaceResou
 
   if (workspaceResource.solutionId) {
     const solutionKey = buildResourceKey('solutions', workspaceResource.solutionId);
-    if (resourceByKey.has(solutionKey)) targets.push(solutionKey);
-  }
-
-  return targets;
-};
-
-export const computeRunnerPropagationTargets = (resourceByKey, runnerResource) => {
-  if (!runnerResource || runnerResource.resourceType !== 'runners') return [];
-
-  const targets = [];
-
-  if (runnerResource.workspaceId) {
-    const workspaceKey = buildResourceKey('workspaces', runnerResource.workspaceId);
-    if (resourceByKey.has(workspaceKey)) targets.push(workspaceKey);
-  }
-
-  if (runnerResource.organizationId) {
-    const organizationKey = buildResourceKey('organizations', runnerResource.organizationId);
-    if (resourceByKey.has(organizationKey)) targets.push(organizationKey);
-  }
-
-  if (runnerResource.solutionId) {
-    const solutionKey = buildResourceKey('solutions', runnerResource.solutionId);
     if (resourceByKey.has(solutionKey)) targets.push(solutionKey);
   }
 
@@ -218,8 +195,6 @@ export const computeEffectiveAssignments = (resourceViewModels = [], draftAssign
     let propagationTargets = [];
     if (resource.resourceType === 'workspaces') {
       propagationTargets = computeWorkspacePropagationTargets(resourceByKey, resource);
-    } else if (resource.resourceType === 'runners') {
-      propagationTargets = computeRunnerPropagationTargets(resourceByKey, resource);
     } else if (resource.resourceType === 'solutions') {
       propagationTargets = computeSolutionPropagationTargets(resourceByKey, resource);
     } else {
@@ -316,7 +291,6 @@ export const buildAclOperation = (resourceModel, effectiveRole) => {
     organizationId: resourceModel.organizationId,
     solutionId: resourceModel.solutionId,
     workspaceId: resourceModel.workspaceId,
-    runnerId: resourceModel.runnerId,
     role: targetRole,
   };
 };

@@ -29,7 +29,11 @@ export const NavigationMenu = () => {
   const location = useLocation();
   const theme = useTheme();
   const auth = useAuth();
+  const publicUrl = (window?.publicWebappConfig?.PUBLIC_URL || '').replace(/\/$/, '');
   const selectedNavTextColor = theme.palette.getContrastText(theme.palette.secondary.main);
+  const logoSrc = `${publicUrl}${
+    theme.palette.mode === 'dark' ? '/cosmotech_logo_dark_theme.png' : '/cosmotech_logo_light_theme.png'
+  }`;
 
   const userInitials = useMemo(() => {
     if (!auth.userName) return 'UN';
@@ -81,7 +85,7 @@ export const NavigationMenu = () => {
           component="img"
           sx={{ height: '39px', width: '100px', maxHeight: '39px', maxWidth: '100px' }}
           alt="Cosmo Tech"
-          src={theme.palette.mode === 'dark' ? '/cosmotech_logo_dark_theme.png' : '/cosmotech_logo_light_theme.png'}
+          src={logoSrc}
         />
       </Box>
       {/* Navigation Items */}

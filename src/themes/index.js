@@ -132,7 +132,6 @@ const getThemeConfig = (mode = 'light') => {
           ORGANIZATION: '#FF9F1C',
           SOLUTION: '#3FA4FF',
           WORKSPACE: '#14C97A',
-          RUNNER: isLight ? '#6D7682' : '#A6ACB5',
         },
       },
     },

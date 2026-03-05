@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 import { OrganizationsUtils } from 'src/utils/OrganizationsUtils.js';
-import { RunnersUtils } from 'src/utils/RunnersUtils.js';
 import { SolutionsUtils } from 'src/utils/SolutionsUtils.js';
 import { WorkspacesUtils } from 'src/utils/WorkspacesUtils.js';
 import { setOrganizations } from '../../organizations/reducers.js';
-import { setRunners } from '../../runners/reducers.js';
 import { setSolutions } from '../../solutions/reducers.js';
 import { setWorkspaces } from '../../workspaces/reducers.js';
 import { APP_STATUS } from '../constants.js';
@@ -14,7 +12,7 @@ import { setAppStatus, setPermissionsMapping } from '../reducers.js';
 /**
  * Thunk to fetch all initial data after authentication.
  * 1. Fetches the organization permissions mapping (roles → permissions per component).
- * 2. Fetches organizations, solutions, workspaces, and runners.
+ * 2. Fetches organizations, solutions, and workspaces.
  * 3. Patches each resource with `currentUserPermissions` for the logged-in user.
  */
 function fetchInitialData() {
@@ -94,26 +92,6 @@ function fetchInitialData() {
       }
       dispatch(setWorkspaces({ workspaces: allWorkspaces }));
       console.log('[Permissions] ✓ Loaded', allWorkspaces.length, 'workspace(s)');
-
-      // Step 5: Fetch runners for each workspace and patch with currentUserPermissions
-      const allRunners = [];
-      const runnerPermissionsMapping = permissionsMapping.runner ?? {};
-
-      for (const org of organizations) {
-        for (const ws of allWorkspaces.filter((w) => w.organizationId === org.id)) {
-          try {
-            const { data: runners } = await api.Runners.listRunners(org.id, ws.id);
-            for (const runner of runners) {
-              RunnersUtils.patchRunnerWithCurrentUserPermissions(runner, userEmail, runnerPermissionsMapping);
-            }
-            allRunners.push(...runners.map((runner) => ({ ...runner, workspaceId: ws.id, organizationId: org.id })));
-          } catch (error) {
-            console.warn(`[Permissions] Could not fetch runners for workspace "${ws.name}":`, error.message);
-          }
-        }
-      }
-      dispatch(setRunners({ runners: allRunners }));
-      console.log('[Permissions] ✓ Loaded', allRunners.length, 'runner(s)');
 
       console.log('[Permissions] ✅ Initial data loading complete');
       dispatch(setAppStatus({ status: APP_STATUS.SUCCESS }));

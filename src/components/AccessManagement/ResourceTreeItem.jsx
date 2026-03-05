@@ -51,19 +51,6 @@ const RESOURCE_ROW_DENSITY = {
     buttonHorizontalPadding: 1.05,
     marginBottom: 0.45,
   },
-  RUNNER: {
-    minHeight: 44,
-    verticalPadding: 0.55,
-    nameFontSize: '0.93rem',
-    metaFontSize: '0.63rem',
-    metaLetterSpacing: 0.64,
-    iconSize: '0.9rem',
-    buttonMinWidth: 62,
-    buttonHeight: 24,
-    buttonFontSize: '0.71rem',
-    buttonHorizontalPadding: 0.9,
-    marginBottom: 0.35,
-  },
 };
 
 export const ResourceTreeItem = ({
@@ -90,8 +77,8 @@ export const ResourceTreeItem = ({
 
   const hasChildren = Children.count(children) > 0;
   const connectorLeft = 24 + (depth - 1) * 36;
-  const itemType = type || 'RUNNER';
-  const rowDensity = RESOURCE_ROW_DENSITY[itemType] || RESOURCE_ROW_DENSITY.RUNNER;
+  const itemType = type || 'WORKSPACE';
+  const rowDensity = RESOURCE_ROW_DENSITY[itemType] || RESOURCE_ROW_DENSITY.WORKSPACE;
   const iconColor = treeIconColors[itemType] || amColors.resourceItemSubtext || theme.palette.text.secondary;
 
   const isRoleAssigned = Boolean(roleLabel);

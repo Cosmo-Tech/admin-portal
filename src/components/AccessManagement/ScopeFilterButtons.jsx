@@ -5,7 +5,6 @@ import {
   ApartmentOutlined as OrgIcon,
   DeveloperBoardOutlined as SolutionIcon,
   FolderOpenOutlined as WorkspaceIcon,
-  PlayArrowOutlined as RunnerIcon,
 } from '@mui/icons-material';
 import { Box, ToggleButton, Typography } from '@mui/material';
 
@@ -27,7 +26,6 @@ const RESOURCE_SCOPE_BUTTONS = [
   { value: 'organizations', icon: <OrgIcon sx={{ fontSize: '0.9rem' }} />, key: 'organizations' },
   { value: 'solutions', icon: <SolutionIcon sx={{ fontSize: '0.9rem' }} />, key: 'solutions' },
   { value: 'workspaces', icon: <WorkspaceIcon sx={{ fontSize: '0.9rem' }} />, key: 'workspaces' },
-  { value: 'runners', icon: <RunnerIcon sx={{ fontSize: '0.9rem' }} />, key: 'runners' },
 ];
 
 export const ScopeFilterButtons = ({ value, onChange, t, theme }) => {
