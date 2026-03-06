@@ -15,7 +15,7 @@ import { setUsers, setUsersStatus, setLastLoginMap, setUserPermissions, setUserR
  *  1. Fetch all users from Keycloak Admin API
  *  2. Fetch LOGIN events (for last-login timestamps)
  *  3. Fetch realm role-mappings per user (to detect Platform.Admin)
- *  4. Compute per-user permissions from organizations/solutions/workspaces/runners ACLs
+ *  4. Compute per-user permissions from organizations/solutions/workspaces ACLs
  */
 function fetchRealmUsers() {
   return async (dispatch, getState) => {
@@ -108,13 +108,11 @@ function fetchRealmUsers() {
       const organizations = state.organizations.list ?? [];
       const solutions = state.solutions.list ?? [];
       const workspaces = state.workspaces.list ?? [];
-      const runners = state.runners.list ?? [];
       const permissionsMapping = state.app.permissionsMapping ?? {};
 
       const orgMapping = permissionsMapping.organization ?? {};
       const solutionMapping = permissionsMapping.solution ?? permissionsMapping.organization ?? {};
       const wsMapping = permissionsMapping.workspace ?? {};
-      const runnerMapping = permissionsMapping.runner ?? {};
 
       const permissionsByUserId = {};
 
@@ -153,20 +151,10 @@ function fetchRealmUsers() {
           }
         }
 
-        const userRunnerPerms = {};
-        for (const runner of runners) {
-          if (runner.security) {
-            const role = SecurityUtils.getUserRoleForResource(runner.security, userEmail);
-            const permissions = SecurityUtils.getUserPermissionsForResource(runner.security, userEmail, runnerMapping);
-            userRunnerPerms[runner.id] = { role: role ?? 'none', permissions, name: runner.name };
-          }
-        }
-
         permissionsByUserId[user.id] = {
           organizations: userOrgPerms,
           solutions: userSolutionPerms,
           workspaces: userWsPerms,
-          runners: userRunnerPerms,
         };
       }
 

@@ -15,7 +15,7 @@ export const useApplicationPermissions = () => useSelector((state) => state.app.
 export const useApplicationPermissionsMapping = () => useSelector((state) => state.app.permissionsMapping);
 
 /**
- * Get the permissionsMapping for a specific component (e.g. 'organization', 'workspace', 'runner', 'dataset').
+ * Get the permissionsMapping for a specific component (e.g. 'organization', 'workspace', 'dataset').
  */
 export const useComponentPermissionsMapping = (component) =>
   useSelector((state) => state.app.permissionsMapping?.[component] ?? {});

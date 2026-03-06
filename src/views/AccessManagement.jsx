@@ -6,7 +6,6 @@ import {
   ApartmentOutlined as OrgIcon,
   DeveloperBoardOutlined as SolutionIcon,
   FolderOpenOutlined as WorkspaceIcon,
-  PlayArrowOutlined as RunnerIcon,
   Search as SearchIcon,
   Lock as LockIcon,
 } from '@mui/icons-material';
@@ -50,7 +49,6 @@ import { useSaveAclAssignments } from 'src/state/accessManagement/hooks.js';
 import { useFetchInitialData } from 'src/state/app/hooks.js';
 import { useUserRoles } from 'src/state/auth/hooks.js';
 import { useOrganizationsList } from 'src/state/organizations/hooks.js';
-import { useRunnersList } from 'src/state/runners/hooks.js';
 import { useSolutionsList } from 'src/state/solutions/hooks.js';
 import { USERS_STATUS } from 'src/state/users/constants.js';
 import { useFetchRealmUsers, useUsersList, useUsersListStatus } from 'src/state/users/hooks.js';
@@ -60,30 +58,11 @@ import { matchesSearchQuery } from 'src/utils/SearchUtils.js';
 
 const getRoleLabelText = (t, role) => t(`accessManagement.roles.${normalizeRole(role)}`);
 
-const buildWorkspaceRunners = (runners, organizationId, workspaceId, workspaceSolutionId) => {
-  const workspaceRunners = [];
-  for (const runner of runners) {
-    if (runner.organizationId !== organizationId) continue;
-    if (runner.workspaceId !== workspaceId) continue;
-    if (String(runner.type || 'RUNNER').toUpperCase() === 'RUN') continue;
-
-    workspaceRunners.push({
-      ...runner,
-      name: runner.name || runner.id,
-      type: runner.type || 'RUNNER',
-      solutionId: runner.solution?.solutionId ?? runner.solutionId ?? workspaceSolutionId ?? null,
-    });
-  }
-  workspaceRunners.sort((a, b) => (a.name || a.id || '').localeCompare(b.name || b.id || ''));
-  return workspaceRunners;
-};
-
-const buildOrganizationTree = (organizations, solutions, workspaces, runners) => {
+const buildOrganizationTree = (organizations, solutions, workspaces) => {
   if (!Array.isArray(organizations) || organizations.length === 0) return [];
 
   const safeSolutions = Array.isArray(solutions) ? solutions : [];
   const safeWorkspaces = Array.isArray(workspaces) ? workspaces : [];
-  const safeRunners = Array.isArray(runners) ? runners : [];
 
   return organizations
     .map((organization) => {
@@ -96,7 +75,6 @@ const buildOrganizationTree = (organizations, solutions, workspaces, runners) =>
             ...workspace,
             name: workspace.name || workspace.id,
             solutionId: workspaceSolutionId,
-            runners: buildWorkspaceRunners(safeRunners, organization.id, workspace.id, workspaceSolutionId),
           };
         });
 
@@ -142,29 +120,11 @@ const filterOrganizationsByWorkspaces = (orgTree, resourceSearchQuery) => {
   return filtered;
 };
 
-const filterOrganizationsByRunners = (orgTree, resourceSearchQuery) => {
-  const filtered = [];
-  for (const organization of orgTree) {
-    const matchedWorkspaces = [];
-    for (const workspace of organization.workspaces || []) {
-      const matchedRunners = [];
-      for (const runner of workspace.runners || []) {
-        if (matchesSearchQuery(resourceSearchQuery, runner.name, runner.id)) matchedRunners.push(runner);
-      }
-      if (matchedRunners.length > 0) matchedWorkspaces.push({ ...workspace, runners: matchedRunners });
-    }
-    if (matchedWorkspaces.length === 0) continue;
-    filtered.push({ ...organization, workspaces: matchedWorkspaces, solutions: [] });
-  }
-  return filtered;
-};
-
 const filterResourceTreeByScope = (orgTree, resourceSearchQuery, resourceSearchScope) => {
   if (!resourceSearchQuery) return orgTree;
   if (resourceSearchScope === 'organizations') return filterOrganizationsByName(orgTree, resourceSearchQuery);
   if (resourceSearchScope === 'solutions') return filterOrganizationsBySolutions(orgTree, resourceSearchQuery);
-  if (resourceSearchScope === 'workspaces') return filterOrganizationsByWorkspaces(orgTree, resourceSearchQuery);
-  return filterOrganizationsByRunners(orgTree, resourceSearchQuery);
+  return filterOrganizationsByWorkspaces(orgTree, resourceSearchQuery);
 };
 
 export const AccessManagement = () => {
@@ -190,7 +150,6 @@ export const AccessManagement = () => {
   const organizations = useOrganizationsList();
   const solutions = useSolutionsList();
   const workspaces = useWorkspacesList();
-  const runners = useRunnersList();
   const userRoles = useUserRoles();
 
   const fetchInitialData = useFetchInitialData();
@@ -253,8 +212,8 @@ export const AccessManagement = () => {
   // ---------------------------------------------------------------------------
 
   const orgTree = useMemo(
-    () => buildOrganizationTree(organizations, solutions, workspaces, runners),
-    [organizations, runners, solutions, workspaces]
+    () => buildOrganizationTree(organizations, solutions, workspaces),
+    [organizations, solutions, workspaces]
   );
 
   const filteredOrgTree = useMemo(
@@ -287,7 +246,6 @@ export const AccessManagement = () => {
         organizationId: organization.id,
         workspaceId: null,
         solutionId: null,
-        runnerId: null,
         baseRole: normalizeRole(organizationBaseRole),
         effectiveRole: normalizeRole(organizationBaseRole),
         draftSource: null,
@@ -312,7 +270,6 @@ export const AccessManagement = () => {
           organizationId: solution.organizationId ?? organization.id,
           workspaceId: null,
           solutionId: solution.id,
-          runnerId: null,
           baseRole: normalizeRole(solutionBaseRole),
           effectiveRole: normalizeRole(solutionBaseRole),
           draftSource: null,
@@ -337,7 +294,6 @@ export const AccessManagement = () => {
           organizationId: workspace.organizationId ?? organization.id,
           workspaceId: workspace.id,
           solutionId: workspace.solutionId,
-          runnerId: null,
           baseRole: normalizeRole(workspaceBaseRole),
           effectiveRole: normalizeRole(workspaceBaseRole),
           draftSource: null,
@@ -347,31 +303,6 @@ export const AccessManagement = () => {
           canAssign:
             ASSIGNABLE_RESOURCE_TYPES.has('workspaces') && (isPlatformAdmin || hasWriteSecurityPermission(workspace)),
         });
-
-        for (const runner of workspace.runners || []) {
-          const runnerExplicitAcl = findExplicitAclEntry(runner.security, userIdentifiers);
-          const runnerBaseRole =
-            getRoleFromUserPermissions(currentUser, 'runners', runner.id) ||
-            getFallbackRoleFromSecurity(runner.security, currentUser);
-
-          models.push({
-            resourceKey: buildResourceKey('runners', runner.id),
-            resourceType: 'runners',
-            resourceId: runner.id,
-            organizationId: runner.organizationId ?? workspace.organizationId ?? organization.id,
-            workspaceId: runner.workspaceId ?? workspace.id,
-            solutionId: runner.solutionId ?? workspace.solutionId ?? null,
-            runnerId: runner.id,
-            baseRole: normalizeRole(runnerBaseRole),
-            effectiveRole: normalizeRole(runnerBaseRole),
-            draftSource: null,
-            hasExplicitAccess: Boolean(runnerExplicitAcl),
-            explicitIdentityId: runnerExplicitAcl?.id || null,
-            preferredIdentityId,
-            canAssign:
-              ASSIGNABLE_RESOURCE_TYPES.has('runners') && (isPlatformAdmin || hasWriteSecurityPermission(runner)),
-          });
-        }
       }
     }
 
@@ -917,7 +848,6 @@ export const AccessManagement = () => {
                               icon={<WorkspaceIcon fontSize="small" />}
                               name={workspace.name || workspace.id}
                               type="WORKSPACE"
-                              itemCount={workspace.runners?.length || workspace.itemCount}
                               depth={1}
                               assignLabel={t('accessManagement.assign')}
                               roleLabel={workspaceAssignment.roleLabel}
@@ -929,32 +859,7 @@ export const AccessManagement = () => {
                               onAssignClick={handleOpenRoleMenu}
                               resourceKey={workspaceAssignment.resourceKey}
                               theme={theme}
-                            >
-                              {(workspace.runners || []).map((runner) => {
-                                const runnerType = String(runner.type || 'RUNNER').toUpperCase();
-                                const runnerAssignment = getResourceAssignmentData('runners', runner.id);
-
-                                return (
-                                  <ResourceTreeItem
-                                    key={`${workspace.id}-${runner.id}`}
-                                    icon={<RunnerIcon fontSize="small" />}
-                                    name={runner.name || runner.id}
-                                    type={runnerType}
-                                    depth={2}
-                                    assignLabel={t('accessManagement.assign')}
-                                    roleLabel={runnerAssignment.roleLabel}
-                                    isDraft={runnerAssignment.isDraft}
-                                    isAutoDraft={runnerAssignment.isAutoDraft}
-                                    isDirectDraft={runnerAssignment.isDirectDraft}
-                                    canAssign={runnerAssignment.canAssign}
-                                    isSaving={isSaving}
-                                    onAssignClick={handleOpenRoleMenu}
-                                    resourceKey={runnerAssignment.resourceKey}
-                                    theme={theme}
-                                  />
-                                );
-                              })}
-                            </ResourceTreeItem>
+                            />
                           );
                         })}
                       </ResourceTreeItem>

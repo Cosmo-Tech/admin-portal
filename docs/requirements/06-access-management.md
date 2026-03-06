@@ -3,7 +3,7 @@
 
 # Access Management — Product Specification
 
-The Access Management page is the central place for managing user access rights across the entire resource hierarchy (Organizations, Solutions, Workspaces, Runners).
+The Access Management page is the central place for managing user access rights across the entire resource hierarchy (Organizations, Solutions, Workspaces).
 
 ## Who can access this page?
 
@@ -19,7 +19,7 @@ The page is divided into two main panels inside a responsive grid:
 
 Above both panels sits a toolbar with:
 - A **user search** field (searches by name, email, username, ID)
-- A **scope filter** toggle group (Organizations, Solutions, Workspaces, Runners)
+- A **scope filter** toggle group (Organizations, Solutions, Workspaces)
 - A **resource search** field (filters the tree by the selected scope)
 
 ---
@@ -62,18 +62,13 @@ Resources are displayed in a collapsible tree structure, sorted alphabetically b
 ```
 Organization
 ├── Solution
-├── Workspace
-│   ├── Runner
-│   └── Runner
 └── Workspace
-    └── Runner
 ```
 
 Each tree node displays:
-- **Icon** — Type-specific icon (apartment, developer board, folder, play arrow)
+- **Icon** — Type-specific icon (apartment, developer board, folder)
 - **Name** — Resource display name (falls back to ID)
-- **Type label** — Uppercase type (ORGANIZATION, SOLUTION, WORKSPACE, RUNNER)
-- **Item count** — Number of child items (for organizations and workspaces)
+- **Type label** — Uppercase type (ORGANIZATION, SOLUTION, WORKSPACE)
 - **Assign/Role button** — Shows current role or "Assign" if no role
 
 ---
@@ -110,7 +105,6 @@ When a role is assigned to a child resource, the system automatically propagates
 ### Propagation paths
 | Source resource | Auto-fills |
 |----------------|-----------|
-| **Runner** | → Workspace, Solution, Organization |
 | **Workspace** | → Solution, Organization |
 | **Solution** | → Organization |
 

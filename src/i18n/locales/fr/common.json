@@ -52,7 +52,6 @@
     "resourceScope": {
       "organizations": "Organisations",
       "solutions": "Solutions",
-      "runners": "Runners",
       "workspaces": "Workspaces"
     },
     "usersLabel": "UTILISATEURS",

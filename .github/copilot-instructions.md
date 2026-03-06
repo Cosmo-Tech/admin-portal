@@ -18,7 +18,7 @@ yarn install && yarn start   # Use yarn only (not npm)
 
 **File headers required:**
 ```javascript
-// SPDX-FileCopyrightText: Copyright (C) 2024-2025 Cosmo Tech
+// SPDX-FileCopyrightText: Copyright (C) 2024-2026 Cosmo Tech
 // SPDX-License-Identifier: LicenseRef-CosmoTech
 ```
 
