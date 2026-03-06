@@ -83,9 +83,7 @@ const applyAclOperation = async (api, operation) => {
         operation.identityId
       );
     }
-    return;
   }
-
 };
 
 /**
